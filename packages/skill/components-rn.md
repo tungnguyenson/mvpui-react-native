@@ -244,3 +244,230 @@ standalone field wrapper around a native `<TextInput>`.
   be partially interacted with via the reveal button.
 
 ---
+
+## Spinner
+
+**Import**
+
+```ts
+import { Spinner, type SpinnerProps, type SpinnerSize, type SpinnerTintKey } from "@mvp-ui-rn/ui"
+```
+
+**Variants**
+
+| Prop | Values | Default |
+|---|---|---|
+| `size` | `"sm"` (16) · `"md"` (20) · `"lg"` (24) · raw `number` | `"md"` |
+| `tint` | `"fg"` · `"fg-secondary"` · `"fg-tertiary"` · `"fg-brand"` · `"fg-error"` · `"primary-fg"` | `"fg"` |
+| `color` | raw RN color string — **overrides `tint`** | — |
+| `durationMs` | full rotation period | `750` |
+
+**When to use**
+
+- Standalone loading indicator next to label text.
+- Inline button loading (Button already wraps this internally).
+- Page-level fetch / refresh affordance.
+
+**When NOT to use**
+
+- Determinate progress — use `ProgressBar` (not yet ported).
+- Background async with no UI affordance — silent is fine.
+
+**Anti-patterns**
+
+- ❌ Hardcoding `color` to `#000000` — breaks dark mode. Use `tint` instead.
+- ❌ `tint="primary-fg"` on the page background — primary-fg is white in
+  both modes, intended for spinners sitting on a brand-filled surface
+  (Button primary, FAB, modal action). Pair with `bg-primary` parent.
+
+**RN deltas vs. web**
+
+- Web uses an inline SVG inside Button only. RN promotes Spinner to a
+  shared component with token-keyed size + semantic tint that
+  auto-flips light/dark via `useColorScheme()`.
+- `color` (raw) prop preserved for Button's per-variant tint map
+  (`button.tsx`) — overrides `tint` when set so the existing call
+  site keeps working.
+
+---
+
+## SafeArea
+
+**Import**
+
+```ts
+import { SafeArea, type SafeAreaProps, type SafeAreaEdge } from "@mvp-ui-rn/ui"
+```
+
+RN-only primitive — no web equivalent. Wraps every screen.
+
+**Variants**
+
+| Prop | Values | Default |
+|---|---|---|
+| `edges` | array of `"top"` / `"bottom"` / `"left"` / `"right"` | all 4 |
+| `statusBar` | `"auto"` (flips with `useColorScheme`) · `"light"` · `"dark"` · `false` (skip) | `"auto"` |
+| `className` | appended to wrapper | — |
+
+**When to use**
+
+- Outermost wrapper of every screen rendered by `expo-router`.
+- Pair with `<Stack>` from expo-router — Stack handles the header inset
+  for native nav; SafeArea handles content + bottom home indicator.
+
+**When NOT to use**
+
+- Inside another `<SafeArea>` — double-padding stacks. SafeArea is a
+  screen primitive, not a section primitive.
+- For ad-hoc spacing inside content — use padding utilities directly.
+
+**Anti-patterns**
+
+- ❌ Overriding `bg-bg` with a raw color in `className` — breaks dark
+  flip. Use semantic aliases when the screen needs a non-default
+  surface.
+- ❌ Setting `edges={[]}` when you mean "all four" — that disables ALL
+  insets, leaving content under the notch.
+
+---
+
+## Card
+
+**Import**
+
+```ts
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@mvp-ui-rn/ui"
+```
+
+Surface composition mirroring mvp-ui (web). 6 sub-components, each
+forwardRef.
+
+**When to use**
+
+- Grouped content with a clear visual boundary: settings sections,
+  preview tiles, confirmation surfaces, list-row groups.
+
+**When NOT to use**
+
+- Whole-screen background — use the SafeArea + ScrollView root.
+- Tap-to-navigate cards — wrap a `<Card>` in `<Pressable>` manually.
+  Mirroring web, Card has no built-in Pressable variant.
+
+**Anti-patterns**
+
+- ❌ Stacking margin on a Card outer container — Card already provides
+  surface chrome; use gap on the parent stack.
+- ❌ Overriding the inner padding with a raw `style.padding` — breaks
+  the 24pt rhythm. Use `className` overrides on CardHeader / Content /
+  Footer with semantic spacing instead.
+
+**RN deltas vs. web**
+
+- Web `shadow-xs` dropped — mobile surfaces use border-only chrome.
+  Same call as Input.
+- `CardDescription` bumped one Tailwind step (`text-sm` → `text-md`)
+  for mobile arm's-length readability — same RN ramp as Label /
+  HintText / Button defaults.
+- `<h3>` → RN `<Text accessibilityRole="header">`. `<p>` → RN `<Text>`.
+
+---
+
+## Alert
+
+**Import**
+
+```ts
+import { Alert, AlertTitle, AlertDescription, type AlertProps, type AlertVariantKey } from "@mvp-ui-rn/ui"
+```
+
+**Variants**
+
+| Prop | Values | Default |
+|---|---|---|
+| `variant` | `"info"` · `"success"` · `"warning"` · `"error"` | `"info"` |
+| `icon` | `IconProp` — lucide component or pre-rendered element | — |
+| `onDismiss` | `() => void` — adds trailing X button; tap fires this | — |
+| `dismissLabel` | accessibility label for the dismiss button | `"Dismiss"` |
+
+**Pair with:** `<AlertTitle variant={...}>` + `<AlertDescription variant={...}>`. Both
+restate the variant so the foreground color renders correctly (RN does
+not cascade Text color from a View ancestor — see RN deltas).
+
+**When to use**
+
+- Inline status notices inside scrollable content.
+- Page-level state messages (form submission, validation summary).
+- Dismissible reminders that should fade out on tap.
+
+**When NOT to use**
+
+- Transient feedback (use Toast / Snackbar when ported).
+- Blocking confirmations (use Dialog when ported).
+
+**Anti-patterns**
+
+- ❌ Forgetting `variant=` on `AlertTitle` / `AlertDescription` — they
+  inherit the prop, not the parent's variant. Defaults to `"info"`,
+  which mismatches the wrapper color.
+- ❌ Calling `onDismiss` without removing the Alert from the parent
+  tree — the X tap fires, but the Alert stays rendered. Reanimated
+  FadeOut only animates the unmount; parent must unmount.
+
+**RN deltas vs. web**
+
+- Web has no dismiss button. RN adds optional `onDismiss` + X button
+  with 44pt touch target + Reanimated `FadeOut.duration(200)` on
+  unmount.
+- Web cascades text color via CSS inheritance from `text-*-fg` on the
+  wrapper. RN does not — `AlertTitle` / `AlertDescription` take their
+  own `variant` prop and apply the matching `text-*-fg` class.
+- Lucide icons receive per-variant `color` from a light/dark hex map
+  keyed by `useColorScheme()`. Same pattern as Input / Button.
+
+---
+
+## EmptyState
+
+**Import**
+
+```ts
+import { EmptyState, type EmptyStateProps } from "@mvp-ui-rn/ui"
+```
+
+**Variants**
+
+| Prop | Values | Default |
+|---|---|---|
+| `title` | `string` | required |
+| `description` | `string` | — |
+| `icon` | `ReactNode` (pre-rendered lucide / illustration) | — |
+| `actions` | `ReactNode` (Button or row of Buttons) | — |
+
+**When to use**
+
+- First-run / zero-data states (empty inbox, no results, no documents).
+- Filter-with-no-matches surface with a "clear filters" CTA.
+- Onboarding placeholders before content streams in.
+
+**When NOT to use**
+
+- Loading state — use Spinner or Skeleton.
+- Error state — use Alert (`variant="error"`).
+- Compact list-empty in dense UIs — too much chrome; render an inline
+  text row instead.
+
+**Anti-patterns**
+
+- ❌ Stuffing more than 2 buttons in `actions` — visual clutter; pick
+  one primary + one secondary at most.
+- ❌ Long description copy — keep it one sentence. The `max-w-xs` cap
+  intentionally enforces a short width.
+
+**RN deltas vs. web**
+
+- Title + description bumped one Tailwind step each (`text-md` →
+  `text-lg`, `text-sm` → `text-md`) for mobile readability. Hierarchy
+  preserved (title remains one step above description).
+- Dashed border + `bg-bg-secondary` surface chrome unchanged from web.
+
+---

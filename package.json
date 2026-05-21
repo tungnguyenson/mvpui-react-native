@@ -15,6 +15,7 @@
     "showcase:android": "pnpm --filter @mvp-ui-rn/showcase android",
     "verify:button": "bash apps/showcase/scripts/verify-button.sh",
     "verify:input": "bash apps/showcase/scripts/verify-input.sh",
+    "verify:batch": "bash apps/showcase/scripts/verify-batch.sh",
     "typecheck": "pnpm -r typecheck",
     "format": "biome format --write .",
     "lint": "biome check ."

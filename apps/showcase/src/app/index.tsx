@@ -7,6 +7,11 @@ import { ThemeToggle } from "@/components/theme-toggle"
 const components = [
   { href: "/components/button", label: "Button" },
   { href: "/components/input", label: "Input" },
+  { href: "/components/spinner", label: "Spinner" },
+  { href: "/components/safe-area", label: "SafeArea" },
+  { href: "/components/card", label: "Card" },
+  { href: "/components/alert", label: "Alert" },
+  { href: "/components/empty-state", label: "EmptyState" },
 ] as const
 
 export default function IndexScreen() {

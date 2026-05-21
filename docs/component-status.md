@@ -46,8 +46,8 @@ Ported from `mvp-ui` (web). Same variant API, same look, RN deltas documented pe
 | Breadcrumb | ❌ | Less common on mobile; defer unless requested. |
 | Pagination | ❌ | Mobile UX often prefers infinite scroll — confirm with user. |
 | SideNav | ❌ | No primitive. `Drawer` from `react-native-drawer-layout` or custom. |
-| Card | ❌ | Surface composition. |
-| Alert | ❌ | Status surfaces (info/success/warning/error). |
+| Card | ✅ | `packages/ui/src/components/card.tsx`. Card + CardHeader/Title/Description/Content/Footer. Mirror web; no Pressable. `shadow-xs` dropped (RN mobile chrome). `CardDescription` bumped `text-sm`→`text-md` per RN ramp. Demo: `apps/showcase/src/app/components/card.tsx`. Docs: `packages/skill/components-rn.md#card`. |
+| Alert | ✅ | `packages/ui/src/components/alert.tsx`. 4 status variants (info/success/warning/error) + icon slot + AlertTitle/AlertDescription. `onDismiss` adds 44pt X button + Reanimated `FadeOut.duration(200)`. Per-variant lucide tint via light/dark hex map. Verified all 4 statuses × both modes + dismissible. |
 | Table | ⚠️ | RN uses `FlatList` patterns; "Table" semantics don't transfer 1:1. Defer / redesign. |
 | Skeleton | ❌ | Reanimated shimmer. |
 
@@ -79,9 +79,9 @@ No direct web equivalent. App-readiness gap if missing. Build these alongside we
 | Component | Status | Notes |
 |---|---|---|
 | List + ListItem + ListSection | ❌ | Grouped iOS list (Settings app pattern). `SectionList`-based. Distinct from Card grid. |
-| EmptyState | ❌ | Illustration + headline + CTA. High frequency on mobile. |
+| EmptyState | ✅ | `packages/ui/src/components/empty-state.tsx`. Icon + title + description + actions. Dashed border + `bg-bg-secondary` surface. Title bumped `text-md`→`text-lg`, description `text-sm`→`text-md` per RN ramp. Composes Button. Demo: `apps/showcase/src/app/components/empty-state.tsx`. |
 | BottomSheet (detent variants) | ❌ | Extends `Drawer` → snap points (half/full), modal-sheet (pull-down dismiss). `@gorhom/bottom-sheet`. |
-| SafeArea wrapper | ❌ | `react-native-safe-area-context`. Layout primitive — wraps every screen. |
+| SafeArea wrapper | ✅ | `packages/ui/src/components/safe-area.tsx`. Wraps `react-native-safe-area-context` SafeAreaView. `edges` array (default all 4) + `bg-bg` default. `statusBar="auto"` flips light/dark via `useColorScheme` through `expo-status-bar`. Use as outermost wrapper of every screen. |
 | StatusBar | ❌ | Per-screen light/dark control via `expo-status-bar`. |
 
 ### Inputs
@@ -100,7 +100,7 @@ No direct web equivalent. App-readiness gap if missing. Build these alongside we
 | Image | ❌ | `expo-image` wrapper with placeholder + blurhash + transition. General-purpose, complements `Avatar`. |
 | ProgressBar | ❌ | Determinate horizontal progress. |
 | CircularProgress | ❌ | Determinate circular. Reanimated. |
-| Spinner | ❌ | Standalone (Button has it inline). Should share tint logic with Button spinner — fix dark tint follow-up here too. |
+| Spinner | ✅ | `packages/ui/src/components/spinner.tsx`. Token-keyed `size` (`sm`/`md`/`lg` or raw number) + semantic `tint` (`fg`/`fg-secondary`/`fg-tertiary`/`fg-brand`/`fg-error`/`primary-fg`) auto-flipping via `useColorScheme`. `color` raw override preserved for Button's per-variant tint map. Demo: `apps/showcase/src/app/components/spinner.tsx`. |
 | Snackbar | ❌ | Bottom bar with action. Decide vs `Toast` — likely Toast = ephemeral, Snackbar = actionable. |
 | Banner | ❌ | Persistent in-page notice. Distinct from `Alert` (modal). |
 
