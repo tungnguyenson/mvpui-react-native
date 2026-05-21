@@ -96,6 +96,8 @@ has no `<label htmlFor>` equivalent).
 | `nativeID` | `string` — paired by consumer to `accessibilityLabelledBy` on the input | — |
 | `children` | `ReactNode` | required |
 
+**Size:** 16px (`text-md font-medium`). One step larger than mvp-ui (web)'s `text-sm` — RN bumps for mobile arm's-length readability per `docs/tokens-rn-adjustments.md` §3a (same philosophy as Button's default size).
+
 **When to use**
 
 - Above every form field. Caller is responsible for the `nativeID` /
@@ -136,7 +138,7 @@ import { HintText, type HintTextProps } from "@mvp-ui-rn/ui"
 
 | Prop | Values | Default |
 |---|---|---|
-| `size` | `sm` (`text-xs`) · `md` (`text-sm`) | `md` |
+| `size` | `sm` (`text-sm` / 14px) · `md` (`text-md` / 16px) | `md` |
 | `isInvalid` | `boolean` — switches `text-fg-tertiary` → `text-fg-error` and announces to screen readers | `false` |
 
 **When to use**

@@ -26,11 +26,15 @@ import { cn } from "../lib/cn"
      re-tints (matches web behavior; verified against the web source).
    ========================================================================== */
 
+// One step larger than mvp-ui (web)'s `text-sm`. iOS callout/body
+// conventions land around 16-17pt; web's 14px label reads cramped at
+// arm's-length mobile distance. Same RN ramp philosophy as Button's
+// default size bump (see docs/tokens-rn-adjustments.md §3a).
 const labelVariants = cva([
-  "text-sm font-medium text-fg-secondary",
+  "text-md font-medium text-fg-secondary",
 ])
 
-const asteriskVariants = cva("text-sm font-medium", {
+const asteriskVariants = cva("text-md font-medium", {
   variants: {
     isInvalid: {
       true: "text-fg-error",

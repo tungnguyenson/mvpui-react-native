@@ -22,11 +22,14 @@ import { cn } from "../lib/cn"
    - Native `<p>` → RN `<Text>`.
    ========================================================================== */
 
+// Size ramp bumped one step from mvp-ui (web): md 14→16 (text-sm →
+// text-md), sm 12→14 (text-xs → text-sm). Mirrors the Label bump for
+// mobile readability — see docs/tokens-rn-adjustments.md §3a philosophy.
 export const hintTextVariants = cva("", {
   variants: {
     size: {
-      sm: "text-xs",
-      md: "text-sm",
+      sm: "text-sm",
+      md: "text-md",
     },
     isInvalid: {
       true: "text-fg-error",
