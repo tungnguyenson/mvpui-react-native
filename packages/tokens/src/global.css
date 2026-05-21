@@ -1,0 +1,433 @@
+/**
+ * Copyright (c) 2026 TungMVP
+ * Licensed under MIT
+ *
+ * mvp-ui-rn — NativeWind v5 / Tailwind v4 token entry point.
+ *
+ * Combines the raw scales from `tokens.css` and the semantic aliases from
+ * `theme.css` into a single Tailwind v4 `@theme` block so NativeWind v5
+ * generates utility classes (bg-bg, text-fg, bg-brand-600, etc.) from these
+ * design tokens.
+ *
+ * Dark mode strategy: semantic aliases (--color-bg, --color-fg, ...) flip via
+ * `@media (prefers-color-scheme: dark)`. The `dark:` Tailwind variant maps to
+ * the same media query in NativeWind v5, so no manual `.dark` class on an
+ * ancestor is required. Raw color scales (--brand-600, --gray-300, ...) stay
+ * constant across light/dark — components must use semantic aliases to be
+ * dark-safe (see CLAUDE.md "Dark-safe styling").
+ *
+ * Source-of-truth values are mirrored from packages/tokens/src/tokens.css and
+ * theme.css. Keep in sync — see CLAUDE.md "Token sync rule".
+ */
+
+@import "tailwindcss/theme.css" layer(theme);
+@import "tailwindcss/preflight.css" layer(base);
+@import "tailwindcss/utilities.css";
+@import "nativewind/theme";
+
+@theme {
+  /* ------------------------------------------------------------------------
+     Raw color scales — mode-independent. Generate utilities bg-{name}-{step},
+     text-{name}-{step}, border-{name}-{step}.
+     Components SHOULD prefer semantic aliases below for dark-safety.
+     ------------------------------------------------------------------------ */
+  --color-brand-25: #fdf4ff;
+  --color-brand-50: #f9f5ff;
+  --color-brand-100: #f4ebff;
+  --color-brand-200: #e9d7fe;
+  --color-brand-300: #d6bbfb;
+  --color-brand-400: #b692f6;
+  --color-brand-500: #9e77ed;
+  --color-brand-600: #7f56d9;
+  --color-brand-700: #6941c6;
+  --color-brand-800: #53389e;
+  --color-brand-900: #42307d;
+  --color-brand-950: #2c1c5f;
+
+  --color-gray-25: #fafafa;
+  --color-gray-50: #f5f5f5;
+  --color-gray-100: #f0f0f0;
+  --color-gray-200: #e5e5e5;
+  --color-gray-300: #d4d4d4;
+  --color-gray-400: #a3a3a3;
+  --color-gray-500: #737373;
+  --color-gray-600: #525252;
+  --color-gray-700: #404040;
+  --color-gray-800: #262626;
+  --color-gray-900: #171717;
+  --color-gray-950: #0a0a0a;
+
+  --color-success-50: #f0fdf4;
+  --color-success-100: #dcfce7;
+  --color-success-200: #bbf7d0;
+  --color-success-300: #86efac;
+  --color-success-400: #4ade80;
+  --color-success-500: #22c55e;
+  --color-success-600: #16a34a;
+  --color-success-700: #15803d;
+  --color-success-800: #166534;
+  --color-success-950: #052e16;
+
+  --color-warning-50: #fffbeb;
+  --color-warning-100: #fef3c7;
+  --color-warning-200: #fde68a;
+  --color-warning-300: #fcd34d;
+  --color-warning-500: #f59e0b;
+  --color-warning-600: #d97706;
+  --color-warning-700: #b45309;
+  --color-warning-800: #92400e;
+  --color-warning-950: #451a03;
+
+  --color-error-25: #fffbfa;
+  --color-error-50: #fef2f2;
+  --color-error-100: #fee2e2;
+  --color-error-200: #fecaca;
+  --color-error-300: #fca5a5;
+  --color-error-500: #ef4444;
+  --color-error-600: #dc2626;
+  --color-error-700: #b91c1c;
+  --color-error-800: #991b1b;
+  --color-error-950: #450a0a;
+
+  /* Decorative ramps — consumed by tag/badge semantic 4-slot pattern */
+  --color-slate-50: #f8fafc;
+  --color-slate-100: #f1f5f9;
+  --color-slate-200: #e2e8f0;
+  --color-slate-300: #cbd5e1;
+  --color-slate-400: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-700: #334155;
+  --color-slate-800: #1e293b;
+  --color-slate-950: #020617;
+
+  --color-sky-50: #f0f9ff;
+  --color-sky-100: #e0f2fe;
+  --color-sky-200: #bae6fd;
+  --color-sky-300: #7dd3fc;
+  --color-sky-400: #38bdf8;
+  --color-sky-500: #0ea5e9;
+  --color-sky-700: #0369a1;
+  --color-sky-800: #075985;
+  --color-sky-950: #082f49;
+
+  --color-blue-50: #eff6ff;
+  --color-blue-100: #dbeafe;
+  --color-blue-200: #bfdbfe;
+  --color-blue-300: #93c5fd;
+  --color-blue-400: #60a5fa;
+  --color-blue-500: #3b82f6;
+  --color-blue-700: #1d4ed8;
+  --color-blue-800: #1e40af;
+  --color-blue-950: #172554;
+
+  --color-indigo-50: #eef2ff;
+  --color-indigo-100: #e0e7ff;
+  --color-indigo-200: #c7d2fe;
+  --color-indigo-300: #a5b4fc;
+  --color-indigo-400: #818cf8;
+  --color-indigo-500: #6366f1;
+  --color-indigo-700: #4338ca;
+  --color-indigo-800: #3730a3;
+  --color-indigo-950: #1e1b4b;
+
+  --color-purple-50: #faf5ff;
+  --color-purple-100: #f3e8ff;
+  --color-purple-200: #e9d5ff;
+  --color-purple-300: #d8b4fe;
+  --color-purple-400: #c084fc;
+  --color-purple-500: #a855f7;
+  --color-purple-700: #7e22ce;
+  --color-purple-800: #6b21a8;
+  --color-purple-950: #3b0764;
+
+  --color-pink-50: #fdf2f8;
+  --color-pink-100: #fce7f3;
+  --color-pink-200: #fbcfe8;
+  --color-pink-300: #f9a8d4;
+  --color-pink-400: #f472b6;
+  --color-pink-500: #ec4899;
+  --color-pink-700: #be185d;
+  --color-pink-800: #9d174d;
+  --color-pink-950: #500724;
+
+  --color-orange-50: #fff7ed;
+  --color-orange-100: #ffedd5;
+  --color-orange-200: #fed7aa;
+  --color-orange-300: #fdba74;
+  --color-orange-400: #fb923c;
+  --color-orange-500: #f97316;
+  --color-orange-700: #c2410c;
+  --color-orange-800: #9a3412;
+  --color-orange-950: #431407;
+
+  /* ------------------------------------------------------------------------
+     Semantic aliases — light mode defaults.
+     These flip under @media (prefers-color-scheme: dark) below.
+     ------------------------------------------------------------------------ */
+
+  /* Action — primary */
+  --color-primary: var(--color-brand-600);
+  --color-primary-hover: var(--color-brand-700);
+  --color-primary-active: var(--color-brand-800);
+  --color-primary-fg: #ffffff;
+
+  /* Filled state colors */
+  --color-success: var(--color-success-600);
+  --color-warning: var(--color-warning-600);
+  --color-error: var(--color-error-600);
+
+  /* Surfaces */
+  --color-bg: #ffffff;
+  --color-bg-secondary: var(--color-gray-25);
+  --color-bg-tertiary: var(--color-gray-50);
+
+  /* Foregrounds */
+  --color-fg: var(--color-gray-900);
+  --color-fg-secondary: var(--color-gray-700);
+  --color-fg-tertiary: var(--color-gray-500);
+  --color-fg-quaternary: var(--color-gray-400);
+  --color-muted-fg: var(--color-gray-400);
+  --color-fg-disabled: var(--color-gray-300);
+  --color-fg-brand: var(--color-brand-600);
+  --color-fg-on-brand: #ffffff;
+
+  /* Borders */
+  --color-border: var(--color-gray-300);
+  --color-border-secondary: var(--color-gray-200);
+  --color-border-brand: var(--color-brand-300);
+  --color-ring: var(--color-brand-500);
+
+  /* Destructive semantic — flips in dark to stay vivid */
+  --color-fg-error: var(--color-error-600);
+  --color-border-error: var(--color-error-200);
+  --color-fg-success: var(--color-success-500);
+  --color-border-success: var(--color-success-200);
+
+  /* Status subtle surfaces (Alert/Badge). bg/border/fg per status. */
+  --color-info-bg: var(--color-brand-50);
+  --color-info-border: var(--color-brand-200);
+  --color-info-fg: var(--color-brand-700);
+  --color-success-bg: var(--color-success-50);
+  --color-success-border: var(--color-success-200);
+  --color-success-fg: var(--color-success-700);
+  --color-warning-bg: var(--color-warning-50);
+  --color-warning-border: var(--color-warning-200);
+  --color-warning-fg: var(--color-warning-700);
+  --color-error-bg: var(--color-error-50);
+  --color-error-border: var(--color-error-200);
+  --color-error-fg: var(--color-error-700);
+  --color-neutral-bg: var(--color-gray-100);
+  --color-neutral-border: var(--color-gray-200);
+
+  /* Tag/Badge decorative surfaces — 4 slots per color: bg / border / fg / accent. */
+  --color-tag-gray-bg: var(--color-gray-50);
+  --color-tag-gray-border: var(--color-gray-200);
+  --color-tag-gray-fg: var(--color-gray-700);
+  --color-tag-gray-accent: var(--color-gray-500);
+
+  --color-tag-brand-bg: var(--color-brand-50);
+  --color-tag-brand-border: var(--color-brand-200);
+  --color-tag-brand-fg: var(--color-brand-700);
+  --color-tag-brand-accent: var(--color-brand-500);
+
+  --color-tag-error-bg: var(--color-error-50);
+  --color-tag-error-border: var(--color-error-200);
+  --color-tag-error-fg: var(--color-error-700);
+  --color-tag-error-accent: var(--color-error-500);
+
+  --color-tag-warning-bg: var(--color-warning-50);
+  --color-tag-warning-border: var(--color-warning-200);
+  --color-tag-warning-fg: var(--color-warning-700);
+  --color-tag-warning-accent: var(--color-warning-500);
+
+  --color-tag-success-bg: var(--color-success-50);
+  --color-tag-success-border: var(--color-success-200);
+  --color-tag-success-fg: var(--color-success-700);
+  --color-tag-success-accent: var(--color-success-500);
+
+  --color-tag-slate-bg: var(--color-slate-50);
+  --color-tag-slate-border: var(--color-slate-200);
+  --color-tag-slate-fg: var(--color-slate-700);
+  --color-tag-slate-accent: var(--color-slate-500);
+
+  --color-tag-sky-bg: var(--color-sky-50);
+  --color-tag-sky-border: var(--color-sky-200);
+  --color-tag-sky-fg: var(--color-sky-700);
+  --color-tag-sky-accent: var(--color-sky-500);
+
+  --color-tag-blue-bg: var(--color-blue-50);
+  --color-tag-blue-border: var(--color-blue-200);
+  --color-tag-blue-fg: var(--color-blue-700);
+  --color-tag-blue-accent: var(--color-blue-500);
+
+  --color-tag-indigo-bg: var(--color-indigo-50);
+  --color-tag-indigo-border: var(--color-indigo-200);
+  --color-tag-indigo-fg: var(--color-indigo-700);
+  --color-tag-indigo-accent: var(--color-indigo-500);
+
+  --color-tag-purple-bg: var(--color-purple-50);
+  --color-tag-purple-border: var(--color-purple-200);
+  --color-tag-purple-fg: var(--color-purple-700);
+  --color-tag-purple-accent: var(--color-purple-500);
+
+  --color-tag-pink-bg: var(--color-pink-50);
+  --color-tag-pink-border: var(--color-pink-200);
+  --color-tag-pink-fg: var(--color-pink-700);
+  --color-tag-pink-accent: var(--color-pink-500);
+
+  --color-tag-orange-bg: var(--color-orange-50);
+  --color-tag-orange-border: var(--color-orange-200);
+  --color-tag-orange-fg: var(--color-orange-700);
+  --color-tag-orange-accent: var(--color-orange-500);
+
+  /* ------------------------------------------------------------------------
+     Radii — generates rounded-{name}
+     ------------------------------------------------------------------------ */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.625rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-full: 9999px;
+
+  /* ------------------------------------------------------------------------
+     Typography
+     ------------------------------------------------------------------------ */
+  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+  --text-5xl: 3rem;
+}
+
+/* ==========================================================================
+   Dark mode — semantic alias overrides via system preference.
+   NativeWind v5 maps Tailwind's `dark:` variant to this media query, so any
+   `bg-bg` / `text-fg` etc. utility resolves to the dark value automatically
+   when the system theme is dark. No `.dark` class on an ancestor is required.
+
+   Mirrors mvp-ui (web) `[data-theme="dark"]` block but scoped to :root
+   because RN has no document subtree semantics — single global theme.
+   ========================================================================== */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+
+    /* Surfaces */
+    --color-bg: var(--color-gray-950);
+    --color-bg-secondary: var(--color-gray-900);
+    --color-bg-tertiary: var(--color-gray-800);
+
+    /* Foregrounds */
+    --color-fg: var(--color-gray-25);
+    --color-fg-secondary: var(--color-gray-300);
+    --color-fg-tertiary: var(--color-gray-400);
+    --color-fg-quaternary: var(--color-gray-500);
+    --color-muted-fg: var(--color-gray-500);
+    --color-fg-disabled: var(--color-gray-600);
+    --color-fg-brand: var(--color-brand-400);
+    --color-fg-on-brand: #ffffff;
+
+    /* Borders */
+    --color-border: var(--color-gray-700);
+    --color-border-secondary: var(--color-gray-800);
+    --color-border-brand: var(--color-brand-400);
+
+    /* Destructive — brighter in dark */
+    --color-fg-error: var(--color-error-500);
+    --color-border-error: var(--color-error-500);
+    --color-fg-success: var(--color-success-500);
+    --color-border-success: var(--color-success-500);
+
+    /* Status subtle surfaces — bg -50→-950, border -200→-800, fg -700→-300 */
+    --color-info-bg: var(--color-brand-950);
+    --color-info-border: var(--color-brand-800);
+    --color-info-fg: var(--color-brand-300);
+    --color-success-bg: var(--color-success-950);
+    --color-success-border: var(--color-success-800);
+    --color-success-fg: var(--color-success-300);
+    --color-warning-bg: var(--color-warning-950);
+    --color-warning-border: var(--color-warning-800);
+    --color-warning-fg: var(--color-warning-300);
+    --color-error-bg: var(--color-error-950);
+    --color-error-border: var(--color-error-800);
+    --color-error-fg: var(--color-error-300);
+    --color-neutral-bg: var(--color-gray-800);
+    --color-neutral-border: var(--color-gray-700);
+
+    /* Tag/Badge decorative — bg -950, border -800, fg -300, accent -400 */
+    --color-tag-gray-bg: var(--color-gray-800);
+    --color-tag-gray-border: var(--color-gray-700);
+    --color-tag-gray-fg: var(--color-gray-300);
+    --color-tag-gray-accent: var(--color-gray-400);
+
+    --color-tag-brand-bg: var(--color-brand-950);
+    --color-tag-brand-border: var(--color-brand-800);
+    --color-tag-brand-fg: var(--color-brand-300);
+    --color-tag-brand-accent: var(--color-brand-400);
+
+    --color-tag-error-bg: var(--color-error-950);
+    --color-tag-error-border: var(--color-error-800);
+    --color-tag-error-fg: var(--color-error-300);
+    --color-tag-error-accent: #f87171;
+
+    --color-tag-warning-bg: var(--color-warning-950);
+    --color-tag-warning-border: var(--color-warning-800);
+    --color-tag-warning-fg: var(--color-warning-300);
+    --color-tag-warning-accent: #fbbf24;
+
+    --color-tag-success-bg: var(--color-success-950);
+    --color-tag-success-border: var(--color-success-800);
+    --color-tag-success-fg: var(--color-success-300);
+    --color-tag-success-accent: var(--color-success-400);
+
+    --color-tag-slate-bg: var(--color-slate-950);
+    --color-tag-slate-border: var(--color-slate-800);
+    --color-tag-slate-fg: var(--color-slate-300);
+    --color-tag-slate-accent: var(--color-slate-400);
+
+    --color-tag-sky-bg: var(--color-sky-950);
+    --color-tag-sky-border: var(--color-sky-800);
+    --color-tag-sky-fg: var(--color-sky-300);
+    --color-tag-sky-accent: var(--color-sky-400);
+
+    --color-tag-blue-bg: var(--color-blue-950);
+    --color-tag-blue-border: var(--color-blue-800);
+    --color-tag-blue-fg: var(--color-blue-300);
+    --color-tag-blue-accent: var(--color-blue-400);
+
+    --color-tag-indigo-bg: var(--color-indigo-950);
+    --color-tag-indigo-border: var(--color-indigo-800);
+    --color-tag-indigo-fg: var(--color-indigo-300);
+    --color-tag-indigo-accent: var(--color-indigo-400);
+
+    --color-tag-purple-bg: var(--color-purple-950);
+    --color-tag-purple-border: var(--color-purple-800);
+    --color-tag-purple-fg: var(--color-purple-300);
+    --color-tag-purple-accent: var(--color-purple-400);
+
+    --color-tag-pink-bg: var(--color-pink-950);
+    --color-tag-pink-border: var(--color-pink-800);
+    --color-tag-pink-fg: var(--color-pink-300);
+    --color-tag-pink-accent: var(--color-pink-400);
+
+    --color-tag-orange-bg: var(--color-orange-950);
+    --color-tag-orange-border: var(--color-orange-800);
+    --color-tag-orange-fg: var(--color-orange-300);
+    --color-tag-orange-accent: var(--color-orange-400);
+
+    /* Brand action — keep brand-600 fill, lighten hover/active for dark */
+    --color-primary: var(--color-brand-600);
+    --color-primary-hover: var(--color-brand-500);
+    --color-primary-active: var(--color-brand-400);
+    --color-ring: var(--color-brand-500);
+  }
+}

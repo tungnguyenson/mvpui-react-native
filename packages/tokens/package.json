@@ -1,0 +1,22 @@
+{
+  "name": "@mvp-ui-rn/tokens",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Design tokens for mvp-ui-rn (RN port of mvp-ui). TS constants + global.css for NativeWind v5.",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./global.css": "./src/global.css",
+    "./tokens.css": "./src/tokens.css",
+    "./theme.css": "./src/theme.css"
+  },
+  "files": ["src"],
+  "license": "MIT",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "5.6.3"
+  }
+}

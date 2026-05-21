@@ -1,0 +1,55 @@
+# dependencies
+node_modules/
+.pnpm-store/
+
+# expo
+.expo/
+.expo-shared/
+dist/
+web-build/
+expo-env.d.ts
+
+# native
+*.orig.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+
+# metro
+.metro-health-check*
+
+# debug
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# typescript
+*.tsbuildinfo
+
+# editors
+.vscode/
+.idea/
+.DS_Store
+
+# logs
+*.log
+
+# env
+.env
+.env.*
+!.env.example
+
+# build outputs
+build/
+dist/
+
+# native deps
+ios/Pods/
+android/.gradle/
+android/build/
+android/app/build/
+
+# NativeWind generated
+nativewind-env.d.ts

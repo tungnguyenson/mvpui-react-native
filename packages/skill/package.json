@@ -1,0 +1,8 @@
+{
+  "name": "@mvp-ui-rn/skill",
+  "version": "0.0.0",
+  "private": true,
+  "description": "AI agent context for mvp-ui-rn — component contracts, anti-patterns, and RN-specific deltas vs. mvp-ui (web).",
+  "files": ["*.md"],
+  "license": "MIT"
+}

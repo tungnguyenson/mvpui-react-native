@@ -1,0 +1,15 @@
+{
+  "extends": "expo/tsconfig.base",
+  "compilerOptions": {
+    "strict": true,
+    "paths": {
+      "@/*": ["./src/*"],
+      "@/assets/*": ["./assets/*"],
+      "@mvp-ui-rn/tokens": ["../../packages/tokens/src/index.ts"],
+      "@mvp-ui-rn/tokens/*": ["../../packages/tokens/src/*"],
+      "@mvp-ui-rn/ui": ["../../packages/ui/src/index.ts"],
+      "@mvp-ui-rn/ui/*": ["../../packages/ui/src/*"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx", ".expo/types/**/*.ts", "expo-env.d.ts", "nativewind-env.d.ts"]
+}
