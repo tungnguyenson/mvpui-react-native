@@ -1,0 +1,69 @@
+# Drives the running showcase app through the Input demo, capturing
+# screenshots named generically (no mode suffix). Wrapper
+# `scripts/verify-input.sh` runs this flow TWICE — once light, once dark —
+# and renames captures to *-light.png / *-dark.png between runs.
+#
+# Preconditions:
+#   1. `pnpm showcase:ios` is running.
+#   2. Expo Go is foregrounded.
+#
+# Run:  pnpm verify:input
+
+appId: host.exp.Exponent
+---
+# --- Reset to index if currently on Input page -------------------------
+
+- runFlow:
+    when:
+      visible: "index"
+    commands:
+      - tapOn: "index"
+
+# --- Index --------------------------------------------------------------
+
+- assertVisible: "mvp-ui-rn"
+- assertVisible: "Components"
+- assertVisible: "Input"
+- takeScreenshot: 01-index
+
+# --- Input page sweep ---------------------------------------------------
+
+- tapOn: "Input"
+- assertVisible:
+    text: "Input"
+    enabled: true
+- assertVisible: "Default"
+- takeScreenshot: 02-input-top
+
+# Slow first swipe (longer duration = less momentum) so success /
+# disabled / read-only rows land in the captured viewport. Faster
+# swipes vaulted past them in the previous flows.
+- swipe:
+    direction: UP
+    duration: 2500
+- takeScreenshot: 03-input-states
+
+- swipe:
+    direction: UP
+    duration: 600
+- takeScreenshot: 04-input-icons
+
+- swipe:
+    direction: UP
+    duration: 600
+- takeScreenshot: 05-input-prefix-suffix
+
+- swipe:
+    direction: UP
+    duration: 600
+- takeScreenshot: 06-input-password
+
+- swipe:
+    direction: UP
+    duration: 600
+- takeScreenshot: 07-input-composed
+
+- swipe:
+    direction: UP
+    duration: 600
+- takeScreenshot: 08-input-standalone

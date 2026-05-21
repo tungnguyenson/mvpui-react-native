@@ -4,7 +4,10 @@ import { SafeAreaView } from "react-native-safe-area-context"
 
 import { ThemeToggle } from "@/components/theme-toggle"
 
-const components = [{ href: "/components/button", label: "Button" }] as const
+const components = [
+  { href: "/components/button", label: "Button" },
+  { href: "/components/input", label: "Input" },
+] as const
 
 export default function IndexScreen() {
   return (
