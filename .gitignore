@@ -53,3 +53,7 @@ android/app/build/
 
 # NativeWind generated
 nativewind-env.d.ts
+
+# Maestro artifacts
+.maestro-out/
+**/screenshot-*.png

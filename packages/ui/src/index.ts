@@ -10,5 +10,6 @@ export {
   type ButtonProps,
   type ButtonSize,
 } from "./components/button"
+export { Spinner, type SpinnerProps } from "./components/spinner"
 export { cn } from "./lib/cn"
 export { renderIcon, type IconProp } from "./lib/render-icon"

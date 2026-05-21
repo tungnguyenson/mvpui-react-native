@@ -13,6 +13,7 @@
     "showcase": "pnpm --filter @mvp-ui-rn/showcase start",
     "showcase:ios": "pnpm --filter @mvp-ui-rn/showcase ios",
     "showcase:android": "pnpm --filter @mvp-ui-rn/showcase android",
+    "verify:button": "bash apps/showcase/scripts/verify-button.sh",
     "typecheck": "pnpm -r typecheck",
     "format": "biome format --write .",
     "lint": "biome check ."

@@ -1,0 +1,8 @@
+# Maestro project config for mvp-ui-rn showcase.
+# https://docs.maestro.dev/cli/configuration
+
+flows:
+  - "*.yaml"
+
+# Where takeScreenshot artifacts land (relative to flow CWD).
+# Override per-run with `maestro test --debug-output <dir>`.

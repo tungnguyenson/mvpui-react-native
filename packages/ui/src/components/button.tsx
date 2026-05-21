@@ -8,13 +8,14 @@
  */
 
 import { Slot } from "@rn-primitives/slot"
-import { tokens } from "@mvp-ui-rn/tokens"
+import { iconSize as tokenIconSize, tokens } from "@mvp-ui-rn/tokens"
 import { cva, type VariantProps } from "class-variance-authority"
 import { forwardRef, type ComponentRef, type ReactNode } from "react"
-import { ActivityIndicator, Pressable, Text, type PressableProps } from "react-native"
+import { Pressable, Text, useColorScheme, type PressableProps } from "react-native"
 
 import { cn } from "../lib/cn"
 import { renderIcon, type IconProp } from "../lib/render-icon"
+import { Spinner } from "./spinner"
 
 /* ==========================================================================
    Button — RN port of mvp-ui (web) Button.
@@ -30,7 +31,7 @@ import { renderIcon, type IconProp } from "../lib/render-icon"
    ========================================================================== */
 
 export const buttonVariants = cva(
-  ["group flex-row items-center justify-center min-h-11"],
+  ["group flex-row items-center justify-center"],
   {
     variants: {
       color: {
@@ -53,24 +54,32 @@ export const buttonVariants = cva(
         "link-gray": ["bg-transparent disabled:opacity-50"],
         "link-destructive": ["bg-transparent disabled:opacity-50"],
       },
+      // Mobile-tuned ramp per docs/tokens-rn-adjustments.md §3a. Web defaults
+      // are desktop-cramped on mobile; bump heights + paddings one Tailwind
+      // step so md (the default) reads as a thumb-comfortable primary CTA
+      // and lg/xl serve hero / marketing surfaces. `sm` (40pt) drops below
+      // the 44pt HIG floor — only acceptable inside Toolbar / dense
+      // ListItem / segmented-control containers (see components-rn.md).
       size: {
-        sm: "gap-1 rounded-md px-3",
-        md: "gap-1 rounded-md px-3.5",
-        lg: "gap-1.5 rounded-md px-4 min-h-12",
-        xl: "gap-1.5 rounded-lg px-5 min-h-14",
+        sm: "gap-1 rounded-md px-4 h-10",
+        md: "gap-1.5 rounded-md px-5 h-12",
+        lg: "gap-1.5 rounded-lg px-6 h-14",
+        xl: "gap-2 rounded-lg px-7 h-16",
       },
       iconOnly: { true: "", false: "" },
-      isLink: { true: "px-0 min-h-0", false: "" },
+      isLink: { true: "px-0 h-auto", false: "" },
     },
+    // iconOnly enforces a square ≥ 44pt regardless of size — sm bumps from
+    // 40 → 44 to keep the HIG touch-target floor even in dense layouts.
     compoundVariants: [
-      { iconOnly: true, size: "sm", className: "px-0 w-11" },
-      { iconOnly: true, size: "md", className: "px-0 w-11" },
-      { iconOnly: true, size: "lg", className: "px-0 w-12" },
-      { iconOnly: true, size: "xl", className: "px-0 w-14" },
+      { iconOnly: true, size: "sm", className: "px-0 w-11 h-11" },
+      { iconOnly: true, size: "md", className: "px-0 w-12 h-12" },
+      { iconOnly: true, size: "lg", className: "px-0 w-14 h-14" },
+      { iconOnly: true, size: "xl", className: "px-0 w-16 h-16" },
     ],
     defaultVariants: {
       color: "primary",
-      size: "sm",
+      size: "md",
       iconOnly: false,
       isLink: false,
     },
@@ -92,12 +101,12 @@ const labelVariants = cva(["font-semibold text-center"], {
     },
     size: {
       sm: "text-sm",
-      md: "text-sm",
+      md: "text-md",
       lg: "text-md",
-      xl: "text-md",
+      xl: "text-lg",
     },
   },
-  defaultVariants: { color: "primary", size: "sm" },
+  defaultVariants: { color: "primary", size: "md" },
 })
 
 /**
@@ -110,7 +119,23 @@ const labelVariants = cva(["font-semibold text-center"], {
  * a className-driven lucide+Reanimated spinner once `cssInterop` is wired
  * for icon components.
  */
-const spinnerTint: Record<ButtonColorKey, string> = {
+type ButtonColorKey = NonNullable<VariantProps<typeof buttonVariants>["color"]>
+type ButtonSizeKey = NonNullable<VariantProps<typeof buttonVariants>["size"]>
+
+/**
+ * Per-variant tint shared by the `Spinner` AND lucide leading/trailing icons.
+ *
+ * `lucide-react-native` takes `color` as a raw RN color string, not a
+ * Tailwind class — so we cannot rely on `text-*` flowing into the icon, and
+ * we cannot resolve the live CSS variable value at the prop boundary either.
+ * Instead we keep two parallel maps (light + dark) keyed by variant and pick
+ * the right one via `useColorScheme()` at render time.
+ *
+ * Values mirror what `labelVariants` resolves to via the semantic tokens.
+ * If a label color changes in `packages/tokens/src/global.css`, update the
+ * corresponding entry here.
+ */
+const iconTintLight: Record<ButtonColorKey, string> = {
   primary: "#ffffff",
   secondary: tokens.color.gray["700"],
   tertiary: tokens.color.gray["700"],
@@ -121,8 +146,23 @@ const spinnerTint: Record<ButtonColorKey, string> = {
   "link-gray": tokens.color.gray["500"],
   "link-destructive": tokens.color.error["600"],
 }
+const iconTintDark: Record<ButtonColorKey, string> = {
+  primary: "#ffffff",
+  secondary: tokens.color.gray["300"],
+  tertiary: tokens.color.gray["300"],
+  "primary-destructive": "#ffffff", // dark-ok: matches white label on error fill
+  "secondary-destructive": tokens.color.error["500"],
+  "tertiary-destructive": tokens.color.error["500"],
+  "link-color": tokens.color.brand["400"],
+  "link-gray": tokens.color.gray["400"],
+  "link-destructive": tokens.color.error["500"],
+}
 
-type ButtonColorKey = NonNullable<VariantProps<typeof buttonVariants>["color"]>
+/**
+ * Lucide icon pixel size per Button size — sourced from the shared token map
+ * (`packages/tokens/src/size.ts`) so all controls scale icons consistently.
+ */
+const iconSize = tokenIconSize satisfies Record<ButtonSizeKey, number>
 
 const LINK_COLORS = ["link-color", "link-gray", "link-destructive"] as const
 
@@ -149,7 +189,7 @@ export const Button = forwardRef<ComponentRef<typeof Pressable>, ButtonProps>(
     {
       className,
       color = "primary",
-      size = "sm",
+      size = "md",
       asChild = false,
       isLoading = false,
       showTextWhileLoading = false,
@@ -167,6 +207,10 @@ export const Button = forwardRef<ComponentRef<typeof Pressable>, ButtonProps>(
     const isIconOnly = !hasChildren && Boolean(iconLeading || iconTrailing)
     const isLink = LINK_COLORS.includes(color as (typeof LINK_COLORS)[number])
     const isDisabled = Boolean(disabled || isLoading)
+    const scheme = useColorScheme()
+    const tints = scheme === "dark" ? iconTintDark : iconTintLight
+    const tint = tints[color as ButtonColorKey]
+    const px = iconSize[size as ButtonSizeKey]
 
     return (
       <Comp
@@ -180,11 +224,11 @@ export const Button = forwardRef<ComponentRef<typeof Pressable>, ButtonProps>(
         )}
         {...props}
       >
-        {!isLoading && iconLeading ? renderIcon(iconLeading, "leading") : null}
+        {!isLoading && iconLeading
+          ? renderIcon(iconLeading, "leading", { color: tint, size: px })
+          : null}
 
-        {isLoading ? (
-          <ActivityIndicator size="small" color={spinnerTint[color as ButtonColorKey]} />
-        ) : null}
+        {isLoading ? <Spinner color={tint} size={px} /> : null}
 
         {hasChildren && (isLoading ? showTextWhileLoading : true) ? (
           asChild ? (
@@ -194,7 +238,9 @@ export const Button = forwardRef<ComponentRef<typeof Pressable>, ButtonProps>(
           )
         ) : null}
 
-        {!isLoading && iconTrailing ? renderIcon(iconTrailing, "trailing") : null}
+        {!isLoading && iconTrailing
+          ? renderIcon(iconTrailing, "trailing", { color: tint, size: px })
+          : null}
       </Comp>
     )
   },
@@ -207,4 +253,4 @@ Button.displayName = "Button"
  * components and need the same variant union as `Button`.
  */
 export type ButtonColor = ButtonColorKey
-export type ButtonSize = NonNullable<VariantProps<typeof buttonVariants>["size"]>
+export type ButtonSize = ButtonSizeKey

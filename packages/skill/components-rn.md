@@ -15,12 +15,12 @@ Update on every component PR per `CLAUDE.md`.
 import { Button, type ButtonProps, type IconProp } from "@mvp-ui-rn/ui"
 ```
 
-**Variants** — mirror mvp-ui (web) exactly.
+**Variants** — color set + IconProp contract mirror mvp-ui (web) exactly. **Size ramp is mobile-tuned** (see `docs/tokens-rn-adjustments.md` §3a) and intentionally diverges from the web ramp: every step is one Tailwind unit bigger so thumbs can hit comfortably.
 
 | Prop | Values | Default |
 |---|---|---|
 | `color` | `primary` · `secondary` · `tertiary` · `primary-destructive` · `secondary-destructive` · `tertiary-destructive` · `link-color` · `link-gray` · `link-destructive` | `primary` |
-| `size` | `sm` · `md` · `lg` · `xl` | `sm` |
+| `size` | `sm` (h=40, px=16, text-sm) · `md` (h=48, px=20, text-md) · `lg` (h=56, px=24, text-md) · `xl` (h=64, px=28, text-lg) | **`md`** |
 | `iconLeading` / `iconTrailing` | `IconProp` (component accepting `className`, or pre-rendered element) | — |
 | `isLoading` | `boolean` — shows `ActivityIndicator`, blocks interaction | `false` |
 | `showTextWhileLoading` | `boolean` — keep label visible alongside spinner | `false` |
@@ -51,9 +51,11 @@ sm / md / lg / xl).
   Treat the API as if it requires text content only.
 - ❌ Hardcoded color in custom `className` — bypasses dark-mode flip. Use a
   semantic alias (`bg-bg`, `text-fg`, etc.) or extend `buttonVariants`.
-- ❌ Setting `style={{ height: ... }}` to shrink below 44pt. Touch targets
-  are baked into variant sizes for accessibility — override only when there
-  is a designed exception.
+- ❌ Setting `style={{ height: ... }}` to shrink below 44pt outside of a
+  dense container. Touch targets are baked into variant sizes for
+  accessibility — `sm` at 40pt is **only** valid inside Toolbar / dense
+  ListItem / SegmentedControl wrappers per
+  `docs/tokens-rn-adjustments.md` §3a. Free-standing CTAs use `md` or above.
 - ❌ Passing an SVG element (web pattern) as `iconLeading`. Use a
   `lucide-react-native` component or any RN-renderable element.
 
@@ -62,10 +64,14 @@ sm / md / lg / xl).
 - `hover:` states are dropped — no hover on touch surfaces.
 - `focus-visible:ring-*` are dropped — RN has no keyboard-focus model.
   Use `accessibilityState` / platform a11y focus instead.
-- Spinner is `ActivityIndicator` with a hex tint resolved from the JS token
-  export. **The spinner color does NOT flip in dark mode** (transient state,
-  acceptable trade-off). Follow-up: wire `cssInterop` for a lucide spinner.
-- `min-h-11` (44pt) is baked into every size for touch-target compliance.
+- Default size flipped from web `sm` to RN `md`. Every size step bumped one
+  Tailwind unit larger than web. See `docs/tokens-rn-adjustments.md` §3a.
+- Lucide icon `color` + `size` are passed as raw props (not className),
+  derived from the same per-variant tint map as the spinner. Lucide does
+  not accept Tailwind classes. **Tint does NOT flip in dark mode** — fix
+  via cssInterop is a follow-up.
+- Spinner is `ActivityIndicator` with the same per-variant tint as icons.
+- `iconOnly` enforces a square ≥ 44pt regardless of size (sm bumps 40 → 44).
 - `asChild` uses `@rn-primitives/slot` — semantics close to Radix `Slot` but
   no `Slottable` equivalent; passing custom layouts as children may not get
   pressed-state styling merged.

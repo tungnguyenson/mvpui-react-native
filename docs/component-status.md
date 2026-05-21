@@ -12,7 +12,15 @@ Update at the end of every session per CLAUDE.md mandate.
 | ❌ | Not started |
 | ⚠️ | Web-only — no RN port planned |
 
-## Inventory
+## Roadmap structure
+
+Two-lens approach. Web-port parity = design-system consistency with `mvp-ui` (web). Mobile-native additions = patterns that web has no analog for but every real mobile app needs.
+
+Priority tiers live below the inventory. Build order follows tier (P0 → P2), not inventory order.
+
+## Inventory — Web-port parity
+
+Ported from `mvp-ui` (web). Same variant API, same look, RN deltas documented per component.
 
 | Component | Status | Notes |
 |---|---|---|
@@ -32,8 +40,8 @@ Update at the end of every session per CLAUDE.md mandate.
 | Drawer | ❌ | Use `@gorhom/bottom-sheet` — RN-idiomatic drawer is bottom sheet. |
 | Popover | ❌ | `@rn-primitives/popover`. |
 | Tooltip | ❌ | `@rn-primitives/tooltip`; touch-adjusted (long-press to show). |
-| Toast | ❌ | Consider `burnt` or custom + portal. |
-| Tabs | ❌ | `@rn-primitives/tabs`. |
+| Toast | ❌ | Consider `burnt` or custom + portal. May overlap with `Snackbar` in mobile-native section — decide on one. |
+| Tabs | ❌ | `@rn-primitives/tabs`. Content tabs (not bottom navigation — see `TabBar` in mobile-native). |
 | Breadcrumb | ❌ | Less common on mobile; defer unless requested. |
 | Pagination | ❌ | Mobile UX often prefers infinite scroll — confirm with user. |
 | SideNav | ❌ | No primitive. `Drawer` from `react-native-drawer-layout` or custom. |
@@ -41,6 +49,82 @@ Update at the end of every session per CLAUDE.md mandate.
 | Alert | ❌ | Status surfaces (info/success/warning/error). |
 | Table | ⚠️ | RN uses `FlatList` patterns; "Table" semantics don't transfer 1:1. Defer / redesign. |
 | Skeleton | ❌ | Reanimated shimmer. |
+
+## Inventory — Mobile-native additions
+
+No direct web equivalent. App-readiness gap if missing. Build these alongside web ports to ship real screens.
+
+### Navigation shells
+
+| Component | Status | Notes |
+|---|---|---|
+| TabBar | ❌ | Bottom tab navigation. Expo Router `<Tabs>` skin with design-system styling + badges + blur background + safe-area. Most-used mobile pattern. |
+| Header | ❌ | Screen header with large-title iOS pattern, collapsible on scroll, back button + title + right actions. Distinct from web header. |
+| SegmentedControl | ❌ | iOS-style pill picker. Different UX from `Tabs` (Tabs = content sections, SegmentedControl = filter/mode switch). |
+
+### Interaction primitives
+
+| Component | Status | Notes |
+|---|---|---|
+| SwipeableRow | ❌ | Left/right swipe reveals actions (Mail-style). `react-native-gesture-handler` Swipeable. |
+| PullToRefresh | ❌ | `RefreshControl` wrapper. Convention not optional. |
+| ActionSheet | ❌ | iOS-native sheet of options. `@expo/ui` or custom over bottom-sheet. |
+| ContextMenu | ❌ | Long-press menu. iOS 13+ native via `zeego` or `expo-context-menu`. |
+| KeyboardAvoidingScroll | ❌ | Layout wrapper — every form needs it. |
+| HapticFeedback | ❌ | `expo-haptics` wrapper. Design-system concern: when to fire (success/warning/selection). |
+
+### Content surfaces
+
+| Component | Status | Notes |
+|---|---|---|
+| List + ListItem + ListSection | ❌ | Grouped iOS list (Settings app pattern). `SectionList`-based. Distinct from Card grid. |
+| EmptyState | ❌ | Illustration + headline + CTA. High frequency on mobile. |
+| BottomSheet (detent variants) | ❌ | Extends `Drawer` → snap points (half/full), modal-sheet (pull-down dismiss). `@gorhom/bottom-sheet`. |
+| SafeArea wrapper | ❌ | `react-native-safe-area-context`. Layout primitive — wraps every screen. |
+| StatusBar | ❌ | Per-screen light/dark control via `expo-status-bar`. |
+
+### Inputs
+
+| Component | Status | Notes |
+|---|---|---|
+| Stepper | ❌ | `-` / number / `+`. iOS-native pattern. |
+| Slider | ❌ | `@react-native-community/slider`. Web range input no good on touch. |
+| DatePicker / TimePicker | ❌ | `@react-native-community/datetimepicker`. Native wheels on iOS, dialog on Android. |
+| SearchBar | ❌ | Header-integrated search with cancel button. Distinct from `Input`. |
+
+### Media + feedback
+
+| Component | Status | Notes |
+|---|---|---|
+| Image | ❌ | `expo-image` wrapper with placeholder + blurhash + transition. General-purpose, complements `Avatar`. |
+| ProgressBar | ❌ | Determinate horizontal progress. |
+| CircularProgress | ❌ | Determinate circular. Reanimated. |
+| Spinner | ❌ | Standalone (Button has it inline). Should share tint logic with Button spinner — fix dark tint follow-up here too. |
+| Snackbar | ❌ | Bottom bar with action. Decide vs `Toast` — likely Toast = ephemeral, Snackbar = actionable. |
+| Banner | ❌ | Persistent in-page notice. Distinct from `Alert` (modal). |
+
+### Composite / application-type
+
+Composed from primitives. Open question whether design-system surface or app-layer concern — decide per item before building.
+
+| Component | Status | Notes |
+|---|---|---|
+| FormField | ❌ | `Label` + `Input` + helper + error. Controlled by `react-hook-form`. Likely design-system. |
+| SettingsRow | ❌ | `Label` + control (Switch/Select/chevron). iOS Settings convention. Likely design-system. |
+| Card variants | ❌ | ProductCard / ListCard / MediaCard. Likely app-layer; design-system provides base `Card`. |
+| Onboarding slides | ❌ | Paginated intro with dots. App-layer. |
+| FAB | ❌ | Material primary action. Android-leaning. |
+
+## Priority tiers
+
+Build first regardless of inventory section. Tiers reflect what's needed to ship a real mobile MVP — not web-port completeness.
+
+| Tier | Components |
+|---|---|
+| **P0 — must have** | Input · Label · Icon wrapper · Card · Alert · SafeArea wrapper · Header · TabBar · List/ListItem · BottomSheet · SearchBar · EmptyState · Spinner · KeyboardAvoidingScroll · FormField |
+| **P1 — likely needed** | Badge · Avatar · Checkbox · Switch · Select · Textarea · Dialog · Toast · Tabs · Skeleton · SegmentedControl · SwipeableRow · PullToRefresh · ActionSheet · Stepper · Slider · DatePicker · Image · ProgressBar · SettingsRow |
+| **P2 — niche / defer** | RadioGroup · PinInput · Popover · Tooltip · Breadcrumb · Pagination · SideNav · ContextMenu · FAB · Onboarding · Banner · CircularProgress · Snackbar · HapticFeedback · StatusBar |
+| **⚠️ defer / redesign** | Table |
 
 ## Bootstrap notes (2026-05-21)
 
@@ -55,10 +139,25 @@ Repo scaffolded via Task 1 of `docs/init-prompt.md`:
 
 ## Open follow-ups
 
-- Confirm dark-mode toggle strategy: system-pref only (current) vs. user-toggleable via `Appearance.setColorScheme` or `VariableContextProvider`. Currently system-only.
-- Confirm font loading approach (`expo-font` + Inter + JetBrains Mono) before Button port lands — text components will need it.
-- `packages/ui` + `packages/skill` landed alongside Button port (2026-05-22).
-- Follow-up: wire `cssInterop` for `lucide-react-native` so spinner/icon colors can use semantic className tokens and flip in dark mode.
+- **Dark-mode toggle strategy** — both wired (2026-05-22): system-pref drives automatic flips via `@media (prefers-color-scheme: dark)`, and the `ThemeToggle` in the showcase header drives a user override via `Appearance.setColorScheme`. Open: confirm which is the *intended* default for real consumer apps (system-only is current product default).
+- **Font loading** — Inter Variable wired in showcase via `expo-font` + local `apps/showcase/assets/fonts/Inter.ttf` (single 880KB TTF covers every weight via RN variable-font support). `useFonts` holds the splash until ready. Consumer apps replicate the pattern OR override `--font-sans` per their own brand.
+- **Icon cssInterop** — still pending. Spinner + lucide icons currently take per-variant hex via JS token export (light/dark maps in `button.tsx`); wiring `cssInterop` would let className drive these and clean up the dark-mode hex duplication.
+- Decide Toast vs Snackbar — one component or two with different semantics (ephemeral vs actionable).
+- Decide which composite components (FormField, SettingsRow, Card variants) live in `packages/ui` vs app-layer.
+- Confirm P0 list with user before sequencing builds.
+
+## Tokens backlog progress (vs docs/tokens-rn-adjustments.md)
+
+| § | Item | Status |
+|---|---|---|
+| 1 | Typography line-heights pairs | ✅ `packages/tokens/src/typography.ts` + `--leading-*` in `global.css` |
+| 2 | Font loading | ✅ Inter Variable via `expo-font` in showcase `_layout.tsx` |
+| 3 | size.ts (touchTarget, controlHeight, controlPaddingX, iconSize) | ✅ + `--size-control-*` / `--size-touch-min` CSS mirrors |
+| 3a | Button size ramp (sm=40, md=48 default, lg=56, xl=64) | ✅ Applied |
+| 4 | `--color-ring` repurpose | ⚠️ Still declared, unused — drop or rename `--color-focus-border` when keyboard-nav target ships |
+| 5 | shadow.ts (iOS shadow* + Android elevation, light + dark maps) | ✅ `packages/tokens/src/shadow.ts` |
+| 6 | motion.ts (duration + easing) | ✅ `packages/tokens/src/motion.ts` |
+| — | JSON source-of-truth generator | ❌ Not scheduled |
 
 ## NativeWind v5 install gotchas (encountered 2026-05-22)
 

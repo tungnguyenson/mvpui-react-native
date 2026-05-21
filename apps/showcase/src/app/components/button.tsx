@@ -49,7 +49,7 @@ export default function ButtonShowcase() {
     <SafeAreaView className="flex-1 bg-bg">
       <Stack.Screen options={{ title: "Button", headerShown: true }} />
       <ScrollView contentContainerClassName="px-5 py-6 gap-8">
-        <Section title="Colors (size sm)">
+        <Section title="Colors (default size: md)">
           {COLORS.map((color) => (
             <Row key={color} label={color}>
               <Button color={color}>Label</Button>
@@ -60,7 +60,7 @@ export default function ButtonShowcase() {
           ))}
         </Section>
 
-        <Section title="Sizes (primary)">
+        <Section title="Sizes (primary, sm → xl)">
           <Row label="default">
             {SIZES.map((size) => (
               <Button key={size} size={size}>
@@ -96,6 +96,18 @@ export default function ButtonShowcase() {
         </Section>
 
         <Section title="Loading">
+          <Row label="always-loading (visual reference)">
+            <Button isLoading>Primary</Button>
+            <Button color="secondary" isLoading>
+              Secondary
+            </Button>
+            <Button color="primary-destructive" isLoading>
+              Destructive
+            </Button>
+            <Button color="link-color" isLoading>
+              Link
+            </Button>
+          </Row>
           <Row label="default (spinner replaces label)">
             <Button
               isLoading={loadingId === "primary"}

@@ -1,0 +1,54 @@
+# Drives the running showcase app through the Button demo, capturing
+# screenshots named generically (no mode suffix). The wrapper script
+# `scripts/verify-button.sh` runs this flow TWICE — once with the simulator
+# forced to light appearance, once with dark — and renames captures to
+# *-light.png / *-dark.png between runs.
+#
+# Preconditions:
+#   1. `pnpm showcase:ios` is running.
+#   2. Expo Go is foregrounded.
+#
+# Run:  pnpm verify:button
+
+appId: host.exp.Exponent
+---
+# --- Reset to index if currently on Button page -------------------------
+
+- runFlow:
+    when:
+      visible: "index"
+    commands:
+      - tapOn: "index"
+
+# --- Index --------------------------------------------------------------
+
+- assertVisible: "mvp-ui-rn"
+- assertVisible: "Components"
+- assertVisible: "Button"
+- takeScreenshot: 01-index
+
+# --- Button page sweep --------------------------------------------------
+
+- tapOn: "Button"
+- assertVisible:
+    text: "Button"
+    enabled: true
+- takeScreenshot: 02-button-top
+
+- assertVisible: "Colors (default size: md)"
+- assertVisible: "primary"
+- assertVisible: "secondary"
+- assertVisible: "primary-destructive"
+
+- swipe:
+    direction: UP
+    duration: 600
+- takeScreenshot: 03-button-mid
+
+- swipe:
+    direction: UP
+    duration: 600
+- takeScreenshot: 04-button-bottom
+
+- assertVisible: "Loading"
+- takeScreenshot: 05-loading
