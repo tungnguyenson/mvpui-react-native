@@ -471,3 +471,233 @@ import { EmptyState, type EmptyStateProps } from "@mvp-ui-rn/ui"
 - Dashed border + `bg-bg-secondary` surface chrome unchanged from web.
 
 ---
+
+## Header
+
+**Import**
+
+```ts
+import { Header, headerScreenOptions, type HeaderProps } from "@mvp-ui-rn/ui"
+```
+
+RN-only screen header primitive. Use when `headerShown: false` is set on the
+route's Stack.Screen.
+
+**Variants**
+
+| Prop | Values | Default |
+|---|---|---|
+| `title` | `string` | — |
+| `showBack` | `boolean` — renders back chevron | `true` |
+| `onBack` | `() => void` — override default `router.back()` | — |
+| `leading` | `ReactNode` — alongside / instead of back | — |
+| `trailing` | `ReactNode` — right-aligned actions | — |
+
+**When to use**
+
+- Routes where you want full design-system typography / spacing on the
+  header bar. Pair with `headerShown: false` so the native nav header
+  doesn't double up.
+- App-shell screens with custom right-side composables (avatar +
+  multi-action rows).
+
+**When NOT to use**
+
+- Default stack routes — let the native expo-router header handle it
+  and theme it with `headerScreenOptions({ isDark })`.
+
+**RN deltas vs. web**
+
+- No web equivalent. Built fresh for RN.
+- Layout: `[back? · leading?]` + centered `title` + `[trailing]`. Left
+  and right zones are fixed 88pt so the title stays centered when
+  trailing is unbalanced.
+- Back chevron uses `text-fg-brand` resolved through `useColorScheme`
+  (brand-600 light / brand-400 dark).
+
+### `headerScreenOptions({ isDark })`
+
+Returns Stack.Screen options that color the native expo-router /
+react-navigation header to match the design system. Pair with
+`useColorScheme()` at the call site. Returns raw style objects (not
+className) — the native nav header lives outside the NativeWind tree.
+
+---
+
+## TabBar
+
+**Import**
+
+```ts
+import { tabBarScreenOptions, type TabBarScreenOptionsArgs } from "@mvp-ui-rn/ui"
+```
+
+RN-only. Skins expo-router's `<Tabs>` — native routing, accessibility,
+and safe-area handling stay native; tokens drive the chrome.
+
+```tsx
+<Tabs screenOptions={tabBarScreenOptions({ isDark: scheme === "dark" })}>
+```
+
+**When to use**
+
+- Bottom tab navigation across the app shell.
+
+**When NOT to use**
+
+- Content tabs inside a screen — use `Tabs` primitive (not yet ported).
+- Need a blur background / FAB slot / badges — pass a fully custom
+  `tabBar` component to `<Tabs>` instead.
+
+**RN deltas vs. web**
+
+- No web equivalent. Skin via `screenOptions` rather than a custom
+  `tabBar` component so consumers don't have to rewire routing.
+- Active tint follows `--color-primary` (brand-600 / brand-400). Inactive
+  follows `--color-fg-tertiary`. Hairline top border (0.5pt).
+
+---
+
+## SearchBar
+
+**Import**
+
+```ts
+import { SearchBar, searchBarScreenOptions, type SearchBarProps } from "@mvp-ui-rn/ui"
+```
+
+Always controlled — caller supplies `value` + `onChangeText` so the
+clear button can reset the value without internal duplicate state.
+
+**Variants**
+
+| Prop | Values | Default |
+|---|---|---|
+| `value` | `string` | required |
+| `onChangeText` | `(text: string) => void` | required |
+| `showCancel` | `boolean` — shows "Cancel" while focused | `false` |
+| `onCancel` | `() => void` — fires after Cancel blurs + clears | — |
+| `placeholder` | `string` | `"Search"` |
+| `cancelLabel` | `string` | `"Cancel"` |
+
+**When to use**
+
+- In-content search above a list / feed.
+- Anywhere the native iOS UISearchBar header pattern doesn't fit
+  (Android, mid-screen, modals).
+
+**When NOT to use**
+
+- Form fields — use `Input` with `iconLeading={Search}`. SearchBar's
+  pill chrome is search-specific.
+
+**RN deltas vs. web**
+
+- Composes around RN `<TextInput>` with the search keyboard
+  (`returnKeyType="search"`, `autoCorrect={false}`,
+  `autoCapitalize="none"`).
+- Trailing X clear button appears while value is non-empty.
+- Cancel text-button slides in while focused (`showCancel` opt-in).
+- Pill bg uses `bg-bg-tertiary` so the field reads as a search
+  affordance even unfocused.
+
+### `searchBarScreenOptions({ placeholder, cancelButtonText, hideWhenScrolling, onChangeText })`
+
+Returns `Stack.Screen.options.headerSearchBarOptions` for the native iOS
+UISearchBar in the header. Android falls back to no native search — use
+the standalone `<SearchBar>` for cross-platform parity.
+
+---
+
+## SegmentedControl
+
+**Import**
+
+```ts
+import {
+  SegmentedControl,
+  type SegmentedControlOption,
+  type SegmentedControlProps,
+} from "@mvp-ui-rn/ui"
+```
+
+iOS-style pill picker with a Reanimated sliding indicator. Filter / mode
+switch. Distinct from `Tabs` (content navigation, not yet ported).
+
+**Variants**
+
+| Prop | Values |
+|---|---|
+| `options` | `ReadonlyArray<{ value: TValue; label: string }>` |
+| `value` | `TValue` — current selection |
+| `onChange` | `(value: TValue) => void` |
+| `accessibilityLabel` | tablist a11y label |
+
+**When to use**
+
+- 2–4 mutually-exclusive view modes (Day / Week / Month / Year).
+- Filter chips at the top of a list (All / Unread / Starred).
+
+**When NOT to use**
+
+- Content section navigation → `Tabs`.
+- More than 4 options → `Select` / dropdown.
+- On/off boolean → `Switch`.
+
+**RN deltas vs. web**
+
+- No web equivalent. Built fresh for RN.
+- Always controlled.
+- Sliding indicator implemented as an `Animated.View` with
+  `translateX` interpolated through Reanimated `withTiming`
+  (`220ms`, cubic-out). Snaps to the current selection on mount via
+  the layout callback (no animation from x=0).
+- Track bg uses `bg-bg-tertiary`; selected pill uses `bg-bg` (`gray-950`
+  in dark → "carved out" effect against the gray-800 track).
+
+---
+
+## KeyboardAvoidingScroll
+
+**Import**
+
+```ts
+import { KeyboardAvoidingScroll, type KeyboardAvoidingScrollProps } from "@mvp-ui-rn/ui"
+```
+
+RN-only form wrapper. ScrollView preconfigured for forms.
+
+**Variants**
+
+| Prop | Values | Default |
+|---|---|---|
+| `scrollClassName` | applied to the ScrollView | — |
+| `contentContainerClassName` | applied to the ScrollView contentContainer | — |
+| `scrollViewProps` | forwarded to the inner ScrollView (excluding the prebound ones) | — |
+
+**When to use**
+
+- The top-level scroll layout of every form screen. Wires
+  `keyboardShouldPersistTaps="handled"` + `keyboardDismissMode="interactive"`.
+
+**When NOT to use**
+
+- Sticky-footer forms (a Save bar pinned above the keyboard) — wrap
+  the ScrollView in a `KeyboardAvoidingView` manually. KAV is
+  intentionally omitted from this primitive (see RN deltas).
+
+**RN deltas vs. web**
+
+- No web equivalent.
+- `KeyboardAvoidingView` is **not** wrapped around the ScrollView.
+  KAV is fragile across RN versions — collapses to zero height when
+  nested in a flex column without explicit dimensions — and modern
+  iOS scrolls a focused TextInput into view automatically. Android
+  relies on `windowSoftInputMode=adjustResize`. Add KAV manually only
+  when a sticky footer needs to lift with the keyboard.
+- No explicit `flex` on the ScrollView and no `flexGrow` on the
+  contentContainer — both broke the layout when nested under
+  `<SafeArea>`. RN's ScrollView fills its parent intrinsically; we
+  let it.
+
+---

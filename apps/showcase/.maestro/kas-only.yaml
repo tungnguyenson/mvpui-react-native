@@ -1,0 +1,22 @@
+# Focused KAS-only flow. Single tap → screenshot. Used while debugging
+# the KeyboardAvoidingScroll layout — avoids re-screenshotting the 4
+# already-verified Header / TabBar / SearchBar / SegmentedControl pages.
+
+appId: host.exp.Exponent
+---
+- runFlow:
+    when:
+      visible: "index"
+    commands:
+      - tapOn: "index"
+
+- assertVisible: "mvp-ui-rn"
+- tapOn: "KAS"
+- assertVisible:
+    text: "KAS"
+    enabled: true
+- takeScreenshot: 01-kas-top
+- swipe:
+    direction: UP
+    duration: 2500
+- takeScreenshot: 02-kas-mid

@@ -59,9 +59,9 @@ No direct web equivalent. App-readiness gap if missing. Build these alongside we
 
 | Component | Status | Notes |
 |---|---|---|
-| TabBar | ❌ | Bottom tab navigation. Expo Router `<Tabs>` skin with design-system styling + badges + blur background + safe-area. Most-used mobile pattern. |
-| Header | ❌ | Screen header with large-title iOS pattern, collapsible on scroll, back button + title + right actions. Distinct from web header. |
-| SegmentedControl | ❌ | iOS-style pill picker. Different UX from `Tabs` (Tabs = content sections, SegmentedControl = filter/mode switch). |
+| TabBar | ✅ | `packages/ui/src/components/tab-bar.tsx`. `tabBarScreenOptions({ isDark })` skins expo-router `<Tabs>` via screenOptions. Native routing preserved. Active tint follows `--color-primary`; inactive follows `--color-fg-tertiary`; 0.5pt hairline top border. Verified light + dark via static preview. |
+| Header | ✅ | `packages/ui/src/components/header.tsx`. Custom `<Header>` primitive (title + back + right actions). 88pt fixed end-zones keep title centered. Back chevron uses `text-fg-brand` (brand-600 / brand-400). Plus `headerScreenOptions({ isDark })` for theming the native expo-router header. |
+| SegmentedControl | ✅ | `packages/ui/src/components/segmented-control.tsx`. iOS pill picker with Reanimated sliding indicator (220ms cubic-out). Always controlled. Track `bg-bg-tertiary`, selected pill `bg-bg`. Verified 2/3/4 segments × light/dark; indicator snaps to selected index on mount. |
 
 ### Interaction primitives
 
@@ -71,7 +71,7 @@ No direct web equivalent. App-readiness gap if missing. Build these alongside we
 | PullToRefresh | ❌ | `RefreshControl` wrapper. Convention not optional. |
 | ActionSheet | ❌ | iOS-native sheet of options. `@expo/ui` or custom over bottom-sheet. |
 | ContextMenu | ❌ | Long-press menu. iOS 13+ native via `zeego` or `expo-context-menu`. |
-| KeyboardAvoidingScroll | ❌ | Layout wrapper — every form needs it. |
+| KeyboardAvoidingScroll | ✅ | `packages/ui/src/components/keyboard-avoiding-scroll.tsx`. ScrollView preconfigured with `keyboardShouldPersistTaps="handled"` + `keyboardDismissMode="interactive"`. `KeyboardAvoidingView` intentionally NOT wrapped (fragile across RN versions, collapses to 0h under flex columns); modern iOS scrolls focused input automatically, Android `softInputMode=adjustResize` handles resize. |
 | HapticFeedback | ❌ | `expo-haptics` wrapper. Design-system concern: when to fire (success/warning/selection). |
 
 ### Content surfaces
@@ -91,7 +91,7 @@ No direct web equivalent. App-readiness gap if missing. Build these alongside we
 | Stepper | ❌ | `-` / number / `+`. iOS-native pattern. |
 | Slider | ❌ | `@react-native-community/slider`. Web range input no good on touch. |
 | DatePicker / TimePicker | ❌ | `@react-native-community/datetimepicker`. Native wheels on iOS, dialog on Android. |
-| SearchBar | ❌ | Header-integrated search with cancel button. Distinct from `Input`. |
+| SearchBar | ✅ | `packages/ui/src/components/search-bar.tsx`. Standalone pill primitive with leading Search icon + trailing X clear + optional Cancel button on focus. Always controlled. Pill bg `bg-bg-tertiary`, search keyboard preset. Plus `searchBarScreenOptions()` for the native iOS UISearchBar via `headerSearchBarOptions`. |
 
 ### Media + feedback
 

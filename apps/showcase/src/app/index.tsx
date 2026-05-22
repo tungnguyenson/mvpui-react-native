@@ -12,6 +12,11 @@ const components = [
   { href: "/components/card", label: "Card" },
   { href: "/components/alert", label: "Alert" },
   { href: "/components/empty-state", label: "EmptyState" },
+  { href: "/components/header", label: "Header" },
+  { href: "/components/tab-bar", label: "TabBar" },
+  { href: "/components/search-bar", label: "SearchBar" },
+  { href: "/components/segmented-control", label: "SegmentedControl" },
+  { href: "/components/keyboard-avoiding-scroll", label: "KAS" },
 ] as const
 
 export default function IndexScreen() {
