@@ -1278,5 +1278,18 @@ collision) the trigger.
   (no `focus-within` in RN).
 - Popover elevation via `pickShadow("lg", mode)` token — light + dark
   shadow maps to keep depth visible in dark mode.
+- Popover width = `triggerPosition.width` from `useRootContext()`. The
+  primitive's `useRelativePosition` returns `top`/`left` only — width
+  isn't propagated, so without an explicit override the items
+  (`flex-1` text) collapse to 0 and the popover renders as a narrow
+  vertical strip on the left.
+- Popover max-height per size: `sm: 224` / `md: 256` / `lg: 320` — mirrors
+  web `max-h-56/64/80`. Items past the cap scroll inside a `<ScrollView>`
+  with `bounces={false}` for a desktop-popover feel.
+- Collision avoidance flips popover above the trigger when there's no
+  room below. `insets={useSafeAreaInsets()}` is forwarded to the
+  primitive so the home-indicator + status-bar safe areas are
+  respected; without it the popover overlaps the home indicator on
+  bottom-anchored triggers.
 
 ---

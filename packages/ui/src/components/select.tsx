@@ -19,11 +19,13 @@ import {
 } from "react"
 import {
   Pressable,
+  ScrollView,
   StyleSheet,
   Text,
   View,
   useColorScheme,
 } from "react-native"
+import { useSafeAreaInsets } from "react-native-safe-area-context"
 
 import { cn } from "../lib/cn"
 import { renderIcon, type IconProp } from "../lib/render-icon"
@@ -253,6 +255,70 @@ const SelectTrigger = forwardRef<
 
 SelectTrigger.displayName = "SelectTrigger"
 
+/* -------------------------------------------------------------------------- */
+/*  SelectContent — width-matched popover                                      */
+/* -------------------------------------------------------------------------- */
+
+interface SelectContentProps {
+  scheme: ReturnType<typeof useColorScheme>
+  size: SelectSize
+  className?: string
+  children: ReactNode
+}
+
+/** Popover max-height per size — mirrors web `max-h-56/64/80`. */
+const CONTENT_MAX_HEIGHT: Record<SelectSize, number> = {
+  sm: 224,
+  md: 256,
+  lg: 320,
+}
+
+/**
+ * `@rn-primitives/select` Content's `positionStyle` carries `top`/`left`
+ * only — width is not derived from the trigger. Without an explicit width
+ * the content shrinks to its intrinsic min (items use `flex-1` for
+ * truncation, which collapses to 0 without a parent constraint) and the
+ * popover renders as a narrow vertical strip on the left.
+ *
+ * Read `triggerPosition.width` from context + clamp to a minimum so the
+ * popover always matches the trigger's footprint.
+ */
+const SelectContent = ({
+  scheme,
+  size,
+  className,
+  children,
+}: SelectContentProps) => {
+  const { triggerPosition } = SelectPrim.useRootContext()
+  const triggerWidth = triggerPosition?.width ?? 0
+  const safeInsets = useSafeAreaInsets()
+
+  return (
+    <SelectPrim.Content
+      sideOffset={4}
+      insets={safeInsets}
+      style={{
+        ...pickShadow("lg", scheme === "dark" ? "dark" : "light"),
+        width: triggerWidth,
+        minWidth: 180,
+        maxHeight: CONTENT_MAX_HEIGHT[size],
+      }}
+      className={cn(
+        "overflow-hidden rounded-lg border border-border-secondary bg-bg py-1",
+        className,
+      )}
+    >
+      <ScrollView
+        bounces={false}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={{ padding: 4 }}
+      >
+        {children}
+      </ScrollView>
+    </SelectPrim.Content>
+  )
+}
+
 export interface SelectProps
   extends Omit<
     SelectPrim.RootProps,
@@ -349,16 +415,13 @@ export const Select = forwardRef<
 
           <SelectPrim.Portal>
             <SelectPrim.Overlay style={StyleSheet.absoluteFill} />
-            <SelectPrim.Content
-              sideOffset={4}
-              style={pickShadow("lg", scheme === "dark" ? "dark" : "light")}
-              className={cn(
-                "rounded-lg border border-border-secondary bg-bg py-1",
-                contentClassName,
-              )}
+            <SelectContent
+              scheme={scheme}
+              size={size}
+              className={contentClassName}
             >
-              <View className="p-1">{children}</View>
-            </SelectPrim.Content>
+              {children}
+            </SelectContent>
           </SelectPrim.Portal>
         </SelectPrim.Root>
 
