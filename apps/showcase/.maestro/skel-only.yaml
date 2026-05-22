@@ -1,0 +1,18 @@
+# Focused Skeleton-only flow. Confirms SafeArea-edges fix.
+
+appId: host.exp.Exponent
+---
+- runFlow:
+    when:
+      visible: "index"
+    commands:
+      - tapOn: "index"
+
+- assertVisible: "mvp-ui-rn"
+- tapOn: "Skeleton"
+- assertVisible:
+    text: "Skeleton"
+    enabled: true
+- waitForAnimationToEnd:
+    timeout: 3000
+- takeScreenshot: 01-skel-top
