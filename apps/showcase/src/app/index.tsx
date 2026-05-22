@@ -29,6 +29,10 @@ const components = [
   { href: "/components/dialog", label: "Dialog" },
   { href: "/components/bottom-sheet", label: "BottomSheet" },
   { href: "/components/toast", label: "Toast" },
+  { href: "/components/icon", label: "Icon" },
+  { href: "/components/progress-bar", label: "ProgressBar" },
+  { href: "/components/tabs", label: "Tabs" },
+  { href: "/components/form-field", label: "FormField" },
 ] as const
 
 export default function IndexScreen() {

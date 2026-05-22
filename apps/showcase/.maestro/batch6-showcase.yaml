@@ -1,0 +1,86 @@
+# Drives the showcase through the P0 + nav batch:
+# Icon / ProgressBar / Tabs / FormField. Wrapper
+# `scripts/verify-batch6.sh` runs twice (light + dark) and renames
+# captures to *-light.png / *-dark.png.
+#
+# Uses Expo deep links (`exp://localhost:8081/--/<route>`) to bypass the
+# flaky scrolled link-tap pattern, same as batch4/5.
+#
+# Preconditions:
+#   1. `pnpm showcase` is running and Expo Go has the bundle loaded.
+#
+# Run:  pnpm verify:batch6
+
+appId: host.exp.Exponent
+---
+# --- Cold-launch Expo Go on the dev bundle, land on index ----------------
+- launchApp:
+    appId: host.exp.Exponent
+    stopApp: true
+- openLink: "exp://localhost:8081/--/"
+- extendedWaitUntil:
+    visible: "mvp-ui-rn"
+    timeout: 60000
+- takeScreenshot: 01-index
+
+# --- Icon --------------------------------------------------------------
+- openLink: "exp://localhost:8081/--/components/icon"
+- assertVisible: "Sizes (sm 16 · md 20 · lg 24 · xl 28)"
+- takeScreenshot: 02-icon-top
+- swipe:
+    direction: UP
+    duration: 1200
+- takeScreenshot: 03-icon-tints
+- swipe:
+    direction: UP
+    duration: 1200
+- takeScreenshot: 04-icon-bottom
+
+# --- ProgressBar -------------------------------------------------------
+- openLink: "exp://localhost:8081/--/components/progress-bar"
+- assertVisible: "Sizes"
+- takeScreenshot: 05-progress-top
+- swipe:
+    direction: UP
+    duration: 1200
+- takeScreenshot: 06-progress-mid
+- tapOn: "+25"
+- tapOn: "+25"
+- takeScreenshot: 07-progress-bumped
+- swipe:
+    direction: UP
+    duration: 1200
+- takeScreenshot: 08-progress-bottom
+
+# --- Tabs --------------------------------------------------------------
+- openLink: "exp://localhost:8081/--/components/tabs"
+- assertVisible: "Variant: underline (default)"
+- takeScreenshot: 09-tabs-underline
+- tapOn: "Activity"
+- waitForAnimationToEnd
+- takeScreenshot: 10-tabs-underline-active
+- swipe:
+    direction: UP
+    duration: 1200
+- takeScreenshot: 11-tabs-button-variants
+- swipe:
+    direction: UP
+    duration: 1200
+- takeScreenshot: 12-tabs-badge
+- swipe:
+    direction: UP
+    duration: 1200
+- takeScreenshot: 13-tabs-fullwidth
+
+# --- FormField ---------------------------------------------------------
+- openLink: "exp://localhost:8081/--/components/form-field"
+- assertVisible: "Vertical (default) — Input"
+- takeScreenshot: 14-form-top
+- swipe:
+    direction: UP
+    duration: 1200
+- takeScreenshot: 15-form-mid
+- swipe:
+    direction: UP
+    duration: 1200
+- takeScreenshot: 16-form-bottom

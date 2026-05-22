@@ -30,7 +30,7 @@ Ported from `mvp-ui` (web). Same variant API, same look, RN deltas documented pe
 | Label | ✅ | `packages/ui/src/components/label.tsx`. `isRequired` asterisk in `text-fg-brand`, re-tinted to `text-fg-error` when `isInvalid`. Paired by consumer via `nativeID` + `accessibilityLabelledBy` (RN has no `htmlFor`). Web `tooltip` prop deferred until Tooltip primitive lands. |
 | HintText | ✅ | `packages/ui/src/components/hint-text.tsx`. Helper / error text below fields. Sizes sm/md. `isInvalid` switches to `text-fg-error` + announces via `accessibilityLiveRegion="polite"`. |
 | Avatar | ✅ | `packages/ui/src/components/avatar.tsx`. 6 sizes (xs/sm/md/lg/xl/2xl) with per-size font + icon step. Cascade: src (expo-image) → initials → placeholder → lucide User. Status dot supports 4 statuses (online/offline/away/busy). `border` + `square` opt-in. Verified all sizes light + dark. |
-| Icon wrapper | ❌ | Wrap `lucide-react-native`; respect `IconProp` contract. |
+| Icon wrapper | ✅ | `packages/ui/src/components/icon.tsx`. Token-aware wrapper around the `IconProp` contract (LOCKED — same as Spinner). `size` keyed to `iconSize.{sm,md,lg,xl}` (16/20/24/28) or raw `number`. `tint` semantic alias auto-flipping via `useColorScheme` (`fg` / `fg-secondary` / `fg-tertiary` / `fg-brand` / `fg-error` / `fg-warning` / `fg-success` / `primary-fg`); raw `color` override preserved. Renders via `renderIcon` — same channel Button/Input/Badge use. Demo: `apps/showcase/src/app/components/icon.tsx`. Docs: `packages/skill/components-rn.md#icon`. Verified iPhone 15 (iOS 18.5) light + dark via `pnpm verify:batch6`. |
 | Checkbox | ✅ | `packages/ui/src/components/checkbox.tsx`. `@rn-primitives/checkbox` Root + tristate (`boolean \| "indeterminate"`) layered at wrapper. Sizes sm (20px box, text-sm) / md (24px box, text-md). States default/checked/indeterminate/disabled/invalid. SVG check + dash glyphs via `react-native-svg` mirror web paths verbatim; stroke hardcoded `#ffffff` = `--color-primary-fg`. Default `hitSlop: 10pt` extends bare-box tap area to ≥ 44pt. Composed `Checkbox` (Pressable row + box + label/hint) + `CheckboxBase` (visual-only cell for embed inside other Pressables like Select item indicator). Demo: `apps/showcase/src/app/components/checkbox.tsx`. Docs: `packages/skill/components-rn.md#checkbox`. Verified on iPhone 15 sim (iOS 18.5) light + dark via `pnpm verify:batch4`. |
 | RadioGroup | ❌ | `@rn-primitives/radio-group`. P2 — not in current batch. |
 | Switch | ✅ | `packages/ui/src/components/switch.tsx`. `@rn-primitives/switch` Root + Reanimated v4 animated pill (Track color + thumb translate via `useDerivedValue(withTiming(200ms))`). Sizes sm (24×44 track, 20 thumb) / md (28×52 track, 24 thumb). On-state track tint = `--color-primary` (brand-600 both modes); off-state = `bg-bg-tertiary` (gray-50 light / gray-800 dark) via `useColorScheme`. Thumb white in both modes. Composed `Switch` (Pressable row + pill + label/hint) + `SwitchBase` (visual-only pill). `slim` variant deferred to follow-up. Demo: `apps/showcase/src/app/components/switch.tsx`. Docs: `packages/skill/components-rn.md#switch`. Verified on iPhone 15 sim (iOS 18.5) light + dark via `pnpm verify:batch4`. |
@@ -42,7 +42,7 @@ Ported from `mvp-ui` (web). Same variant API, same look, RN deltas documented pe
 | Popover | ❌ | `@rn-primitives/popover`. |
 | Tooltip | ❌ | `@rn-primitives/tooltip`; touch-adjusted (long-press to show). |
 | Toast | ✅ | `packages/ui/src/components/toast.tsx`. Custom store + portal (no `sonner` / `burnt` dep). Module-level singleton subscribed via `useSyncExternalStore`. Imperative API: `toast(msg)` / `toast.info` / `toast.success` / `toast.warning` / `toast.error` + `toast.dismiss(id?)`. Auto-dismiss timer (`duration` ms, default 4000; `Infinity` for sticky). 4 variants with per-mode icon tint + semantic border (info/success/warning/error). Reanimated `FadeIn.duration(150)` / `FadeOut.duration(120)` (slide+spring stripped per `[[simple-animations]]`). `<Toaster />` mounted once at app root. Position default `"bottom"` (top would collide with native iOS `UINavigationBar`). Demo: `apps/showcase/src/app/components/toast.tsx`. Verified iPhone 15 light + dark via `pnpm verify:batch5`. |
-| Tabs | ❌ | `@rn-primitives/tabs`. Content tabs (not bottom navigation — see `TabBar` in mobile-native). |
+| Tabs | ✅ | `packages/ui/src/components/tabs.tsx`. Compound: `Tabs` (Root) + `TabsList` + `TabsTrigger` + `TabsContent` on `@rn-primitives/tabs`. Controlled (`value` + `onValueChange`). v1 variants: `underline` (default, active border-bottom + brand label), `button-gray` (pill bg-bg-tertiary on active), `button-border` (outline pill on active). Sizes sm (40h) / md (48h, default). `fullWidth` collapses scroll + makes triggers `flex-1`. `badgeCount` prop on TabsTrigger renders a numeric pill (brand fill on active, neutral otherwise). List wraps in horizontal `ScrollView` for overflow (unless `fullWidth`). No sliding underline indicator in v1 — active trigger paints its own bottom border; deferred. `underline-shadow` + `button-minimal` variants + vertical orientation deferred. Demo: `apps/showcase/src/app/components/tabs.tsx`. Docs: `packages/skill/components-rn.md#tabs`. Verified iPhone 15 (iOS 18.5) light + dark via `pnpm verify:batch6`. |
 | Breadcrumb | ❌ | Less common on mobile; defer unless requested. |
 | Pagination | ❌ | Mobile UX often prefers infinite scroll — confirm with user. |
 | SideNav | ❌ | No primitive. `Drawer` from `react-native-drawer-layout` or custom. |
@@ -98,7 +98,7 @@ No direct web equivalent. App-readiness gap if missing. Build these alongside we
 | Component | Status | Notes |
 |---|---|---|
 | Image | ✅ | `packages/ui/src/components/image.tsx`. `expo-image` wrapper with `contentFit="cover"` + `transition={200}` defaults. Optional `blurhash` prop derives the placeholder. All other expo-image props pass through. Complements `Avatar`. |
-| ProgressBar | ❌ | Determinate horizontal progress. |
+| ProgressBar | ✅ | `packages/ui/src/components/progress-bar.tsx`. Determinate linear progress. View track + Reanimated-animated fill (`withTiming` on width percent, `motion.slow` 300ms × `easing.standard`). Sizes sm (h-1.5) / md (h-2 default) / lg (h-2.5). Colors `primary` / `success` / `warning` / `error` (semantic solids, tracks stay `bg-bg-tertiary`). `value` clamped 0–100. Optional `label` (left) + `showValue` (right `${round(value)}%`) caption row above bar. `accessibilityRole="progressbar"` + `accessibilityValue`. Stripe / shimmer / indeterminate variants deferred. Demo: `apps/showcase/src/app/components/progress-bar.tsx`. Docs: `packages/skill/components-rn.md#progressbar`. Verified iPhone 15 (iOS 18.5) light + dark via `pnpm verify:batch6`. |
 | CircularProgress | ❌ | Determinate circular. Reanimated. |
 | Spinner | ✅ | `packages/ui/src/components/spinner.tsx`. Token-keyed `size` (`sm`/`md`/`lg` or raw number) + semantic `tint` (`fg`/`fg-secondary`/`fg-tertiary`/`fg-brand`/`fg-error`/`primary-fg`) auto-flipping via `useColorScheme`. `color` raw override preserved for Button's per-variant tint map. Demo: `apps/showcase/src/app/components/spinner.tsx`. |
 | Snackbar | ⚠️ | Dropped 2026-05-22 (batch5 decision). `Toast` covers ephemeral feedback; actionable bottom bars use `BottomSheet` or a composed pattern in the app layer. |
@@ -110,7 +110,7 @@ Composed from primitives. Open question whether design-system surface or app-lay
 
 | Component | Status | Notes |
 |---|---|---|
-| FormField | ❌ | **Separate PR after forms-controls batch (decision Q3=separate, 2026-05-22).** `Label` + control (Input/Textarea/Select/Checkbox/Switch) + `HintText`. Shared `id` + `isInvalid` + `isRequired` + `isDisabled` flow down. Open API call: `control` slot vs `type` prop — decide after the 4 controls settle. Controlled by `react-hook-form` at app layer. |
+| FormField | ✅ | `packages/ui/src/components/form-field.tsx`. Composes Label + child control + HintText. API resolved Q2 → **children slot** (non-magical, no per-control coupling). Renders `<Label>` with `isRequired` / `isInvalid`, child, then `<HintText>` — `errorMessage` (with `isInvalid` tint) takes precedence over `hint`. Exposes `<FormFieldContext>` + `useFormField()` so controls can opt-in to shared state (`nativeID`, `isInvalid`, `isRequired`, `isDisabled`) — base controls auto-wire in a follow-up. `orientation="horizontal"` (Q3 OK) lays out label inline beside Checkbox/Switch; vertical is default. Wrapper drops to `opacity-50` when `isDisabled`. Pair with `*Base` controls (`InputBase`, `TextareaBase`, `Select`, `Checkbox`, `Switch`) — never the composed `Input`/`Textarea` which already render Label+HintText. Demo: `apps/showcase/src/app/components/form-field.tsx`. Docs: `packages/skill/components-rn.md#formfield`. Verified iPhone 15 (iOS 18.5) light + dark via `pnpm verify:batch6`. |
 | SettingsRow | ❌ | `Label` + control (Switch/Select/chevron). iOS Settings convention. Likely design-system. |
 | Card variants | ❌ | ProductCard / ListCard / MediaCard. Likely app-layer; design-system provides base `Card`. |
 | Onboarding slides | ❌ | Paginated intro with dots. App-layer. |
@@ -185,8 +185,30 @@ Maestro flow notes (for future overlay batches):
 - BottomSheet content lives inside the native modal overlay; UIAutomation tree-walk can't see internal text labels or tap buttons inside the sheet. Dismiss via coord-tap on backdrop (`tapOn: { point: "50%, 15%" }`) — the `BottomSheetBackdrop`'s `pressBehavior="close"` closes the modal. `swipe DOWN` from the sheet body doesn't reliably trigger pan-to-close under Maestro.
 - Toast position must be `"bottom"` for testing — `"top"` toasts render behind the native iOS `UINavigationBar` and don't appear in screenshots even though the component is mounted.
 
+### P0 closers + nav batch (2026-05-22) — landed + verified
+
+Decisions locked (Q1–Q7 confirmed before build):
+- **Q1 — Icon visual surface:** ship — centralises the light/dark hex maps that Button/Spinner/Input each carry locally.
+- **Q2 — FormField API:** children slot (`<FormField>{<InputBase/>}</FormField>`) — non-magical, future-proof for custom controls, no per-control coupling. `type` discriminated union rejected.
+- **Q3 — FormField horizontal orientation:** ship — Checkbox / Switch demand inline layout.
+- **Q4 — Tabs variants v1:** ship all three (`underline` default, `button-gray`, `button-border`). Sliding underline indicator deferred; active trigger paints own border.
+- **Q5 — Tabs vertical orientation:** skip — rare on mobile.
+- **Q6 — ProgressBar indeterminate:** defer — Spinner covers "thinking" UX.
+- **Q7 — ProgressBar stripe/shimmer:** defer — decorative.
+
+Build order shipped: Icon → ProgressBar → Tabs → FormField. All four pass `tsc --noEmit` across `packages/ui` / `apps/showcase` and were verified on the iPhone 15 simulator (iOS 18.5) in both light + dark via `pnpm verify:batch6` (Maestro flow `apps/showcase/.maestro/batch6-showcase.yaml` + wrapper `apps/showcase/scripts/verify-batch6.sh`).
+
+Infrastructure changes shipped alongside this batch:
+- `@rn-primitives/tabs@^1.4.0` added to `packages/ui` deps.
+- No new portal hosts / providers needed — Tabs renders inline, FormField is composition only, ProgressBar uses Reanimated already in use.
+
+P0 tier now closed. Remaining web-port: PinInput, Popover, Tooltip, Breadcrumb, Pagination, SideNav, Table (all P2 or defer/redesign).
+
 ### Deferred (post-batch)
 
+- **Tabs sliding indicator** — measured-translate animated underline on the `underline` variant (mirror SegmentedControl's 220ms cubic-out). Non-breaking add. Needs layout measurement of each trigger relative to the horizontal ScrollView's content origin; build when consumers ask for it.
+- **Tabs `underline-shadow` / `button-minimal` variants** — defer. Two of five web variants shipped; remaining two are visual deltas only.
+- **FormField auto-wire via `useFormField()`** — base controls (`InputBase`, `TextareaBase`, `Select`, `CheckboxBase`, `SwitchBase`) opt-in to read `nativeID` + `isInvalid` + `isDisabled` from FormFieldContext. v1 still requires manual prop pass-through (same as forms-controls batch). Schedule alongside SettingsRow build.
 - **`Select` sheet variant** — `variant="sheet"` (bottom-sheet wheel for long lists OR ActionSheet rows for short lists). Non-breaking addition. Blocked on BottomSheet primitive shipping. Re-evaluate UX: wheel vs ActionSheet at decision time.
 - **`Select` extras** — `items` prop + render-prop children form, `avatarUrl` / `supportingText` per item, `selectionIndicator="checkbox"`, combobox typeahead. Pulled out of v1 for scope; add as opt-in props in follow-ups.
 - **`Switch` slim variant** — bordered track for dense dashboards. Web Toggle has it; RN port deferred to keep first land iOS-pill-shaped.

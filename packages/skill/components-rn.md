@@ -1574,3 +1574,291 @@ inside `<Toaster />`.
   fade reads cleaner per the simple-animations convention).
 
 ---
+
+## Icon
+
+```tsx
+import { Icon } from "@mvp-ui-rn/ui"
+import { Search } from "lucide-react-native"
+
+<Icon as={Search} size="md" tint="fg-secondary" />
+<Icon as={Search} size={32} color="#7f56d9" />
+```
+
+Token-aware wrapper around the `IconProp` contract. Resolves lucide /
+react-native-svg `color` + `size` props from a semantic `tint` + a
+token-keyed `size`. Mirrors the Spinner tint API so they compose cleanly
+inside a button / chip / row.
+
+### Sizes
+
+| Key | px | Pairs with |
+|---|---|---|
+| `sm` | 16 | input/button sm |
+| `md` (default) | 20 | input/button md |
+| `lg` | 24 | input/button lg |
+| `xl` | 28 | input/button xl |
+
+Pass a raw `number` to override (e.g. hero settings glyphs `size={48}`).
+
+### Tints (auto light/dark via `useColorScheme`)
+
+`fg` · `fg-secondary` · `fg-tertiary` · `fg-brand` · `fg-error` · `fg-warning` · `fg-success` · `primary-fg`.
+
+Raw `color` (RN color string) overrides `tint` — used by consumers
+that need a value Tailwind can't express.
+
+### When to use
+
+- Standalone glyphs in headers, list items, badges, empty states.
+- Anywhere you'd previously hardcode a light/dark hex map locally.
+
+### When not to use
+
+- Inside `Button` / `Input` / `Badge` / `Select` icon slots — those
+  accept `IconProp` directly and apply their own per-variant tint.
+- Animated icons — drop down to `react-native-svg` + Reanimated.
+
+### Anti-patterns
+
+- **Don't** hardcode `color="#000"` — tints flip with the scheme.
+- **Don't** pass a lucide component to a context that already accepts
+  `IconProp` (Button `icon`, Input `iconLeading`, etc).
+
+---
+
+## ProgressBar
+
+```tsx
+import { ProgressBar } from "@mvp-ui-rn/ui"
+
+<ProgressBar value={60} />
+<ProgressBar value={value} label="Upload" showValue />
+<ProgressBar value={50} color="error" size="lg" />
+```
+
+Determinate linear progress. Track + animated fill. Width transitions
+via Reanimated `withTiming` so a live `value` eases between updates.
+
+### Variants
+
+| Prop | Values | Default |
+|---|---|---|
+| `size` | `sm` (h-1.5) / `md` (h-2) / `lg` (h-2.5) | `md` |
+| `color` | `primary` / `success` / `warning` / `error` | `primary` |
+
+### Props
+
+| Prop | Notes |
+|---|---|
+| `value` | `0`–`100`, clamped. |
+| `label` | Caption text above the track (left-aligned). |
+| `showValue` | Render `${round(value)}%` on the right of the caption row. |
+| `animationDurationMs` | Override the easing duration. Default `motion.slow` (300ms). |
+
+### Accessibility
+
+`accessibilityRole="progressbar"` + `accessibilityValue={{ min:0, max:100, now }}`. TalkBack / VoiceOver announces percentage.
+
+### When to use
+
+- Uploads, downloads, multi-step wizard progress, storage usage.
+
+### When not to use
+
+- Indeterminate "thinking" state — use `Spinner` instead.
+- Decorative percent visualizations — design a custom chart.
+
+### Anti-patterns
+
+- **Don't** animate `value` faster than perception (~150ms) — looks
+  like a snap. Trust the default 300ms ease.
+- **Don't** mount a ProgressBar inside a `<Pressable>` row — TalkBack
+  reads the row's label, not the bar's.
+- **Don't** rely on color alone to signal status — `error` / `warning`
+  variants are decorative; pair with a text label.
+
+### RN deltas vs. web
+
+- Web `transition: width 300ms` → Reanimated `withTiming` with token
+  `easing.standard`.
+- Web stripe / shimmer variants deferred.
+- Web indeterminate mode deferred (use `Spinner`).
+
+---
+
+## Tabs
+
+```tsx
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@mvp-ui-rn/ui"
+
+const [tab, setTab] = useState("overview")
+
+<Tabs value={tab} onValueChange={setTab}>
+  <TabsList>
+    <TabsTrigger value="overview">Overview</TabsTrigger>
+    <TabsTrigger value="activity" badgeCount={12}>Activity</TabsTrigger>
+    <TabsTrigger value="settings">Settings</TabsTrigger>
+  </TabsList>
+  <TabsContent value="overview">…</TabsContent>
+  <TabsContent value="activity">…</TabsContent>
+  <TabsContent value="settings">…</TabsContent>
+</Tabs>
+```
+
+Content tabs (not bottom navigation — see `TabBar` for that). Compound
+component built on `@rn-primitives/tabs`. Controlled via `value` +
+`onValueChange`.
+
+### Variants
+
+| Variant | Visual |
+|---|---|
+| `underline` (default) | Bottom border on active trigger, hairline base under the row |
+| `button-gray` | Pill background on active, no row border |
+| `button-border` | Outline pill on active |
+
+### Sizes
+
+| Size | h | Padding |
+|---|---|---|
+| `sm` | 40 | px-3 |
+| `md` (default) | 48 | px-4 |
+
+### Props
+
+| Prop | Notes |
+|---|---|
+| `variant` | See table above. |
+| `size` | `sm` / `md`. |
+| `fullWidth` | Triggers stretch `flex-1`; row no longer scrolls. Use for 2–4 stable tabs that should always show as a single row. |
+| `badgeCount` (on TabsTrigger) | Numeric pill next to the label. Primary fill when the tab is active, neutral otherwise. |
+
+### When to use
+
+- Top-of-page section switcher (Overview / Activity / Settings).
+- Inbox folder switching (with `badgeCount`).
+- Period selector with `fullWidth` (Weekly / Monthly / Yearly).
+
+### When not to use
+
+- Bottom navigation between top-level screens — use `TabBar` (expo-router).
+- Stepper wizards — use a `SegmentedControl` or a dedicated stepper.
+- Vertical orientation — not supported on RN port (rare on mobile).
+
+### Anti-patterns
+
+- **Don't** wrap `TabsContent` body in another `ScrollView` if the
+  outer screen already scrolls — nested scroll on RN is fiddly.
+- **Don't** use more than ~5 tabs at `fullWidth` — triggers get cramped.
+  Drop `fullWidth` and let the list scroll horizontally.
+- **Don't** put critical destructive actions inside a tab — the active
+  state can be missed at a glance.
+
+### RN deltas vs. web
+
+- No sliding underline indicator (v1). The active trigger paints its
+  own bottom border; cross-fade between triggers is instant. Sliding
+  measured-translate indicator is deferred.
+- `underline-shadow` + `button-minimal` web variants deferred.
+- Vertical orientation skipped — rare on mobile.
+- `TabsList` wraps in horizontal `ScrollView` (unless `fullWidth`) so
+  overflow stays reachable on narrow screens.
+
+---
+
+## FormField
+
+```tsx
+import { FormField, InputBase, Switch } from "@mvp-ui-rn/ui"
+
+<FormField
+  label="Email"
+  hint="We'll never share your email."
+  errorMessage={errors.email?.message}
+  isRequired
+  isInvalid={!!errors.email}
+  isDisabled={submitting}
+>
+  <InputBase keyboardType="email-address" autoCapitalize="none" />
+</FormField>
+
+<FormField
+  label="Push notifications"
+  hint="Receive alerts when something needs attention."
+  orientation="horizontal"
+>
+  <Switch checked={value} onCheckedChange={setValue} />
+</FormField>
+```
+
+Label + control + HintText composite. Resolves Q3 from the
+forms-controls batch decisions (see `docs/component-status.md`).
+
+FormField does three things:
+
+1. Renders `<Label>` (with `isRequired` + `isInvalid`).
+2. Renders the child control.
+3. Renders `<HintText>` — `errorMessage` (with `isInvalid` tint) takes
+   precedence over `hint`.
+
+Also exposes `<FormFieldContext>` so opt-in controls can read shared
+state without prop drilling. `useFormField()` returns the context or
+`null` outside a FormField.
+
+### Props
+
+| Prop | Notes |
+|---|---|
+| `label` | `ReactNode`. Omit to render control + hint only. |
+| `hint` | Helper text below. Hidden when `errorMessage` is set. |
+| `errorMessage` | Replaces hint and flags the field invalid. |
+| `isRequired` | Tints the asterisk on the label. |
+| `isInvalid` | Override — defaults to `errorMessage !== undefined`. |
+| `isDisabled` | Wrapper drops to `opacity-50`. |
+| `orientation` | `"vertical"` (default) or `"horizontal"` (Checkbox / Switch convention). |
+| `nativeID` | Override the generated id. |
+
+### Pair with
+
+- `InputBase` (not the composed `Input` — that already renders Label + HintText)
+- `TextareaBase` (not the composed `Textarea`)
+- `Select`
+- `Checkbox` (use `orientation="horizontal"`)
+- `Switch` (use `orientation="horizontal"`)
+
+### When to use
+
+- Any form built from base controls that needs Label + hint/error
+  wiring without rebuilding the layout per field.
+- Forms driven by `react-hook-form` at the app layer.
+
+### When not to use
+
+- A single Input on a screen with no label — drop down to `InputBase`.
+- Settings rows where the control sits trailing — use `ListItem` instead.
+
+### Anti-patterns
+
+- **Don't** pass a composed `Input` / `Textarea` / `Checkbox` / `Switch`
+  as the child. They already render Label + HintText and you'll
+  double up. Pass the `*Base` form (or the bare control for
+  Select / Checkbox / Switch).
+- **Don't** override `nativeID` unless you have a paired control that
+  needs a specific id — let `useId()` do its job.
+- **Don't** set `isInvalid` AND omit `errorMessage` — there's nothing
+  for the user to read. Either tint via error message, or render a
+  custom error node below.
+
+### RN deltas vs. web
+
+- Web `<label htmlFor>` doesn't translate to RN. FormField provides a
+  `nativeID` via context; controls opt-in by reading
+  `useFormField()`. The forms-controls batch already established this
+  manual-wire pattern; FormField centralises it.
+- No `<Slot>`-based prop injection in v1 — auto-wiring `nativeID` /
+  `accessibilityLabelledBy` / `editable` onto arbitrary children risks
+  prop-spray on controls that don't accept them. Auto-wiring is a
+  follow-up once the base controls expose `useFormField()` opt-in.
+
+---

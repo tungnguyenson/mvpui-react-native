@@ -24,6 +24,7 @@
     "@rn-primitives/select": "^1.4.0",
     "@rn-primitives/slot": "^1.4.0",
     "@rn-primitives/switch": "^1.4.0",
+    "@rn-primitives/tabs": "^1.4.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1"
   },

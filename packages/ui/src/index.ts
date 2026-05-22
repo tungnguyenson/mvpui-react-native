@@ -79,6 +79,12 @@ export {
 } from "./components/dialog"
 export { EmptyState, type EmptyStateProps } from "./components/empty-state"
 export {
+  FormField,
+  useFormField,
+  type FormFieldContextValue,
+  type FormFieldProps,
+} from "./components/form-field"
+export {
   Image,
   type ImageProps,
 } from "./components/image"
@@ -89,6 +95,11 @@ export {
   type HeaderScreenOptionsArgs,
 } from "./components/header"
 export { HintText, hintTextVariants, type HintTextProps } from "./components/hint-text"
+export {
+  Icon,
+  type IconProps,
+  type IconTint,
+} from "./components/icon"
 export {
   Input,
   InputBase,
@@ -108,6 +119,12 @@ export {
   type ListItemProps,
   type ListSectionProps,
 } from "./components/list"
+export {
+  ProgressBar,
+  type ProgressBarColor,
+  type ProgressBarProps,
+  type ProgressBarSize,
+} from "./components/progress-bar"
 export { SafeArea, type SafeAreaEdge, type SafeAreaProps } from "./components/safe-area"
 export {
   Skeleton,
@@ -135,6 +152,18 @@ export {
   type SwitchProps,
   type SwitchSize,
 } from "./components/switch"
+export {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+  type TabsContentProps,
+  type TabsListProps,
+  type TabsProps,
+  type TabsSize,
+  type TabsTriggerProps,
+  type TabsVariant,
+} from "./components/tabs"
 export {
   SegmentedControl,
   type SegmentedControlOption,
