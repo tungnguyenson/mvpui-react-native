@@ -26,6 +26,9 @@ const components = [
   { href: "/components/switch", label: "Switch" },
   { href: "/components/textarea", label: "Textarea" },
   { href: "/components/select", label: "Select" },
+  { href: "/components/dialog", label: "Dialog" },
+  { href: "/components/bottom-sheet", label: "BottomSheet" },
+  { href: "/components/toast", label: "Toast" },
 ] as const
 
 export default function IndexScreen() {

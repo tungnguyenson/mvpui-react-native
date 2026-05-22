@@ -1,5 +1,7 @@
 import "@mvp-ui-rn/tokens/global.css"
 
+import { BottomSheetModalProvider } from "@gorhom/bottom-sheet"
+import { Toaster } from "@mvp-ui-rn/ui"
 import { PortalHost } from "@rn-primitives/portal"
 import { useFonts } from "expo-font"
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from "expo-router"
@@ -7,6 +9,7 @@ import * as SplashScreen from "expo-splash-screen"
 import { StatusBar } from "expo-status-bar"
 import { useEffect } from "react"
 import { useColorScheme, View } from "react-native"
+import { GestureHandlerRootView } from "react-native-gesture-handler"
 import { SafeAreaProvider } from "react-native-safe-area-context"
 
 // Hold the splash screen until Inter is loaded so the first paint already
@@ -39,26 +42,40 @@ export default function RootLayout() {
   if (!fontsLoaded) return null
 
   return (
-    <SafeAreaProvider>
-      <ThemeProvider value={navTheme}>
-        <StatusBar style="auto" />
-        {/* bg-bg flips via @media (prefers-color-scheme: dark). Stack screens
-         * sit on top with transparent content so the token-driven background
-         * is what actually paints — Stack's default white screen bg would
-         * mask the dark token in dark mode. */}
-        <View className="flex-1 bg-bg">
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              contentStyle: { backgroundColor: "transparent" },
-            }}
-          />
-        </View>
-        {/* PortalHost lives outside Stack so popovers (Select, Dialog,
-         * Tooltip) can overlay the navigation header. Default name; primitives
-         * target the default host automatically. */}
-        <PortalHost />
-      </ThemeProvider>
-    </SafeAreaProvider>
+    // GestureHandlerRootView must sit above any gesture-driven primitive
+    // (BottomSheet, SwipeableRow). expo-router auto-wraps in newer SDKs but
+    // mounting it here is explicit + future-proof.
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <ThemeProvider value={navTheme}>
+          {/* BottomSheetModalProvider hosts all BottomSheet modals. Mount
+           * outside Stack so sheets overlay the navigation header. */}
+          <BottomSheetModalProvider>
+            <StatusBar style="auto" />
+            {/* bg-bg flips via @media (prefers-color-scheme: dark). Stack
+             * screens sit on top with transparent content so the
+             * token-driven background is what actually paints — Stack's
+             * default white screen bg would mask the dark token in dark
+             * mode. */}
+            <View className="flex-1 bg-bg">
+              <Stack
+                screenOptions={{
+                  headerShown: false,
+                  contentStyle: { backgroundColor: "transparent" },
+                }}
+              />
+            </View>
+            {/* PortalHost lives outside Stack so popovers (Select, Dialog,
+             * Tooltip) can overlay the navigation header. Default name;
+             * primitives target the default host automatically. */}
+            <PortalHost />
+            {/* Toaster mounts the toast stack once. Bottom anchored to
+             * avoid the native iOS UINavigationBar (which sits outside the
+             * JS tree and would clip a top-anchored toast). */}
+            <Toaster />
+          </BottomSheetModalProvider>
+        </ThemeProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   )
 }

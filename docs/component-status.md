@@ -37,11 +37,11 @@ Ported from `mvp-ui` (web). Same variant API, same look, RN deltas documented pe
 | Select | ✅ | `packages/ui/src/components/select.tsx`. `@rn-primitives/select` (Radix-style compound: Root + Trigger + Portal + Overlay + Content + Item + ItemText + ItemIndicator). Trigger mirrors Input box (`triggerVariants` cva — sm h-11 / md h-12 / lg h-14). Popover elevation via `pickShadow("lg", mode)` token. Items support leading `IconProp`, disabled, right-aligned check indicator. Consumer API: `value` / `defaultValue` / `onValueChange` use `SelectOption = { value, label } \| undefined` matching primitive. **Requires** `<PortalHost />` mounted in app root (added to showcase `_layout.tsx`). Deferred for v1: `items` prop + render-prop children, `avatarUrl` / `supportingText` per-item, `selectionIndicator="checkbox"`, combobox typeahead, `variant="sheet"`. Demo: `apps/showcase/src/app/components/select.tsx`. Docs: `packages/skill/components-rn.md#select`. Verified on iPhone 15 sim (iOS 18.5) light + dark via `pnpm verify:batch4`. |
 | Textarea | ✅ | `packages/ui/src/components/textarea.tsx`. `TextInput multiline` + `textAlignVertical="top"` (Android caret-at-top). Sizes sm (px-3 py-3 text-sm) / md (px-3.5 py-3 text-md) / lg (px-3.5 py-3.5 text-lg). `rows` prop drives `minHeight` via `LEADING[size] × rows + PADDING_Y[size] × 2` — content grows beyond min. States default/error/success/disabled/readonly. Composed `Textarea` (Label + TextareaBase + HintText, mirrors Input) + `TextareaBase` (standalone field). Web `::-webkit-resizer` custom SVG handle dropped (RN grows auto). Placeholder color resolved as raw hex via JS tokens. Demo: `apps/showcase/src/app/components/textarea.tsx`. Docs: `packages/skill/components-rn.md#textarea`. Verified on iPhone 15 sim (iOS 18.5) light + dark via `pnpm verify:batch4`. |
 | PinInput | ❌ | Custom; consider `react-native-confirmation-code-field` as reference. |
-| Dialog | ❌ | `@rn-primitives/dialog` + `@rn-primitives/portal`. |
-| Drawer | ❌ | Use `@gorhom/bottom-sheet` — RN-idiomatic drawer is bottom sheet. |
+| Dialog | ✅ | `packages/ui/src/components/dialog.tsx`. Compound: `Dialog` (Root) + `DialogTrigger` + `DialogContent` (Portal+Overlay+Content+animated panel) + `DialogHeader/Body/Footer` + `DialogTitle` + `DialogDescription` + `DialogClose`. Sizes sm (max-w-xs) / md (max-w-sm default) / lg (max-w-md). Scrim = `AnimatedPressable` (createAnimatedComponent on Pressable) with raw inline `backgroundColor` because NativeWind v5 can't interop runtime-created animated components — `className` is silently dropped. Reanimated v4 `FadeIn.duration(150)` / `FadeOut.duration(120)` on both scrim + panel (zoom/spring stripped per `[[simple-animations]]`). Scheme-aware scrim color via `useColorScheme`. Backdrop tap + Android hardware-back dismiss handled by primitive. Demo: `apps/showcase/src/app/components/dialog.tsx`. Verified iPhone 15 (iOS 18.5) light + dark via `pnpm verify:batch5`. |
+| Drawer | ⚠️ | Replaced by `BottomSheet` — RN-idiomatic drawer is the bottom sheet pattern. |
 | Popover | ❌ | `@rn-primitives/popover`. |
 | Tooltip | ❌ | `@rn-primitives/tooltip`; touch-adjusted (long-press to show). |
-| Toast | ❌ | Consider `burnt` or custom + portal. May overlap with `Snackbar` in mobile-native section — decide on one. |
+| Toast | ✅ | `packages/ui/src/components/toast.tsx`. Custom store + portal (no `sonner` / `burnt` dep). Module-level singleton subscribed via `useSyncExternalStore`. Imperative API: `toast(msg)` / `toast.info` / `toast.success` / `toast.warning` / `toast.error` + `toast.dismiss(id?)`. Auto-dismiss timer (`duration` ms, default 4000; `Infinity` for sticky). 4 variants with per-mode icon tint + semantic border (info/success/warning/error). Reanimated `FadeIn.duration(150)` / `FadeOut.duration(120)` (slide+spring stripped per `[[simple-animations]]`). `<Toaster />` mounted once at app root. Position default `"bottom"` (top would collide with native iOS `UINavigationBar`). Demo: `apps/showcase/src/app/components/toast.tsx`. Verified iPhone 15 light + dark via `pnpm verify:batch5`. |
 | Tabs | ❌ | `@rn-primitives/tabs`. Content tabs (not bottom navigation — see `TabBar` in mobile-native). |
 | Breadcrumb | ❌ | Less common on mobile; defer unless requested. |
 | Pagination | ❌ | Mobile UX often prefers infinite scroll — confirm with user. |
@@ -80,7 +80,7 @@ No direct web equivalent. App-readiness gap if missing. Build these alongside we
 |---|---|---|
 | List + ListItem + ListSection | ✅ | `packages/ui/src/components/list.tsx`. iOS Settings-grouped: `<ListSection title footer>` = rounded card with hairline dividers between rows. `<ListItem leading title subtitle trailing onPress disabled chevron>` — chevron default-on when pressable + no trailing. Supports lucide leading OR function-as-leading (`leading={() => <Avatar … />}`). View-based; not virtualized. |
 | EmptyState | ✅ | `packages/ui/src/components/empty-state.tsx`. Icon + title + description + actions. Dashed border + `bg-bg-secondary` surface. Title bumped `text-md`→`text-lg`, description `text-sm`→`text-md` per RN ramp. Composes Button. Demo: `apps/showcase/src/app/components/empty-state.tsx`. |
-| BottomSheet (detent variants) | ❌ | Extends `Drawer` → snap points (half/full), modal-sheet (pull-down dismiss). `@gorhom/bottom-sheet`. |
+| BottomSheet (detent variants) | ✅ | `packages/ui/src/components/bottom-sheet.tsx`. Wrapper over `@gorhom/bottom-sheet` v5 `BottomSheetModal`. Imperative ref API: `present()` / `dismiss()` / `snapToIndex(i)` / `expand()` / `close()`. Default `snapPoints={["50%","90%"]}`. Token-driven `bg-bg` + `pickShadow("xl")` (light + dark maps via `useColorScheme`). Drag handle visible by default (`hideHandle` opt-out). `BottomSheetBackdrop` dim + `pressBehavior="close"`. `enablePanDownToClose`. Section helpers: `BottomSheetHeader/Body/Footer/Title/Description` mirror Dialog. **Requires** `<BottomSheetModalProvider>` inside `<GestureHandlerRootView>` at app root (added to showcase `_layout.tsx`). Trust library animations — no custom Reanimated. Demo: `apps/showcase/src/app/components/bottom-sheet.tsx`. Verified iPhone 15 light + dark via `pnpm verify:batch5`. |
 | SafeArea wrapper | ✅ | `packages/ui/src/components/safe-area.tsx`. Wraps `react-native-safe-area-context` SafeAreaView. `edges` array (default all 4) + `bg-bg` default. `statusBar="auto"` flips light/dark via `useColorScheme` through `expo-status-bar`. Use as outermost wrapper of every screen. |
 | StatusBar | ❌ | Per-screen light/dark control via `expo-status-bar`. |
 
@@ -101,7 +101,7 @@ No direct web equivalent. App-readiness gap if missing. Build these alongside we
 | ProgressBar | ❌ | Determinate horizontal progress. |
 | CircularProgress | ❌ | Determinate circular. Reanimated. |
 | Spinner | ✅ | `packages/ui/src/components/spinner.tsx`. Token-keyed `size` (`sm`/`md`/`lg` or raw number) + semantic `tint` (`fg`/`fg-secondary`/`fg-tertiary`/`fg-brand`/`fg-error`/`primary-fg`) auto-flipping via `useColorScheme`. `color` raw override preserved for Button's per-variant tint map. Demo: `apps/showcase/src/app/components/spinner.tsx`. |
-| Snackbar | ❌ | Bottom bar with action. Decide vs `Toast` — likely Toast = ephemeral, Snackbar = actionable. |
+| Snackbar | ⚠️ | Dropped 2026-05-22 (batch5 decision). `Toast` covers ephemeral feedback; actionable bottom bars use `BottomSheet` or a composed pattern in the app layer. |
 | Banner | ❌ | Persistent in-page notice. Distinct from `Alert` (modal). |
 
 ### Composite / application-type
@@ -143,7 +143,7 @@ Repo scaffolded via Task 1 of `docs/init-prompt.md`:
 - **Dark-mode toggle strategy** — both wired (2026-05-22): system-pref drives automatic flips via `@media (prefers-color-scheme: dark)`, and the `ThemeToggle` in the showcase header drives a user override via `Appearance.setColorScheme`. Open: confirm which is the *intended* default for real consumer apps (system-only is current product default).
 - **Font loading** — Inter Variable wired in showcase via `expo-font` + local `apps/showcase/assets/fonts/Inter.ttf` (single 880KB TTF covers every weight via RN variable-font support). `useFonts` holds the splash until ready. Consumer apps replicate the pattern OR override `--font-sans` per their own brand.
 - **Icon cssInterop** — still pending. Spinner + lucide icons currently take per-variant hex via JS token export (light/dark maps in `button.tsx`); wiring `cssInterop` would let className drive these and clean up the dark-mode hex duplication.
-- Decide Toast vs Snackbar — one component or two with different semantics (ephemeral vs actionable).
+- ~~Decide Toast vs Snackbar~~ — resolved 2026-05-22: `Toast` covers ephemeral, Snackbar dropped.
 - Decide which composite components (FormField, SettingsRow, Card variants) live in `packages/ui` vs app-layer.
 - Confirm P0 list with user before sequencing builds.
 
@@ -164,6 +164,26 @@ Maestro flow notes (for future batches):
 - `tapOn` on a long-scroll link in the index list was flaky — after a fresh Expo Go bundle hydration, Maestro's tap on the scrolled link consistently registered without firing the Link's onPress. Switching the batch flow to `openLink "exp://localhost:8081/--/<route>"` for each component bypasses the link-tap problem entirely.
 - Cold-launch Expo Go via `launchApp: { stopApp: true }` at the start of each flow keeps state predictable between light + dark passes.
 - `extendedWaitUntil` against the index title absorbs the splash-screen wait during the cold-bundle reload (~30s ceiling).
+
+### Overlays batch (2026-05-22) — landed + verified
+
+Decisions locked:
+- **Q1 — Dialog scope:** full compound (Trigger/Portal/Overlay/Content/Header/Body/Footer/Title/Description/Close). AlertDialog deferred.
+- **Q2 — BottomSheet scope:** modal + snap points via `@gorhom/bottom-sheet` v5. Persistent non-modal deferred.
+- **Q3 — Toast library:** custom store + portal (no `sonner` / `burnt` dep). Variants info/success/warning/error.
+- **Q4 — Snackbar:** dropped. Toast covers ephemeral; actionable bottom bars use BottomSheet or app-layer composition.
+- **Animation tone:** user feedback during build — "animations way complex, unnecessary". All custom `ZoomIn` + `springify().damping()` + direction-aware `SlideInUp/Down` removed. Components now use `FadeIn.duration(150)` / `FadeOut.duration(120)` only. BottomSheet trusts library defaults (no custom Reanimated wrapper). See `[[simple-animations]]` memory.
+
+Infrastructure changes shipped alongside this batch:
+- `@rn-primitives/dialog@^1.4.0` + `@gorhom/bottom-sheet@^5` added to `packages/ui` deps. `react-native-gesture-handler` added to `packages/ui` peer.
+- `<GestureHandlerRootView>` mounts above `<SafeAreaProvider>` in `apps/showcase/src/app/_layout.tsx` (required by gesture-handler for BottomSheet pan gestures).
+- `<BottomSheetModalProvider>` wraps inside ThemeProvider; modals can present from anywhere.
+- `<Toaster />` mounted once at root (bottom position by default).
+- Maestro flow `apps/showcase/.maestro/batch5-showcase.yaml` + wrapper `apps/showcase/scripts/verify-batch5.sh` + `pnpm verify:batch5` script.
+
+Maestro flow notes (for future overlay batches):
+- BottomSheet content lives inside the native modal overlay; UIAutomation tree-walk can't see internal text labels or tap buttons inside the sheet. Dismiss via coord-tap on backdrop (`tapOn: { point: "50%, 15%" }`) — the `BottomSheetBackdrop`'s `pressBehavior="close"` closes the modal. `swipe DOWN` from the sheet body doesn't reliably trigger pan-to-close under Maestro.
+- Toast position must be `"bottom"` for testing — `"top"` toasts render behind the native iOS `UINavigationBar` and don't appear in screenshots even though the component is mounted.
 
 ### Deferred (post-batch)
 
@@ -211,6 +231,8 @@ per-variant audit at full screenshot resolution.
 | 12 | Declaring "renders correctly" from one good variant → other variants silently broken. | Per-variant audit at full screenshot resolution, every variant × {light, dark, disabled, loading, pressed}. |
 | 13 | Per-size **font + icon** stalls while height/padding step up (e.g. web pattern `lg: text-md` same as `md: text-md`). On a real device `lg` then reads as "just a taller `md`" — perceived as no size step. Maestro screenshots at 393×852 don't expose this; only real-device feel does. | Each size step MUST bump font AND icon one Tailwind unit. Sync `inputTextVariants` / `inlineTextVariants` / `labelVariants` / `inlineIconSize` to the same step as `controlHeight`. Verify on hardware, not screenshots. |
 | 14 | Screenshot-based audit can't catch perceived-size complaints. "Looks fine in 393×852 PNG" ≠ "feels right at arm's length on iPhone". | When user reports a size/feel issue, push to physical device and re-evaluate before any token-ramp change. Bumping the ramp blindly after a screenshot audit risks double-correction. |
+| 15 | `Animated.createAnimatedComponent(Pressable)` silently drops `className` — NativeWind v5 only auto-interops a known list of components (Animated.View / Text / Image / etc), not anything `createAnimatedComponent` returns. Symptom: scrim bg invisible, content blends with screen, dialog looks like inline content. | Use raw inline `style={{ backgroundColor }}` on the AnimatedPressable. Resolve token colors via `useColorScheme()` + JS hex maps. Document the constraint at the call site. |
+| 16 | Maestro UIAutomation can't reach into `@gorhom/bottom-sheet` native modal layer — text labels + buttons inside the sheet aren't selectable. Also: iOS native `UINavigationBar` lives outside the JS tree, so top-anchored portal content (toasts at `top: insets.top + 8`) renders behind it and looks like the toast never appeared. | For BottomSheet: dismiss via coord-tap on backdrop (`tapOn: point: "50%, 15%"` — `pressBehavior="close"`). For toasts: default `position="bottom"`. Document both as Maestro caveats in the per-batch flow comments. |
 
 ### Build template (next component)
 

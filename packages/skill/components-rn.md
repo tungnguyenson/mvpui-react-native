@@ -1300,3 +1300,277 @@ collision) the trigger.
   bottom-anchored triggers.
 
 ---
+
+## Dialog
+
+```tsx
+import {
+  Dialog,
+  DialogContent,
+  DialogTrigger,
+  DialogHeader,
+  DialogBody,
+  DialogFooter,
+  DialogTitle,
+  DialogDescription,
+  DialogClose,
+} from "@mvp-ui-rn/ui"
+
+<Dialog>
+  <DialogTrigger asChild>
+    <Button>Open</Button>
+  </DialogTrigger>
+  <DialogContent size="md">
+    <DialogHeader>
+      <DialogTitle>Are you sure?</DialogTitle>
+      <DialogDescription>This will permanently delete the project.</DialogDescription>
+    </DialogHeader>
+    <DialogFooter>
+      <DialogClose asChild>
+        <Button color="secondary">Cancel</Button>
+      </DialogClose>
+      <DialogClose asChild>
+        <Button color="primary-destructive">Delete</Button>
+      </DialogClose>
+    </DialogFooter>
+  </DialogContent>
+</Dialog>
+```
+
+Compound API mirrors web `Modal` family on top of `@rn-primitives/dialog`.
+Centered modal with dim scrim and tap-to-dismiss backdrop.
+
+### Variants
+
+| Prop | Values | Default | Notes |
+|---|---|---|---|
+| `size` (on `DialogContent`) | `sm` / `md` / `lg` | `md` | Panel max-width: 320 / 384 / 448. Phones nearly always fit within `lg`; full-screen modals belong on a route or `BottomSheet`. |
+
+### Controlled vs. uncontrolled
+
+`Dialog` exposes `open`, `defaultOpen`, `onOpenChange` from the primitive
+Root. Controlled when state lives outside (form prompts, network-driven
+flows); uncontrolled when the trigger is the only opener.
+
+### Anti-patterns
+
+- **Don't** nest a `Dialog` inside another `Dialog`. Use a sequenced
+  pattern: dismiss the first, then open the second on the next frame.
+- **Don't** put a `Pressable`/`Button` inside `DialogTrigger` without
+  `asChild` — the trigger renders its own Pressable, so you'd double-wrap
+  and hit-test the wrapper, not the button.
+- **Don't** rely on `className` on the scrim — the scrim is an animated
+  Pressable created via `Animated.createAnimatedComponent(Pressable)`,
+  and NativeWind v5 silently drops `className` on runtime-created
+  animated components. Scrim color is set via raw inline `backgroundColor`
+  resolved through `useColorScheme()`.
+- **Don't** add scale/zoom motion. Per project convention (see
+  `[[simple-animations]]` memory) overlays use `FadeIn` only.
+
+### Composition
+
+`DialogBody` is optional — many dialogs go header → footer. Use it for
+form fields or scrollable content. Section helpers stay 1-D: `DialogHeader`
+on top, optional `DialogBody`, `DialogFooter` (border-top, justify-end).
+
+### RN deltas vs. web
+
+- Web `react-aria-components` Modal/ModalOverlay/Dialog → RN
+  `@rn-primitives/dialog`. Compound shape identical.
+- Web `size: full` (full-screen sheet on mobile breakpoints) dropped. On
+  RN, full-screen content is either a route or a 95% BottomSheet.
+- Web uses `animate-in fade-in zoom-in` utilities; RN uses Reanimated
+  `FadeIn.duration(150)` / `FadeOut.duration(120)` on both scrim + panel
+  per the simple-animations convention.
+- Backdrop dismiss + Android hardware-back are handled by the primitive
+  (`closeOnPress` default `true` on Overlay; back-press registered in
+  Content's effect).
+- Requires `<PortalHost />` mounted at the layout root (already wired in
+  showcase for Select; reused by Dialog + future Popover / Tooltip).
+
+---
+
+## BottomSheet
+
+```tsx
+import {
+  BottomSheet,
+  BottomSheetHeader,
+  BottomSheetBody,
+  BottomSheetFooter,
+  BottomSheetTitle,
+  BottomSheetDescription,
+  type BottomSheetRef,
+} from "@mvp-ui-rn/ui"
+
+const sheetRef = useRef<BottomSheetRef>(null)
+
+<Button onPress={() => sheetRef.current?.present()}>Open</Button>
+
+<BottomSheet ref={sheetRef} snapPoints={["50%", "90%"]}>
+  <BottomSheetHeader>
+    <BottomSheetTitle>Filter options</BottomSheetTitle>
+    <BottomSheetDescription>Tap an option to refine the list.</BottomSheetDescription>
+  </BottomSheetHeader>
+  <BottomSheetBody>
+    {/* content */}
+  </BottomSheetBody>
+</BottomSheet>
+```
+
+Mobile-native drawer pattern. Wraps `@gorhom/bottom-sheet` v5
+`BottomSheetModal` with our token-driven surface + shadow + handle.
+
+### Imperative ref API
+
+| Method | Effect |
+|---|---|
+| `ref.current.present()` | Open to the first snap point |
+| `ref.current.dismiss()` | Close (alias: `close()`) |
+| `ref.current.snapToIndex(i)` | Move to snap point at index `i` |
+| `ref.current.expand()` | Open to the largest snap point |
+
+### Variants
+
+| Prop | Default | Notes |
+|---|---|---|
+| `snapPoints` | `["50%", "90%"]` | Percentages or pixels. Single-detent action sheets: `["40%"]`. Long sheets: `["95%"]`. |
+| `hideHandle` | `false` | Hides the drag indicator. Keep visible unless the sheet has its own visual affordance for drag. |
+| `disableDismissOnDrag` | `false` | Locks pull-down-to-close. Use when content has its own dismiss flow. |
+| `disableBackdrop` | `false` | Removes the dim scrim — the sheet still presents modally but the underlying screen stays fully tappable. Rare. |
+
+### Required setup
+
+```tsx
+// app/_layout.tsx
+<GestureHandlerRootView style={{ flex: 1 }}>
+  <SafeAreaProvider>
+    <BottomSheetModalProvider>
+      {/* app */}
+    </BottomSheetModalProvider>
+  </SafeAreaProvider>
+</GestureHandlerRootView>
+```
+
+`GestureHandlerRootView` must wrap the tree for pan gestures to register.
+`BottomSheetModalProvider` hosts the modal layer; sheets present
+themselves above the entire Stack via this provider, including over the
+native nav header.
+
+### Anti-patterns
+
+- **Don't** put scrollable content inside `BottomSheetBody` using plain
+  `<ScrollView>`. The sheet's pan gesture and the scroll gesture
+  conflict. Use `BottomSheetScrollView` / `BottomSheetFlatList` from
+  `@gorhom/bottom-sheet` directly.
+- **Don't** wrap the sheet in any other modal (React Native `<Modal>`,
+  `@rn-primitives/dialog`). The library manages its own native overlay
+  layer.
+- **Don't** mount a sheet per-render in conditional state. Mount it once
+  near the screen root with a ref; control visibility through
+  `present()`/`dismiss()`.
+
+### Maestro caveat
+
+UIAutomation can't see text labels or tap buttons inside the native
+modal overlay layer. To dismiss in a flow, coord-tap the backdrop:
+
+```yaml
+- tapOn:
+    point: "50%, 15%"
+```
+
+(The `BottomSheetBackdrop`'s `pressBehavior="close"` reacts to that tap.)
+`swipe DOWN` from the sheet body does NOT reliably trigger the
+pan-to-close gesture under Maestro.
+
+### RN deltas vs. web
+
+- Web has no direct equivalent. Web `Drawer` (side panel) is replaced by
+  BottomSheet on RN — mobile users expect bottom-anchored modals for
+  filters / actions / pickers. Side drawers reserved for top-level
+  navigation, which expo-router handles natively.
+- Animations: trust the library defaults. No custom Reanimated wrapping
+  per the simple-animations convention.
+
+---
+
+## Toast
+
+```tsx
+import { toast, Toaster } from "@mvp-ui-rn/ui"
+
+// Once at app root:
+<Toaster />
+
+// Anywhere:
+toast("Hello")                                          // info
+toast.success("Saved", { description: "Synced to cloud" })
+toast.error("Upload failed", { description: "Tap to retry" })
+toast.warning("Storage almost full")
+toast.info("New message")
+
+// Sticky toast (no auto-dismiss):
+toast.info("Connecting…", { duration: Number.POSITIVE_INFINITY })
+
+// Dismiss programmatically:
+const id = toast.success("Saved")
+toast.dismiss(id)
+
+// Dismiss all:
+toast.dismiss()
+```
+
+Ephemeral feedback bar. Fire-and-forget imperative API. Backed by a
+module-level singleton store + `useSyncExternalStore` subscription
+inside `<Toaster />`.
+
+### Variants
+
+| Method | Variant | Icon (lucide) | Border tint |
+|---|---|---|---|
+| `toast` / `toast.info` | `info` | `Info` | `border-info-border` |
+| `toast.success` | `success` | `CheckCircle2` | `border-success-border` |
+| `toast.warning` | `warning` | `AlertTriangle` | `border-warning-border` |
+| `toast.error` | `error` | `AlertCircle` | `border-error-border` |
+
+### Options
+
+| Option | Default | Notes |
+|---|---|---|
+| `description` | — | Second line in `text-fg-secondary text-sm`. |
+| `duration` | `4000` (ms) | Pass `Number.POSITIVE_INFINITY` for sticky. |
+| `dismissible` | `true` | Adds 44pt trailing X. Set `false` for non-interruptible status. |
+
+### Toaster props
+
+| Prop | Default | Notes |
+|---|---|---|
+| `position` | `"bottom"` | `"top"` collides with the native iOS `UINavigationBar` — only use top on screens with `headerShown: false`. |
+| `maxVisible` | `3` | Older toasts fall off when the cap is exceeded. |
+
+### Anti-patterns
+
+- **Don't** mount more than one `<Toaster />`. The store is module-level,
+  so multiple Toasters render duplicates of every toast.
+- **Don't** use Toast for blocking decisions. If the user must choose
+  an action, use `Dialog` (modal) or `BottomSheet` (action sheet).
+- **Don't** stack toasts as conversational UX. Toasts are interrupts;
+  for chat-style feedback use a dedicated component.
+- **Don't** color the toast text with `text-{variant}-fg`. Title is
+  always `text-fg` for contrast; variant is signaled by the icon + border.
+
+### RN deltas vs. web
+
+- Web uses `sonner` (DOM + CSS animations). RN port reimplements the
+  store + render to avoid pulling a web-dependent dep.
+- Web supports top-left / top-right / bottom-left / bottom-right
+  positions. RN collapses to a vertical axis: top OR bottom, centered
+  horizontally. Side stacking adds little value on a phone width.
+- Action button (`{ action: { label, onPress } }`) deferred — not in v1.
+  Add when composite UX patterns settle.
+- Animation: `FadeIn.duration(150)` / `FadeOut.duration(120)`. No slide
+  direction (web sonner slides from the corner; on mobile a centered
+  fade reads cleaner per the simple-animations convention).
+
+---

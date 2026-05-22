@@ -1,0 +1,74 @@
+# Drives the showcase through the overlays batch:
+# Dialog / BottomSheet / Toast. Wrapper
+# `scripts/verify-batch5.sh` runs twice (light + dark) and renames
+# captures to *-light.png / *-dark.png.
+#
+# Uses Expo deep links (`exp://localhost:8081/--/<route>`) to bypass the
+# flaky scrolled link-tap pattern, same as batch4.
+#
+# Preconditions:
+#   1. `pnpm showcase` (or `pnpm start` in apps/showcase) is running and
+#      Expo Go has the bundle loaded.
+#
+# Run:  pnpm verify:batch5
+
+appId: host.exp.Exponent
+---
+# --- Cold-launch Expo Go on the dev bundle, land on index ----------------
+- launchApp:
+    appId: host.exp.Exponent
+    stopApp: true
+- openLink: "exp://localhost:8081/--/"
+- extendedWaitUntil:
+    visible: "mvp-ui-rn"
+    timeout: 60000
+- takeScreenshot: 01-index
+
+# --- Dialog -------------------------------------------------------------
+- openLink: "exp://localhost:8081/--/components/dialog"
+- assertVisible: "Default — confirm"
+- takeScreenshot: 02-dialog-closed
+- tapOn: "Open dialog"
+- waitForAnimationToEnd
+- assertVisible: "Are you sure?"
+- takeScreenshot: 03-dialog-open
+- tapOn: "Cancel"
+- waitForAnimationToEnd
+- takeScreenshot: 04-dialog-dismissed
+- swipe:
+    direction: UP
+    duration: 1500
+- takeScreenshot: 05-dialog-bottom
+
+# --- BottomSheet --------------------------------------------------------
+- openLink: "exp://localhost:8081/--/components/bottom-sheet"
+- assertVisible: "Default — half + full detents"
+- takeScreenshot: 06-sheet-closed
+- tapOn: "Open default"
+- waitForAnimationToEnd
+# BottomSheet content sits in a native modal layer that Maestro's UIAutomation
+# tree-walk can miss. Skip assert on internal label; rely on tap success +
+# screenshot evidence instead.
+- takeScreenshot: 07-sheet-open
+# Dismiss via backdrop tap — the Close button text sits inside the native
+# overlay and isn't selectable by Maestro, and `swipe DOWN` from the sheet
+# body doesn't reliably trigger the pan-to-close gesture under Maestro.
+# Backdrop's `pressBehavior="close"` reacts to a coord tap on the dim area.
+- tapOn:
+    point: "50%, 15%"
+- waitForAnimationToEnd
+- takeScreenshot: 08-sheet-dismissed
+
+# --- Toast --------------------------------------------------------------
+- openLink: "exp://localhost:8081/--/components/toast"
+- assertVisible: "Variants"
+- takeScreenshot: 09-toast-empty
+- tapOn: "toast.success (with description)"
+- waitForAnimationToEnd
+- takeScreenshot: 10-toast-success
+- tapOn: "toast.error"
+- waitForAnimationToEnd
+- takeScreenshot: 11-toast-error
+- tapOn: "Dismiss all"
+- waitForAnimationToEnd
+- takeScreenshot: 12-toast-cleared
