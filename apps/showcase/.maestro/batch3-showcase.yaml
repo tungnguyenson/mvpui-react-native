@@ -1,0 +1,79 @@
+# Drives the showcase through Badge / Avatar / List / Image / Skeleton.
+# Wrapper `scripts/verify-batch3.sh` runs twice (light + dark) and
+# renames captures to *-light.png / *-dark.png.
+#
+# Preconditions:
+#   1. `pnpm showcase:ios` is running.
+#   2. Expo Go is foregrounded.
+#
+# Run:  pnpm verify:batch3
+
+appId: host.exp.Exponent
+---
+- runFlow:
+    when:
+      visible: "index"
+    commands:
+      - tapOn: "index"
+
+- assertVisible: "mvp-ui-rn"
+- takeScreenshot: 01-index
+
+# ----- Badge ------------------------------------------------------------
+- tapOn: "Badge"
+- assertVisible:
+    text: "Badge"
+    enabled: true
+- takeScreenshot: 02-badge-top
+- swipe:
+    direction: UP
+    duration: 2500
+- takeScreenshot: 03-badge-mid
+- tapOn: "index"
+
+# ----- Avatar -----------------------------------------------------------
+- tapOn: "Avatar"
+- assertVisible:
+    text: "Avatar"
+    enabled: true
+- takeScreenshot: 04-avatar-top
+- swipe:
+    direction: UP
+    duration: 2500
+- takeScreenshot: 05-avatar-mid
+- tapOn: "index"
+
+# ----- List -------------------------------------------------------------
+- tapOn: "List"
+- assertVisible:
+    text: "List"
+    enabled: true
+- takeScreenshot: 06-list-top
+- swipe:
+    direction: UP
+    duration: 2500
+- takeScreenshot: 07-list-mid
+- tapOn: "index"
+
+# ----- Image ------------------------------------------------------------
+- tapOn: "Image"
+- assertVisible:
+    text: "Image"
+    enabled: true
+- takeScreenshot: 08-image-top
+- swipe:
+    direction: UP
+    duration: 2500
+- takeScreenshot: 09-image-mid
+- tapOn: "index"
+
+# ----- Skeleton ---------------------------------------------------------
+- tapOn: "Skeleton"
+- assertVisible:
+    text: "Skeleton"
+    enabled: true
+- takeScreenshot: 10-skel-top
+- swipe:
+    direction: UP
+    duration: 2500
+- takeScreenshot: 11-skel-mid

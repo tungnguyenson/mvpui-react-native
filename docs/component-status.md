@@ -24,12 +24,12 @@ Ported from `mvp-ui` (web). Same variant API, same look, RN deltas documented pe
 
 | Component | Status | Notes |
 |---|---|---|
-| Button | ✅ | `packages/ui/src/components/button.tsx`. All 9 colors × 4 sizes + iconOnly + isLoading + asChild. Mobile-tuned ramp (sm=40 / md=48 default / lg=56 / xl=64). Custom `<Spinner>` via `react-native-svg` + Reanimated mirrors the web two-circle pattern. Per-variant `iconTint` maps (light + dark, switched via `useColorScheme`) for lucide icons and spinner. Dark-mode parity verified in both modes. Demo: `apps/showcase/src/app/components/button.tsx`. Docs: `packages/skill/components-rn.md#button`. |
-| Badge | ❌ | Uses tag-* semantic tokens. |
-| Input | ✅ | `packages/ui/src/components/input.tsx`. `InputBase` (field box) + composed `Input` (Label + InputBase + HintText). Sizes sm=44 / md=48 default / lg=56 per RN ramp. State default/error/success, focus tracked via `onFocus`/`onBlur` (no `focus-within` on RN), prefix/suffix, leading/trailing icons (lucide via per-mode tint map), password mode with 44pt eye toggle, forwards mobile-native props (`keyboardType`, `autoComplete`, etc.). Dark-mode parity verified in both modes. Demo: `apps/showcase/src/app/components/input.tsx`. Docs: `packages/skill/components-rn.md#input`. |
+| Button | ✅ | `packages/ui/src/components/button.tsx`. All 9 colors × 4 sizes + iconOnly + isLoading + asChild. Mobile-tuned ramp (sm=40 / md=48 default / lg=56 / xl=64). **Per-size font steps with height**: sm=text-sm / md=text-md / lg=text-lg / xl=text-xl (fixed 2026-05-22 — prior `lg: text-md` matched md font and read as same size on hardware; see trap #13). Custom `<Spinner>` via `react-native-svg` + Reanimated mirrors the web two-circle pattern. Per-variant `iconTint` maps (light + dark, switched via `useColorScheme`) for lucide icons and spinner. Dark-mode parity verified in both modes. Demo: `apps/showcase/src/app/components/button.tsx`. Docs: `packages/skill/components-rn.md#button`. |
+| Badge | ✅ | `packages/ui/src/components/badge.tsx`. 12 colors × 3 sizes × 2 shapes (pill/rounded) + slot `iconLeading`. Per-size font + icon step with height per trap #13 (sm=text-xs+10px, md=text-sm+12px, lg=text-md+14px). Tag-* tokens flip per scheme. WithButton/WithImage/BadgeGroup deferred. Demo: `apps/showcase/src/app/components/badge.tsx`. |
+| Input | ✅ | `packages/ui/src/components/input.tsx`. `InputBase` (field box) + composed `Input` (Label + InputBase + HintText). Sizes sm=44 / md=48 default / lg=56 per RN ramp. **Per-size font + icon step with height**: sm=text-sm+16px / md=text-md+20px / lg=text-lg+24px (fixed 2026-05-22 — prior `lg: text-md` + `lg icon: tokenIconSize.md (20px)` matched md; lg felt identical on hardware; see trap #13). State default/error/success, focus tracked via `onFocus`/`onBlur` (no `focus-within` on RN), prefix/suffix, leading/trailing icons (lucide via per-mode tint map), password mode with 44pt eye toggle, forwards mobile-native props (`keyboardType`, `autoComplete`, etc.). Dark-mode parity verified in both modes. Demo: `apps/showcase/src/app/components/input.tsx`. Docs: `packages/skill/components-rn.md#input`. |
 | Label | ✅ | `packages/ui/src/components/label.tsx`. `isRequired` asterisk in `text-fg-brand`, re-tinted to `text-fg-error` when `isInvalid`. Paired by consumer via `nativeID` + `accessibilityLabelledBy` (RN has no `htmlFor`). Web `tooltip` prop deferred until Tooltip primitive lands. |
 | HintText | ✅ | `packages/ui/src/components/hint-text.tsx`. Helper / error text below fields. Sizes sm/md. `isInvalid` switches to `text-fg-error` + announces via `accessibilityLiveRegion="polite"`. |
-| Avatar | ❌ | `expo-image` for remote sources. |
+| Avatar | ✅ | `packages/ui/src/components/avatar.tsx`. 6 sizes (xs/sm/md/lg/xl/2xl) with per-size font + icon step. Cascade: src (expo-image) → initials → placeholder → lucide User. Status dot supports 4 statuses (online/offline/away/busy). `border` + `square` opt-in. Verified all sizes light + dark. |
 | Icon wrapper | ❌ | Wrap `lucide-react-native`; respect `IconProp` contract. |
 | Checkbox | ❌ | `@rn-primitives/checkbox`. |
 | RadioGroup | ❌ | `@rn-primitives/radio-group`. |
@@ -49,7 +49,7 @@ Ported from `mvp-ui` (web). Same variant API, same look, RN deltas documented pe
 | Card | ✅ | `packages/ui/src/components/card.tsx`. Card + CardHeader/Title/Description/Content/Footer. Mirror web; no Pressable. `shadow-xs` dropped (RN mobile chrome). `CardDescription` bumped `text-sm`→`text-md` per RN ramp. Demo: `apps/showcase/src/app/components/card.tsx`. Docs: `packages/skill/components-rn.md#card`. |
 | Alert | ✅ | `packages/ui/src/components/alert.tsx`. 4 status variants (info/success/warning/error) + icon slot + AlertTitle/AlertDescription. `onDismiss` adds 44pt X button + Reanimated `FadeOut.duration(200)`. Per-variant lucide tint via light/dark hex map. Verified all 4 statuses × both modes + dismissible. |
 | Table | ⚠️ | RN uses `FlatList` patterns; "Table" semantics don't transfer 1:1. Defer / redesign. |
-| Skeleton | ❌ | Reanimated shimmer. |
+| Skeleton | ✅ | `packages/ui/src/components/skeleton.tsx`. Reanimated opacity-pulse (1200ms, cubic-in-out, reverse). 3 shapes: rect (width/height/rounded), circle (size), text (locked 24h, width default 100%). bg-bg-tertiary base. Demo composes list-item + feed-card placeholders. |
 
 ## Inventory — Mobile-native additions
 
@@ -78,7 +78,7 @@ No direct web equivalent. App-readiness gap if missing. Build these alongside we
 
 | Component | Status | Notes |
 |---|---|---|
-| List + ListItem + ListSection | ❌ | Grouped iOS list (Settings app pattern). `SectionList`-based. Distinct from Card grid. |
+| List + ListItem + ListSection | ✅ | `packages/ui/src/components/list.tsx`. iOS Settings-grouped: `<ListSection title footer>` = rounded card with hairline dividers between rows. `<ListItem leading title subtitle trailing onPress disabled chevron>` — chevron default-on when pressable + no trailing. Supports lucide leading OR function-as-leading (`leading={() => <Avatar … />}`). View-based; not virtualized. |
 | EmptyState | ✅ | `packages/ui/src/components/empty-state.tsx`. Icon + title + description + actions. Dashed border + `bg-bg-secondary` surface. Title bumped `text-md`→`text-lg`, description `text-sm`→`text-md` per RN ramp. Composes Button. Demo: `apps/showcase/src/app/components/empty-state.tsx`. |
 | BottomSheet (detent variants) | ❌ | Extends `Drawer` → snap points (half/full), modal-sheet (pull-down dismiss). `@gorhom/bottom-sheet`. |
 | SafeArea wrapper | ✅ | `packages/ui/src/components/safe-area.tsx`. Wraps `react-native-safe-area-context` SafeAreaView. `edges` array (default all 4) + `bg-bg` default. `statusBar="auto"` flips light/dark via `useColorScheme` through `expo-status-bar`. Use as outermost wrapper of every screen. |
@@ -97,7 +97,7 @@ No direct web equivalent. App-readiness gap if missing. Build these alongside we
 
 | Component | Status | Notes |
 |---|---|---|
-| Image | ❌ | `expo-image` wrapper with placeholder + blurhash + transition. General-purpose, complements `Avatar`. |
+| Image | ✅ | `packages/ui/src/components/image.tsx`. `expo-image` wrapper with `contentFit="cover"` + `transition={200}` defaults. Optional `blurhash` prop derives the placeholder. All other expo-image props pass through. Complements `Avatar`. |
 | ProgressBar | ❌ | Determinate horizontal progress. |
 | CircularProgress | ❌ | Determinate circular. Reanimated. |
 | Spinner | ✅ | `packages/ui/src/components/spinner.tsx`. Token-keyed `size` (`sm`/`md`/`lg` or raw number) + semantic `tint` (`fg`/`fg-secondary`/`fg-tertiary`/`fg-brand`/`fg-error`/`primary-fg`) auto-flipping via `useColorScheme`. `color` raw override preserved for Button's per-variant tint map. Demo: `apps/showcase/src/app/components/spinner.tsx`. |
@@ -182,6 +182,8 @@ per-variant audit at full screenshot resolution.
 | 10 | Maestro tap on small iconOnly buttons can trip Expo Go's dev menu. | Use `xcrun simctl ui` to drive state externally, or build always-on demo rows that don't need a tap. |
 | 11 | Maestro `tapOn` doesn't wait for React state flush → state-dependent screenshots miss the state. | `waitForAnimationToEnd` after taps, OR always-on demo rows. |
 | 12 | Declaring "renders correctly" from one good variant → other variants silently broken. | Per-variant audit at full screenshot resolution, every variant × {light, dark, disabled, loading, pressed}. |
+| 13 | Per-size **font + icon** stalls while height/padding step up (e.g. web pattern `lg: text-md` same as `md: text-md`). On a real device `lg` then reads as "just a taller `md`" — perceived as no size step. Maestro screenshots at 393×852 don't expose this; only real-device feel does. | Each size step MUST bump font AND icon one Tailwind unit. Sync `inputTextVariants` / `inlineTextVariants` / `labelVariants` / `inlineIconSize` to the same step as `controlHeight`. Verify on hardware, not screenshots. |
+| 14 | Screenshot-based audit can't catch perceived-size complaints. "Looks fine in 393×852 PNG" ≠ "feels right at arm's length on iPhone". | When user reports a size/feel issue, push to physical device and re-evaluate before any token-ramp change. Bumping the ramp blindly after a screenshot audit risks double-correction. |
 
 ### Build template (next component)
 
@@ -195,6 +197,7 @@ per-variant audit at full screenshot resolution.
    - `<Text>` wrap labels when not `asChild`.
    - Touch target ≥ 44pt baked into variant defaults; `sm` opt-in only.
    - Import sizing from `@mvp-ui-rn/tokens` (`iconSize` / `controlHeight` / `controlPaddingX`) — do not hardcode pixel values.
+   - **Per-size font + icon must step with height.** Web often shares `lg: text-md` with `md`; on RN that reads as same size. Each size step bumps text class AND icon px one unit (sm→text-sm+iconSize.sm, md→text-md+iconSize.md, lg→text-lg+iconSize.lg, xl→text-xl+iconSize.xl). Audit on hardware, not Maestro screenshots. See trap #13.
 6. Export from `packages/ui/src/index.ts`.
 7. Demo at `apps/showcase/src/app/components/<slug>.tsx`. Cover every color × size × state. Add always-on rows for tap-triggered states.
 8. Maestro flow `apps/showcase/.maestro/<slug>-showcase.yaml` + wrapper `apps/showcase/scripts/verify-<slug>.sh` (clone of `verify-button.sh`) + pnpm script.

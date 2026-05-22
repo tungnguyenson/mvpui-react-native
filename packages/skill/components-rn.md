@@ -20,7 +20,7 @@ import { Button, type ButtonProps, type IconProp } from "@mvp-ui-rn/ui"
 | Prop | Values | Default |
 |---|---|---|
 | `color` | `primary` · `secondary` · `tertiary` · `primary-destructive` · `secondary-destructive` · `tertiary-destructive` · `link-color` · `link-gray` · `link-destructive` | `primary` |
-| `size` | `sm` (h=40, px=16, text-sm) · `md` (h=48, px=20, text-md) · `lg` (h=56, px=24, text-md) · `xl` (h=64, px=28, text-lg) | **`md`** |
+| `size` | `sm` (h=40, px=16, text-sm) · `md` (h=48, px=20, text-md) · `lg` (h=56, px=24, text-lg) · `xl` (h=64, px=28, text-xl) | **`md`** |
 | `iconLeading` / `iconTrailing` | `IconProp` (component accepting `className`, or pre-rendered element) | — |
 | `isLoading` | `boolean` — shows `ActivityIndicator`, blocks interaction | `false` |
 | `showTextWhileLoading` | `boolean` — keep label visible alongside spinner | `false` |
@@ -175,7 +175,7 @@ standalone field wrapper around a native `<TextInput>`.
 
 | Prop | Values | Default |
 |---|---|---|
-| `size` | `sm` (h=44, dense) · `md` (h=48, default) · `lg` (h=56) | `md` |
+| `size` | `sm` (h=44, dense, text-sm, icon 16) · `md` (h=48, default, text-md, icon 20) · `lg` (h=56, text-lg, icon 24) | `md` |
 | `isInvalid` | `boolean` — red border, error `AlertCircle` trailing | `false` |
 | `isSuccess` | `boolean` — green border. Ignored when `isInvalid`. | `false` |
 | `iconLeading` / `iconTrailing` | `IconProp` | — |
@@ -699,5 +699,271 @@ RN-only form wrapper. ScrollView preconfigured for forms.
   contentContainer — both broke the layout when nested under
   `<SafeArea>`. RN's ScrollView fills its parent intrinsically; we
   let it.
+
+---
+
+## Badge
+
+**Import**
+
+```ts
+import { Badge, type BadgeColor, type BadgeProps, type BadgeShape, type BadgeSize } from "@mvp-ui-rn/ui"
+```
+
+**Variants**
+
+| Prop | Values | Default |
+|---|---|---|
+| `color` | `gray` · `brand` · `error` · `warning` · `success` · `slate` · `sky` · `blue` · `indigo` · `purple` · `pink` · `orange` (12) | `gray` |
+| `shape` | `pill` (rounded-full) · `rounded` (rounded-md) | `pill` |
+| `size` | `sm` (h=20, text-xs, icon 10) · `md` (h=24, text-sm, icon 12) · `lg` (h=28, text-md, icon 14) | `md` |
+| `iconLeading` | `IconProp` — lucide component or pre-rendered element | — |
+
+**When to use**
+
+- Status pills in lists, headers, table rows: "Active", "3 new", "Beta".
+- Counts and filter chips.
+- Tag-style decorations on cards and avatars.
+
+**When NOT to use**
+
+- Tap-to-act surfaces — use a Button.
+- Dismissible inline notice — use Alert.
+
+**Anti-patterns**
+
+- ❌ Stacking >3 badges on a single row — visual clutter; collapse to a
+  single counter badge.
+- ❌ Raw color in `className` — bypasses dark-mode flip. Pick from the
+  12 semantic `color` values (tag-* tokens flip per scheme).
+
+**RN deltas vs. web**
+
+- Web `ring-1 ring-inset` → RN `border` (no `ring` primitive on RN).
+- Web `modern` type (bg-bg + shadow-xs) dropped — mobile chrome avoids
+  shadows; pill + rounded shapes carry the variant story.
+- `BadgeWithButton` / `BadgeWithImage` / `BadgeGroup` web sub-components
+  deferred — base Badge + slot icon covers the common cases.
+- Per-size font + icon step with height per trap #13 (web shared
+  text-xs across sm/md, which read as no size step on RN hardware).
+
+---
+
+## Avatar
+
+**Import**
+
+```ts
+import { Avatar, type AvatarProps, type AvatarSize, type AvatarStatus } from "@mvp-ui-rn/ui"
+```
+
+Cascade: `src` (expo-image) → `initials` → `placeholder` → default lucide
+`<User />`. Adds a status dot at bottom-right when `status` is set.
+
+**Variants**
+
+| Prop | Values | Default |
+|---|---|---|
+| `size` | `xs` (h=24, text-xs, icon 14) · `sm` (h=32, text-sm, icon 18) · `md` (h=40, text-md, icon 22) · `lg` (h=48, text-lg, icon 26) · `xl` (h=56, text-xl, icon 30) · `2xl` (h=64, text-2xl, icon 34) | `md` |
+| `src` | `string \| null` — remote URL (expo-image) | — |
+| `alt` | `string` — accessibility label | — |
+| `initials` | 1–2 char fallback | — |
+| `placeholder` | `ReactNode` — overrides default lucide User icon | — |
+| `status` | `online` (success) · `offline` (fg-quaternary) · `away` (warning) · `busy` (error) | — |
+| `border` | adds `border-border` ring | `false` |
+| `square` | rounded-md instead of rounded-full | `false` |
+
+**When to use**
+
+- User identity in headers, lists, chat threads, comments.
+- Team grids and member rosters.
+- Status presence in inboxes and rooms (`status` dot).
+
+**When NOT to use**
+
+- Decorative icons unrelated to identity — use lucide directly.
+- Brand logos in product UI — render an image without the round
+  crop.
+
+**Anti-patterns**
+
+- ❌ Setting `src` to a string that often fails — leaves a flash of
+  the loading state. Use blurhash via `<Image>` or guard with
+  `?` upstream.
+- ❌ Status dot without a status semantic — passing `online` to mean
+  "verified" misleads screen readers. Use the upcoming `verified`
+  state when ported (currently deferred).
+
+**RN deltas vs. web**
+
+- Remote `<img>` → `expo-image`; cached + 200ms transition by default.
+- Falls back through the cascade on load failure.
+- 4 status colors (vs web's online/offline only): online · offline ·
+  away · busy.
+- Drops `state="verified"|"blocked"`, `count` notification badge, and
+  focusable-ring (no RN keyboard focus model). Re-add when consumers
+  need them.
+- Per-size font + icon step with height per trap #13 (web shared
+  text-sm between sm and md).
+
+---
+
+## List + ListItem + ListSection
+
+**Import**
+
+```ts
+import { List, ListItem, ListSection, type ListItemProps, type ListSectionProps } from "@mvp-ui-rn/ui"
+```
+
+RN-only — no direct web equivalent. iOS Settings-grouped pattern.
+
+**Variants — ListSection**
+
+| Prop | Values |
+|---|---|
+| `title` | small-caps heading above the card |
+| `footer` | caption below the card |
+| `children` | one or more `<ListItem>` |
+
+**Variants — ListItem**
+
+| Prop | Values |
+|---|---|
+| `leading` | `IconProp` — lucide component or a function returning an Avatar (`leading={() => <Avatar … />}`) |
+| `title` | primary line, single-line truncated |
+| `subtitle` | optional secondary line, 2-line truncated |
+| `trailing` | `ReactNode` — Badge / Switch / inline text |
+| `chevron` | force on/off; defaults to `isPressable && trailing == null` |
+| `onPress` | when set, row renders `<Pressable>` with `active:bg-bg-tertiary` |
+| `disabled` | 50% opacity, blocks press |
+
+**When to use**
+
+- Settings screens, inbox / contacts, navigation groupings, account
+  detail pages, simple selection lists.
+
+**When NOT to use**
+
+- Unbounded data lists — render a FlatList directly. The component
+  is View-based (no virtualization).
+- Edge-to-edge feed cards — use `<Card>` instead.
+
+**Anti-patterns**
+
+- ❌ Passing a `<View>` of complex layout as `leading` — leading is
+  reserved for icon-sized elements (~22pt). For richer leading, use a
+  function-as-leading: `leading={() => <Avatar size="sm" />}`.
+- ❌ Forgetting `chevron={false}` on team / readonly rows — chevron
+  defaults to on for pressable rows and signals "tap to drill in",
+  misleading users on view-only rows.
+
+**RN deltas vs. web**
+
+- Built fresh for RN. Web has no `List` primitive — it uses ad-hoc
+  flex stacks per page.
+- Hairline dividers between rows are absolute-positioned `bg-border`
+  Views (no `divide-y` utility on RN).
+- Row height 56pt minimum; subtitle multiplies the height naturally.
+- `leading` supports both `IconProp` (lucide) and a function returning
+  a node — handy for Avatar leading without forcing the consumer to
+  pre-render.
+
+---
+
+## Image
+
+**Import**
+
+```ts
+import { Image, type ImageProps } from "@mvp-ui-rn/ui"
+```
+
+Thin wrapper around `expo-image`. Use for general-purpose images;
+`Avatar` covers identity-with-cascade.
+
+**Defaults**
+
+| Prop | Value |
+|---|---|
+| `contentFit` | `"cover"` |
+| `transition` | `200` (ms fade) |
+| `placeholder` | derived from `blurhash` if passed |
+
+All other `expo-image` props pass through.
+
+**When to use**
+
+- Photos, hero images, product covers, illustrations.
+- Anywhere `expo-image`'s caching / blurhash / disk-cache matter.
+
+**When NOT to use**
+
+- User-identity avatars → use `<Avatar>` (cascade fallback baked in).
+- Icons → lucide-react-native.
+- Inline SVG → `react-native-svg`.
+
+**Anti-patterns**
+
+- ❌ Forgetting `width`/`height` — expo-image renders to zero unless
+  sized via `style` or `className`.
+- ❌ Reach for `Image.Background` patterns — not yet wired. Compose
+  via absolute children inside a parent View.
+
+**RN deltas vs. web**
+
+- No web equivalent — web uses `<img>` + CSS `object-fit`. RN ships
+  `expo-image` with native caching + blurhash + disk-cache as the
+  perf-friendly default.
+
+---
+
+## Skeleton
+
+**Import**
+
+```ts
+import { Skeleton, type SkeletonProps, type SkeletonShape } from "@mvp-ui-rn/ui"
+```
+
+Reanimated opacity-pulse loading placeholder.
+
+**Variants**
+
+| Prop | Values | Default |
+|---|---|---|
+| `shape` | `rect` · `circle` · `text` | `rect` |
+| `width` | px number or `"100%"` (rect / text only) | `"100%"` |
+| `height` | px number (rect only) | `16` |
+| `size` | px (circle only) | `40` |
+| `rounded` | corner radius (rect only) | `6` |
+
+**Sizing rules**
+
+- `circle` → square with `borderRadius: size / 2`.
+- `text` → height locked to `24` (text-md line-height); width defaults
+  to `"100%"`.
+- `rect` → caller controls everything.
+
+**Animation:** opacity oscillates between 0.45 and 1.0 over 1200ms with
+cubic-in-out easing, repeating reverse. Single `Animated.View` — no
+masked gradient overlay, no LinearGradient dep.
+
+**When to use**
+
+- Initial mount before remote data resolves.
+- List rows / cards / feed items as filler while content streams in.
+- Avatar slot during image load.
+
+**When NOT to use**
+
+- Static empty state — use `EmptyState`.
+- Determinate progress — use `ProgressBar` (not yet ported).
+- During tap action — use Button's `isLoading` instead.
+
+**RN deltas vs. web**
+
+- Built fresh for RN. Web typically uses CSS keyframes; we use
+  Reanimated to stay on the compositor thread.
 
 ---

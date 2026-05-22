@@ -17,6 +17,11 @@ const components = [
   { href: "/components/search-bar", label: "SearchBar" },
   { href: "/components/segmented-control", label: "SegmentedControl" },
   { href: "/components/keyboard-avoiding-scroll", label: "KAS" },
+  { href: "/components/badge", label: "Badge" },
+  { href: "/components/avatar", label: "Avatar" },
+  { href: "/components/list", label: "List" },
+  { href: "/components/image", label: "Image" },
+  { href: "/components/skeleton", label: "Skeleton" },
 ] as const
 
 export default function IndexScreen() {
