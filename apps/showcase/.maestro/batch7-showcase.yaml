@@ -1,0 +1,97 @@
+# Drives the showcase through the mobile-interactions batch:
+# Stepper / PullToRefresh / ActionSheet / SwipeableRow. Wrapper
+# `scripts/verify-batch7.sh` runs twice (light + dark) and renames
+# captures to *-light.png / *-dark.png.
+#
+# Uses Expo deep links (`exp://localhost:8081/--/<route>`) to bypass the
+# flaky scrolled link-tap pattern, same as prior batches.
+#
+# Maestro caveats for this batch:
+# - ActionSheet now renders in our custom design-system chrome (RN
+#   Modal + Animated). Sheet options ARE inspectable in the JS tree —
+#   Maestro can assertVisible / tapOn option labels directly.
+# - SwipeableRow gesture-driven open is flaky under Maestro (the gesture
+#   handler needs a real pan velocity). We rely on the imperative "Open"
+#   trigger to verify the open state instead of swiping.
+# - PullToRefresh `swipe DOWN` from the top reliably engages the iOS
+#   RefreshControl. Wait for the spinner state via the on-screen text.
+#
+# Preconditions:
+#   1. `pnpm showcase` is running and Expo Go has the bundle loaded.
+#
+# Run:  pnpm verify:batch7
+
+appId: host.exp.Exponent
+---
+# --- Cold-launch Expo Go on the dev bundle, land on index ----------------
+- launchApp:
+    appId: host.exp.Exponent
+    stopApp: true
+- openLink: "exp://localhost:8081/--/"
+- extendedWaitUntil:
+    visible: "mvp-ui-rn"
+    timeout: 60000
+- takeScreenshot: 01-index
+
+# --- Stepper ------------------------------------------------------------
+- openLink: "exp://localhost:8081/--/components/stepper"
+- assertVisible: "Default — size md, min 0 max ∞"
+- takeScreenshot: 02-stepper-top
+- swipe:
+    direction: UP
+    duration: 1200
+- takeScreenshot: 03-stepper-mid
+- swipe:
+    direction: UP
+    duration: 1200
+- takeScreenshot: 04-stepper-bottom
+
+# --- PullToRefresh ------------------------------------------------------
+- openLink: "exp://localhost:8081/--/components/pull-to-refresh"
+- assertVisible: "Pull down from the top"
+- takeScreenshot: 05-ptr-idle
+- swipe:
+    direction: DOWN
+    duration: 1500
+    start: 50%, 30%
+    end: 50%, 85%
+- takeScreenshot: 06-ptr-pulling
+- extendedWaitUntil:
+    visible: "Refresh count: 1"
+    timeout: 8000
+- takeScreenshot: 07-ptr-after
+
+# --- ActionSheet --------------------------------------------------------
+- openLink: "exp://localhost:8081/--/components/action-sheet"
+- assertVisible: "Default — photo source"
+- takeScreenshot: 08-actionsheet-triggers
+- tapOn: "Photo source"
+- waitForAnimationToEnd
+- assertVisible: "Take photo"
+- takeScreenshot: 09-actionsheet-open
+- tapOn: "Cancel"
+- waitForAnimationToEnd
+- takeScreenshot: 10-actionsheet-dismissed
+- tapOn: "Show rich options"
+- waitForAnimationToEnd
+- assertVisible: "Pin to top of inbox"
+- takeScreenshot: 11-actionsheet-rich
+
+# --- SwipeableRow -------------------------------------------------------
+- openLink: "exp://localhost:8081/--/components/swipeable-row"
+- assertVisible: "Mail-style — left swipe reveals destructive"
+- takeScreenshot: 12-swipe-closed
+- swipe:
+    direction: UP
+    duration: 1200
+- takeScreenshot: 13-swipe-mid
+- swipe:
+    direction: UP
+    duration: 1200
+- tapOn: "Open"
+- waitForAnimationToEnd
+- takeScreenshot: 14-swipe-opened
+- swipe:
+    direction: UP
+    duration: 1200
+- takeScreenshot: 15-swipe-bottom

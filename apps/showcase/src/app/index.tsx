@@ -33,6 +33,10 @@ const components = [
   { href: "/components/progress-bar", label: "ProgressBar" },
   { href: "/components/tabs", label: "Tabs" },
   { href: "/components/form-field", label: "FormField" },
+  { href: "/components/stepper", label: "Stepper" },
+  { href: "/components/pull-to-refresh", label: "PullToRefresh" },
+  { href: "/components/action-sheet", label: "ActionSheet" },
+  { href: "/components/swipeable-row", label: "SwipeableRow" },
 ] as const
 
 export default function IndexScreen() {

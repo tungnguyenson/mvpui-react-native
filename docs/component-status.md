@@ -67,9 +67,9 @@ No direct web equivalent. App-readiness gap if missing. Build these alongside we
 
 | Component | Status | Notes |
 |---|---|---|
-| SwipeableRow | ❌ | Left/right swipe reveals actions (Mail-style). `react-native-gesture-handler` Swipeable. |
-| PullToRefresh | ❌ | `RefreshControl` wrapper. Convention not optional. |
-| ActionSheet | ❌ | iOS-native sheet of options. `@expo/ui` or custom over bottom-sheet. |
+| SwipeableRow | ✅ | `packages/ui/src/components/swipeable-row.tsx`. `ReanimatedSwipeable` from `react-native-gesture-handler` ~2.31. Data-driven `leftActions` / `rightActions` arrays of `{key,label,icon,color: primary\|destructive\|neutral,width,onPress}`. Tapping an action fires `onPress` then auto-closes. Imperative ref → `close()/openLeft()/openRight()/reset()`. Threshold defaults to half panel-width. `overshootLeft/Right={false}`. Light + dark color maps via `useColorScheme`. Demo: `apps/showcase/src/app/components/swipeable-row.tsx`. Docs: `packages/skill/components-rn.md#swipeablerow`. |
+| PullToRefresh | ✅ | `packages/ui/src/hooks/use-pull-to-refresh.tsx`. Hook returning `{ refreshing, refreshControl, setRefreshing }`. Wraps RN's built-in `RefreshControl`. iOS `tintColor`+`titleColor` vs Android `colors[]`+`progressBackgroundColor` normalised via `Platform.select`. Theme-aware tint default `text-fg-tertiary` (gray-500/gray-400) via `useColorScheme`. `onRefresh` may be async — `refreshing` flips off in `finally`. Demo: `apps/showcase/src/app/components/pull-to-refresh.tsx`. Docs: `packages/skill/components-rn.md#usepulltorefresh`. |
+| ActionSheet | ✅ | `packages/ui/src/components/action-sheet.tsx`. **Pivoted mid-batch from native (`@expo/react-native-action-sheet`) to design-system-controlled custom implementation on RN's built-in `Modal`** — user-driven decision after seeing side-by-side ("I prefer the Custom version C"). Single `<ActionSheetHost />` mounted at app root, singleton store, imperative API `actionSheet.present({ title?, message?, options: [{label, description?, icon?, style?, disabled?, onPress?}] }) → Promise<number \| null>`. Hook form `useActionSheet()` also available. Rich options API — per-option `icon` + `description` (native variants take strings only). iOS-style two-panel layout: main options card + separated cancel panel. RN `Animated` scrim fade + slide-up. Tokens flow: `bg-bg`, `text-fg-error` destructive, `pickShadow("xl")` panels, light+dark via `useColorScheme`. Demo: `apps/showcase/src/app/components/action-sheet.tsx`. Docs: `packages/skill/components-rn.md#actionsheet`. |
 | ContextMenu | ❌ | Long-press menu. iOS 13+ native via `zeego` or `expo-context-menu`. |
 | KeyboardAvoidingScroll | ✅ | `packages/ui/src/components/keyboard-avoiding-scroll.tsx`. ScrollView preconfigured with `keyboardShouldPersistTaps="handled"` + `keyboardDismissMode="interactive"`. `KeyboardAvoidingView` intentionally NOT wrapped (fragile across RN versions, collapses to 0h under flex columns); modern iOS scrolls focused input automatically, Android `softInputMode=adjustResize` handles resize. |
 | HapticFeedback | ❌ | `expo-haptics` wrapper. Design-system concern: when to fire (success/warning/selection). |
@@ -88,7 +88,7 @@ No direct web equivalent. App-readiness gap if missing. Build these alongside we
 
 | Component | Status | Notes |
 |---|---|---|
-| Stepper | ❌ | `-` / number / `+`. iOS-native pattern. |
+| Stepper | ✅ | `packages/ui/src/components/stepper.tsx`. `-` / value / `+` numeric picker. Sizes sm (h=40) / md (h=48 default). Controlled `value` + `onChange`. Clamps to `min`/`max` (defaults `0` / `Number.MAX_SAFE_INTEGER`). Custom `step` + `format`. Hold-to-repeat — 500ms initial delay → 100ms interval; refs track live `value`/`min`/`max`/`step` so latest props apply on every tick; cancels on release / clamp / disable. VoiceOver via `accessibilityRole="adjustable"` + increment/decrement actions. Center label uses `fontVariant: tabular-nums` so digits stay monospaced. Demo: `apps/showcase/src/app/components/stepper.tsx`. Docs: `packages/skill/components-rn.md#stepper`. |
 | Slider | ❌ | `@react-native-community/slider`. Web range input no good on touch. |
 | DatePicker / TimePicker | ❌ | `@react-native-community/datetimepicker`. Native wheels on iOS, dialog on Android. |
 | SearchBar | ✅ | `packages/ui/src/components/search-bar.tsx`. Standalone pill primitive with leading Search icon + trailing X clear + optional Cancel button on focus. Always controlled. Pill bg `bg-bg-tertiary`, search keyboard preset. Plus `searchBarScreenOptions()` for the native iOS UISearchBar via `headerSearchBarOptions`. |
@@ -203,6 +203,34 @@ Infrastructure changes shipped alongside this batch:
 - No new portal hosts / providers needed — Tabs renders inline, FormField is composition only, ProgressBar uses Reanimated already in use.
 
 P0 tier now closed. Remaining web-port: PinInput, Popover, Tooltip, Breadcrumb, Pagination, SideNav, Table (all P2 or defer/redesign).
+
+### Mobile-interactions batch (2026-05-22) — landed
+
+Decisions locked (Q1–Q4 confirmed before build):
+- **Q1 — ActionSheet implementation:** ⚠️ pivoted mid-batch. Initial direction = native via `@expo/react-native-action-sheet` (UIAlertController on iOS, Material on Android). User reviewed side-by-side in showcase, picked **Option C — custom-only**: "I prefer the Custom version C". Final impl = single design-system component on RN `Modal` + `Animated`. Drops external dep + root provider. See ActionSheet row above for full notes.
+- **Q2 — SwipeableRow action API:** data-driven `leftActions` / `rightActions` arrays. Render-prop slots rejected to keep design-system styling consistent.
+- **Q3 — Stepper long-press:** ship hold-to-repeat in v1 (500ms delay → 100ms interval).
+- **Q4 — ActionSheet return:** `Promise<number | null>` for composable async flows; per-option `onPress` still fires for callback-style consumers.
+
+Build order shipped: Stepper → PullToRefresh hook → ActionSheet (native build → side-by-side compare → pivot to custom) → SwipeableRow. All four pass `tsc --noEmit` across `packages/tokens` / `packages/ui` / `apps/showcase`. Maestro flow `apps/showcase/.maestro/batch7-showcase.yaml` + wrapper `apps/showcase/scripts/verify-batch7.sh` + `pnpm verify:batch7` script.
+
+Infrastructure changes shipped alongside this batch:
+- `@expo/react-native-action-sheet@^4.1.1` added then **dropped** after pivot to custom impl.
+- No new provider mount required — `ActionSheetProvider` was briefly added then removed. Single `<ActionSheetHost />` mounted alongside `<Toaster />` is all the custom variant needs.
+- New `packages/ui/src/hooks/` directory — `use-pull-to-refresh.tsx` is the first hook (vs component) export.
+
+ActionSheet pivot — **gorhom `BottomSheetModal` failure** investigated in detail before settling on RN `Modal`:
+- First custom attempt used `@gorhom/bottom-sheet`'s `BottomSheetModal` (already wired for our `BottomSheet` primitive). Build looked correct: store flipped, `modalRef.current.present()` returned without exception, ref was non-null, snapPoints + handleComponent configured. **But the sheet never painted.** No scrim, no panel, no visible animation.
+- Diagnosed via Maestro probe (`apps/showcase/.maestro/probe-actionsheet-custom.yaml`) plus an on-screen debug overlay rendered from the host (`AS:OPEN/2o · present-called`). Overlay confirmed every JS-side branch executed; gorhom's internal portal still produced nothing.
+- Hypothesis (not fully verified, no time to bisect deeper): gorhom v5's `BottomSheetModal` has a layout-context dependency that breaks when its host is mounted at the app-root level as a sibling to a flex-1 layout child. The provider tree was correct, modal-ref was set, but the portal's internal `useAnimatedReaction` chain seems to fail-open silently in that configuration.
+- Pivot = swap to RN's built-in `Modal` (transparent + animationType="none" + RN `Animated` scrim/slide). No portal magic, no measurement requirements, behaviour proven on first attempt. Final impl is ~480 lines, no external deps beyond RN core + safe-area-context.
+
+Maestro caveats (for future swipe / overlay batches):
+- **SwipeableRow gesture-driven open is flaky under Maestro** — RN-GH expects a real pan velocity that Maestro's `swipe` event doesn't always reproduce. The flow uses the imperative `Open` trigger (ref.openRight()) to verify the open state instead of relying on swipe gestures.
+- **PullToRefresh `swipe DOWN`** from 30% → 85% with `duration: 1500ms` engages the iOS RefreshControl reliably. Wait on the `Refresh count: 1` text to confirm completion (the async work + state flip).
+- **ActionSheet custom impl IS inspectable in Maestro** — options live in the JS tree. `tapOn: "Cancel"` and `assertVisible: "Take photo"` both work. (The original UIAlertController approach would have required coord-taps + screenshot review.)
+
+P1 mobile-native remaining after this batch: SettingsRow, Slider, DatePicker/TimePicker, HapticFeedback (P2).
 
 ### Deferred (post-batch)
 

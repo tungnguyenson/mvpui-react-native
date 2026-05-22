@@ -1862,3 +1862,323 @@ state without prop drilling. `useFormField()` returns the context or
   follow-up once the base controls expose `useFormField()` opt-in.
 
 ---
+
+## Stepper
+
+**Import**
+
+```ts
+import { Stepper, type StepperProps, type StepperSize } from "@mvp-ui-rn/ui"
+```
+
+**Variants**
+
+| Prop | Values | Default |
+|---|---|---|
+| `value` | `number` (controlled) | — |
+| `onChange` | `(next: number) => void` | — |
+| `min` | `number` | `0` |
+| `max` | `number` | `Number.MAX_SAFE_INTEGER` |
+| `step` | `number` | `1` |
+| `size` | `sm` (h=40) · `md` (h=48) | `md` |
+| `disabled` | `boolean` | `false` |
+| `format` | `(value: number) => string` | `String(value)` |
+| `accessibilityLabel` | `string` | `"Stepper"` |
+
+`-` / value / `+` numeric picker. iOS UIStepper analog with no web
+equivalent — web's `<input type="number">` spinners are unusable on
+touch.
+
+**When to use**
+
+- Quantity pickers (cart, ticket count, photo prints).
+- Settings that accept a small integer range (font size, brightness
+  steps, default duration).
+- Anywhere the user needs to nudge a value up or down repeatedly.
+
+**When NOT to use**
+
+- Continuous ranges (use `Slider` when it lands).
+- Large numeric ranges where typing a value is faster — pair with a
+  `TextInput` (`keyboardType="number-pad"`).
+- Single-shot inputs (`Switch` / `Checkbox`).
+
+**Hold-to-repeat**
+
+- Press-and-hold fires the delta after a 500ms initial delay, then
+  repeats every 100ms while held.
+- Release, hitting `min`/`max`, or `disabled` flipping true stops the
+  repeat.
+- Timer state lives in refs — the latest `value` / `min` / `max` /
+  `step` are read on every tick, so live prop changes apply instantly.
+
+**Anti-patterns**
+
+- ❌ Treating the center label as a tap target — it's not. If you
+  need a value editor, pair the Stepper with a `TextInput`.
+- ❌ Setting `min === max` — both buttons dim and the Stepper is
+  visual chrome only. Hide it entirely instead.
+- ❌ Hardcoding pixel sizes via `style` — use `size` so the touch
+  targets stay HIG-compliant.
+
+**RN deltas vs. web**
+
+- No web Stepper equivalent. Pattern adapted from iOS UIStepper +
+  Material `<NumberPicker>`.
+- VoiceOver wiring via `accessibilityRole="adjustable"` +
+  `accessibilityActions=[{name:"increment"},{name:"decrement"}]` so
+  swipe-up / swipe-down on VO target the value, not the buttons.
+- `fontVariant: ["tabular-nums"]` on the center label keeps digits
+  monospaced so the row doesn't reflow as the value width changes.
+
+---
+
+## usePullToRefresh
+
+**Import**
+
+```ts
+import {
+  usePullToRefresh,
+  type UsePullToRefreshOptions,
+  type UsePullToRefreshResult,
+} from "@mvp-ui-rn/ui"
+```
+
+**Signature**
+
+```ts
+const { refreshing, refreshControl } = usePullToRefresh(
+  async () => { await reload() },
+  { tintColor?, title?, titleColor?, progressViewOffset? },
+)
+```
+
+`refreshControl` is a `<RefreshControl>` element ready to spread:
+
+```tsx
+<ScrollView refreshControl={refreshControl}>…</ScrollView>
+<FlatList refreshControl={refreshControl} … />
+```
+
+**When to use**
+
+- Any scrollable showing data that can be reloaded — feed lists,
+  inboxes, dashboards, settings that depend on remote state.
+- Pull-to-refresh is **convention not optional** on mobile; consumers
+  expect it on every list of remote data.
+
+**When NOT to use**
+
+- Static screens with no remote data.
+- Horizontal scrollers (gesture conflicts).
+- Inside a `BottomSheet` body — the sheet's own pan-down-to-dismiss
+  gesture wins. Use a button-driven reload instead.
+
+**Theming**
+
+- `tintColor` defaults to `--color-fg-tertiary` (gray-500 light,
+  gray-400 dark) via `useColorScheme`.
+- iOS uses `tintColor` + `titleColor`. Android uses `colors` (array)
+  + `progressBackgroundColor`. The hook normalises both via
+  `Platform.select` so callers pass a single tint.
+
+**Anti-patterns**
+
+- ❌ Driving your own `refreshing` state alongside the hook — the
+  hook owns it. Use the returned `refreshing` value if you need to
+  read it (e.g. to disable other actions during refresh).
+- ❌ Forgetting to `await` the async work inside `onRefresh` — the
+  spinner spins forever because the hook can't tell when the work
+  finished.
+- ❌ Long-running work without bailout — give the user a way to cancel
+  if `onRefresh` can take more than ~5s.
+
+**RN deltas vs. web**
+
+- No web equivalent. Web's `position: sticky` headers + scroll-up
+  refresh patterns are not idiomatic on mobile.
+- Hook returns a `ReactElement<RefreshControlProps>` so consumers can
+  treat it as opaque or destructure for custom display.
+
+---
+
+## ActionSheet
+
+**Import**
+
+```ts
+import {
+  ActionSheetHost,
+  actionSheet,
+  useActionSheet,
+  type ActionSheetApi,
+  type ActionSheetOption,
+  type ActionSheetOptionStyle,
+  type ActionSheetPresentOptions,
+} from "@mvp-ui-rn/ui"
+```
+
+**Setup**
+
+Mount the host once at the app root:
+
+```tsx
+import { ActionSheetHost } from "@mvp-ui-rn/ui"
+
+// inside RootLayout, anywhere within your provider tree:
+<ActionSheetHost />
+```
+
+**Usage**
+
+```ts
+// imperative singleton (matches the `toast` pattern):
+const index = await actionSheet.present({
+  title: "Photo",
+  message: "Choose a source",
+  options: [
+    { label: "Take photo", icon: Camera },
+    { label: "Choose from library", icon: ImageIcon },
+    { label: "Delete", icon: Trash2, style: "destructive" },
+    { label: "Cancel", style: "cancel" },
+  ],
+})
+
+// or via hook:
+const { present } = useActionSheet()
+await present({ ... })
+```
+
+Resolves with:
+- the selected option's index, OR
+- `null` on backdrop / cancel / hardware-back dismiss.
+
+**Option fields**
+
+| Field | Type | Notes |
+|---|---|---|
+| `label` | `string` | Row label. |
+| `description` | `string?` | Secondary line below the label. |
+| `icon` | `IconProp?` | Leading icon (lucide component or pre-rendered node). |
+| `style` | `"default" \| "destructive" \| "cancel"` | `destructive` paints red. `cancel` is grouped in a separate iOS-style panel. |
+| `disabled` | `boolean?` | Block tap + dim opacity. |
+| `onPress` | `() => void?` | Fires before the promise resolves. |
+
+**When to use**
+
+- 2–5 mutually-exclusive actions anchored to a single tap
+  (overflow menu, share, photo source, sort-by).
+- Confirming destructive actions inline (`Delete`).
+
+**When NOT to use**
+
+- More than ~5 options — switch to a full `BottomSheet` list.
+- Forms — open a `Dialog` or push a route.
+- "Picker" patterns with many rows — use a custom `BottomSheet` with
+  a virtualised list.
+
+**Anti-patterns**
+
+- ❌ Multiple `"cancel"` options. Exactly one is supported.
+- ❌ Side effects in `option.onPress` that race with the resolved
+  promise — pick one or the other.
+- ❌ Long labels (> 1 line). Multi-line action labels are visually
+  hard to scan; use a `BottomSheet` for richer content.
+
+**RN deltas vs. web**
+
+- No web equivalent. Mobile-native pattern.
+- Implementation note: built on RN's built-in `Modal` (not
+  `@gorhom/bottom-sheet`, not `@expo/react-native-action-sheet`).
+  See `docs/component-status.md` batch7 notes for the rationale —
+  short version: gorhom's `BottomSheetModal` failed to render
+  visually when the host was mounted at app-root level (silent
+  portal failure), and OS-native variants couldn't carry our rich
+  `icon` + `description` per-option metadata. RN `Modal` solves both.
+- Tokens flow through: surface = `bg-bg`, destructive label =
+  `text-fg-error`, scrim = `rgba(0,0,0,0.5)`, panels use
+  `pickShadow("xl")` from the shadow tokens. Light + dark flip via
+  `useColorScheme`.
+
+---
+
+## SwipeableRow
+
+**Import**
+
+```ts
+import {
+  SwipeableRow,
+  type SwipeableAction,
+  type SwipeableActionColor,
+  type SwipeableRowRef,
+} from "@mvp-ui-rn/ui"
+```
+
+**Variants**
+
+| Prop | Values | Default |
+|---|---|---|
+| `leftActions` | `SwipeableAction[]` | — |
+| `rightActions` | `SwipeableAction[]` | — |
+| `onSwipeOpen` | `(side: "left" \| "right") => void` | — |
+| `enabled` | `boolean` | `true` |
+| `friction` | `number` | `2` |
+| `children` | row content | — |
+
+`SwipeableAction`:
+
+| Prop | Values | Default |
+|---|---|---|
+| `key` | `string` | — |
+| `label` | `string` | — |
+| `icon` | `IconProp` | — |
+| `color` | `"primary"` · `"destructive"` · `"neutral"` | `"primary"` |
+| `width` | `number` (pixels) | `80` |
+| `onPress` | `() => void` | — |
+
+Imperative ref methods: `close()` · `openLeft()` · `openRight()` ·
+`reset()`.
+
+**When to use**
+
+- iOS Mail-style row actions (Archive / Pin / Delete).
+- Quick row-level actions in feeds, inboxes, settings lists.
+- Anywhere a destructive action should be hidden behind an explicit
+  swipe + tap.
+
+**When NOT to use**
+
+- Above an inner horizontal `ScrollView` — the gestures conflict.
+- For navigation — use a tap or `ListItem onPress` instead.
+- For the *primary* action on the row — swipe is a discovery-hostile
+  affordance. Use a button when the action is essential.
+
+**Conventions**
+
+- Destructive action goes on the RIGHT (left-swipe reveals it). This
+  matches iOS Mail + Messages.
+- Each action is a fixed-width column. Multiple actions stack
+  horizontally; the user can swipe further to reveal more.
+- Tapping any action fires its `onPress` then auto-closes the row.
+
+**Anti-patterns**
+
+- ❌ Putting the same action on both sides — confusing and breaks
+  Mail-style mental model.
+- ❌ More than ~3 actions per side — runs off the screen edge.
+- ❌ Long labels — actions are vertically stacked (icon over label)
+  with a fixed-width column. Keep labels ≤ 8 chars.
+
+**RN deltas vs. web**
+
+- No web equivalent. Web hover-revealed action menus don't translate
+  to touch.
+- Built on `ReanimatedSwipeable` (the modern replacement for the
+  legacy `Swipeable` in `react-native-gesture-handler`). Requires a
+  `<GestureHandlerRootView>` ancestor — already wired at the app
+  root for `BottomSheet`.
+- `friction` defaults to 2; raise it (e.g. 8) for a stickier feel.
+
+---

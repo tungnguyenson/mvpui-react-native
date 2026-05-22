@@ -1,7 +1,7 @@
 import "@mvp-ui-rn/tokens/global.css"
 
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet"
-import { Toaster } from "@mvp-ui-rn/ui"
+import { ActionSheetHost, Toaster } from "@mvp-ui-rn/ui"
 import { PortalHost } from "@rn-primitives/portal"
 import { useFonts } from "expo-font"
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from "expo-router"
@@ -73,6 +73,9 @@ export default function RootLayout() {
              * avoid the native iOS UINavigationBar (which sits outside the
              * JS tree and would clip a top-anchored toast). */}
             <Toaster />
+            {/* ActionSheet host — singleton store + RN Modal. Mount
+             * once at app root anywhere inside the provider tree. */}
+            <ActionSheetHost />
           </BottomSheetModalProvider>
         </ThemeProvider>
       </SafeAreaProvider>
