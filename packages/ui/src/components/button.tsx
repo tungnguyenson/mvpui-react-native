@@ -102,8 +102,8 @@ const labelVariants = cva(["font-semibold text-center"], {
     size: {
       sm: "text-sm",
       md: "text-md",
-      lg: "text-md",
-      xl: "text-lg",
+      lg: "text-lg",
+      xl: "text-xl",
     },
   },
   defaultVariants: { color: "primary", size: "md" },

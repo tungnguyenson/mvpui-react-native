@@ -96,7 +96,7 @@ const inputTextVariants = cva(["min-w-0 flex-1 text-fg p-0"], {
     size: {
       sm: "text-sm",
       md: "text-md",
-      lg: "text-md",
+      lg: "text-lg",
     },
   },
   defaultVariants: { size: "md" },
@@ -107,7 +107,7 @@ const inlineTextVariants = cva("shrink-0 text-fg-tertiary", {
     size: {
       sm: "text-sm",
       md: "text-md",
-      lg: "text-md",
+      lg: "text-lg",
     },
   },
   defaultVariants: { size: "md" },
@@ -134,7 +134,7 @@ const errorTintDark = tokens.color.error["500"]
 const inlineIconSize: Record<InputSize, number> = {
   sm: tokenIconSize.sm,
   md: tokenIconSize.md,
-  lg: tokenIconSize.md,
+  lg: tokenIconSize.lg,
 }
 
 const TRAILING_HINT_SIZE = 16
