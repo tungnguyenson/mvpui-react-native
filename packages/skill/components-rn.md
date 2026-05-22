@@ -1283,9 +1283,16 @@ collision) the trigger.
   isn't propagated, so without an explicit override the items
   (`flex-1` text) collapse to 0 and the popover renders as a narrow
   vertical strip on the left.
-- Popover max-height per size: `sm: 224` / `md: 256` / `lg: 320` — mirrors
-  web `max-h-56/64/80`. Items past the cap scroll inside a `<ScrollView>`
-  with `bounces={false}` for a desktop-popover feel.
+- Item heights step with the control ramp (`sm: 44` / `md: 48` / `lg: 56`)
+  so every row clears the HIG 44pt touch-target floor. Web Select items
+  use `py-1.5`/`py-2` (~32-36pt) which is dense for a cursor but cramped
+  for a thumb — the RN port deliberately diverges.
+- Popover max-height per size: `sm: 280` / `md: 304` / `lg: 360` — sized
+  for ~6 items at the per-size item height plus inner padding. Items
+  past the cap scroll inside a `<ScrollView>` with `bounces={false}`.
+  Web's `max-h-56/64/80` (224/256/320) was tuned for the denser web
+  item heights; with the RN floor bump those caps would only show
+  4-5 items.
 - Collision avoidance flips popover above the trigger when there's no
   room below. `insets={useSafeAreaInsets()}` is forwarded to the
   primitive so the home-indicator + status-bar safe areas are

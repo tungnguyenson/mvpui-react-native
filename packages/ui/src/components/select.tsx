@@ -108,14 +108,17 @@ const triggerTextVariants = cva("flex-1 truncate", {
   defaultVariants: { size: "md", hasValue: false },
 })
 
+// Item heights step with control ramp (sm=44 / md=48 / lg=56) so every
+// row clears the HIG 44pt touch-target floor. Vertical centering via
+// `items-center`; horizontal padding stays consistent with the trigger.
 const itemVariants = cva(
-  "flex-row items-center gap-2 rounded-md px-2 py-2 active:bg-bg-secondary",
+  "flex-row items-center gap-2 rounded-md active:bg-bg-secondary",
   {
     variants: {
       size: {
-        sm: "px-2 py-1.5",
-        md: "px-2 py-2",
-        lg: "px-2.5 py-2.5",
+        sm: "h-11 px-3",
+        md: "h-12 px-3",
+        lg: "h-14 px-3.5",
       },
       isDisabled: { true: "opacity-50", false: "" },
     },
@@ -266,11 +269,14 @@ interface SelectContentProps {
   children: ReactNode
 }
 
-/** Popover max-height per size — mirrors web `max-h-56/64/80`. */
+// Popover max-height per size — sized for ~6 items at the per-size item
+// height (sm 44 / md 48 / lg 56) plus inner padding. Web `max-h-56/64/80`
+// (224/256/320) was tuned for the denser web item heights; with the RN
+// 44-pt-floor bump, those caps would only show 4-5 items.
 const CONTENT_MAX_HEIGHT: Record<SelectSize, number> = {
-  sm: 224,
-  md: 256,
-  lg: 320,
+  sm: 280,
+  md: 304,
+  lg: 360,
 }
 
 /**
