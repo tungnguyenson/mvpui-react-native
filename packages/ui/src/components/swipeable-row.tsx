@@ -135,51 +135,49 @@ interface ActionPanelProps {
 
 const ActionPanel = ({ side, actions, methods, isDark }: ActionPanelProps) => {
   const tints = isDark ? COLOR_DARK : COLOR_LIGHT
-  // Right-side panel ordered LTR (leftmost = least-destructive) so the
-  // user can read left → right while the panel slides in from the trailing
-  // edge. Left-side panel keeps natural order.
-  const ordered = actions
+  const totalWidth = actions.reduce((acc, a) => acc + (a.width ?? DEFAULT_ACTION_WIDTH), 0)
 
   return (
     <View
+      style={{ width: totalWidth, overflow: "hidden" }}
       className={cn(
         "flex-row",
         side === "left" ? "justify-start" : "justify-end",
       )}
     >
-      {ordered.map((action) => {
+      {actions.map((action) => {
         const tone = tints[action.color ?? "primary"]
         const width = action.width ?? DEFAULT_ACTION_WIDTH
         return (
-          <Pressable
-            key={action.key}
-            accessibilityRole="button"
-            accessibilityLabel={action.label}
-            onPress={() => {
-              action.onPress()
-              methods.close()
-            }}
-            style={({ pressed }) => ({
-              width,
-              backgroundColor: tone.bg,
-              opacity: pressed ? 0.8 : 1,
-            })}
-            className="items-center justify-center px-2 py-3"
-          >
-            {action.icon
-              ? renderIcon(action.icon, "leading", {
-                  color: tone.fg,
-                  size: 22,
-                })
-              : null}
-            <Text
-              className="mt-1 text-sm font-semibold"
-              numberOfLines={1}
-              style={{ color: tone.fg }}
+          <View key={action.key} style={{ width, backgroundColor: tone.bg }}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={action.label}
+              onPress={() => {
+                action.onPress()
+                methods.close()
+              }}
+              style={({ pressed }) => ({
+                flex: 1,
+                opacity: pressed ? 0.8 : 1,
+              })}
+              className="items-center justify-center px-2 py-3"
             >
-              {action.label}
-            </Text>
-          </Pressable>
+              {action.icon
+                ? renderIcon(action.icon, "leading", {
+                    color: tone.fg,
+                    size: 22,
+                  })
+                : null}
+              <Text
+                className="mt-1 text-sm font-semibold"
+                numberOfLines={1}
+                style={{ color: tone.fg }}
+              >
+                {action.label}
+              </Text>
+            </Pressable>
+          </View>
         )
       })}
     </View>
@@ -254,9 +252,8 @@ export const SwipeableRow = forwardRef<SwipeableRowRef, SwipeableRowProps>(
             : undefined
         }
         onSwipeableOpen={(direction) => onSwipeOpen?.(direction)}
-        childrenContainerStyle={{ backgroundColor: isDark ? tokens.color.gray["900"] : tokens.color.white }}
       >
-        <View className={cn("flex-1", className)}>{children}</View>
+        <View className={cn("flex-1 bg-bg", className)}>{children}</View>
       </ReanimatedSwipeable>
     )
   },
