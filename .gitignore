@@ -57,3 +57,7 @@ nativewind-env.d.ts
 # Maestro artifacts
 .maestro-out/
 **/screenshot-*.png
+# Transient probe captures (Maestro takeScreenshot writes to cwd; named
+# captures from one-off probe flows that aren't moved into .maestro-out/).
+/probe-*.png
+/select-*.png
