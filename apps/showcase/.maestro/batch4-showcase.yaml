@@ -1,0 +1,84 @@
+# Drives the showcase through the forms-controls batch:
+# Checkbox / Switch / Textarea / Select. Wrapper
+# `scripts/verify-batch4.sh` runs twice (light + dark) and renames
+# captures to *-light.png / *-dark.png.
+#
+# Uses Expo deep links (`exp://localhost:8081/--/<route>`) to jump
+# straight into each component screen. Going through the index list +
+# `tapOn` on a scrolled link was flaky: Maestro's tap after a long
+# scroll repeatedly landed back at the index top instead of firing the
+# Link's onPress. Deep links bypass the link-tap problem entirely.
+#
+# Preconditions:
+#   1. `pnpm showcase` is running and Expo Go has the bundle loaded.
+#
+# Run:  pnpm verify:batch4
+
+appId: host.exp.Exponent
+---
+# --- Cold-launch Expo Go on the dev bundle, land on index ----------------
+# `launchApp` with stopApp=true forces Expo Go to relaunch on each run so
+# routes navigate cleanly (previously sticking on the last route from a
+# prior run made `openLink "/--/"` a no-op). The splash screen lingers
+# until the bundle hydrates; `extendedWaitUntil` retries the index
+# assertion while we wait. 60s ceiling covers a worst-case cold compile.
+- launchApp:
+    appId: host.exp.Exponent
+    stopApp: true
+- openLink: "exp://localhost:8081/--/"
+- extendedWaitUntil:
+    visible: "mvp-ui-rn"
+    timeout: 60000
+- takeScreenshot: 01-index
+
+# --- Checkbox -----------------------------------------------------------
+- openLink: "exp://localhost:8081/--/components/checkbox"
+- assertVisible: "States (always-on visual reference)"
+- takeScreenshot: 02-checkbox-top
+- swipe:
+    direction: UP
+    duration: 2500
+- takeScreenshot: 03-checkbox-mid
+- swipe:
+    direction: UP
+    duration: 1500
+- takeScreenshot: 04-checkbox-bottom
+
+# --- Switch -------------------------------------------------------------
+- openLink: "exp://localhost:8081/--/components/switch"
+- assertVisible: "Interactive (controlled)"
+- takeScreenshot: 05-switch-top
+- swipe:
+    direction: UP
+    duration: 2500
+- takeScreenshot: 06-switch-mid
+- swipe:
+    direction: UP
+    duration: 1500
+- takeScreenshot: 07-switch-bottom
+
+# --- Textarea -----------------------------------------------------------
+- openLink: "exp://localhost:8081/--/components/textarea"
+- assertVisible: "Sizes (sm / md default / lg)"
+- takeScreenshot: 08-textarea-top
+- swipe:
+    direction: UP
+    duration: 2500
+- takeScreenshot: 09-textarea-mid
+- swipe:
+    direction: UP
+    duration: 1500
+- takeScreenshot: 10-textarea-bottom
+
+# --- Select -------------------------------------------------------------
+- openLink: "exp://localhost:8081/--/components/select"
+- assertVisible: "Select country"
+- takeScreenshot: 11-select-top
+- swipe:
+    direction: UP
+    duration: 2500
+- takeScreenshot: 12-select-mid
+- swipe:
+    direction: UP
+    duration: 1500
+- takeScreenshot: 13-select-bottom

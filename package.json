@@ -18,6 +18,7 @@
     "verify:batch": "bash apps/showcase/scripts/verify-batch.sh",
     "verify:batch2": "bash apps/showcase/scripts/verify-batch2.sh",
     "verify:batch3": "bash apps/showcase/scripts/verify-batch3.sh",
+    "verify:batch4": "bash apps/showcase/scripts/verify-batch4.sh",
     "verify:kas": "bash apps/showcase/scripts/verify-kas.sh",
     "typecheck": "pnpm -r typecheck",
     "format": "biome format --write .",
