@@ -118,6 +118,10 @@ export default function TabBarShowcase() {
             Inactive tints use fg-tertiary; active tints use brand-600
             (brand-400 in dark). 0.5pt hairline on top border.
           </Text>
+          <Text className="text-fg-secondary text-md">
+            See `/components/bottom-tabs` for a live `&lt;Tabs&gt;` demo with
+            real routing + badge.
+          </Text>
         </Section>
 
         <Section title="When NOT to use">

@@ -14,6 +14,8 @@ const components = [
   { href: "/components/empty-state", label: "EmptyState" },
   { href: "/components/header", label: "Header" },
   { href: "/components/tab-bar", label: "TabBar" },
+  { href: "/components/bottom-tabs", label: "BottomTabs (live demo)" },
+  { href: "/components/bottom-tabs-fab", label: "BottomTabs — FAB center" },
   { href: "/components/search-bar", label: "SearchBar" },
   { href: "/components/segmented-control", label: "SegmentedControl" },
   { href: "/components/keyboard-avoiding-scroll", label: "KAS" },

@@ -44,11 +44,18 @@ export interface TabBarScreenOptionsArgs {
   isDark?: boolean
   /** Override the base height (the safe-area inset adds on top). */
   height?: number
+  /**
+   * Bottom safe-area inset. Pass `useSafeAreaInsets().bottom` from the layout
+   * so the bar clears the iOS home indicator. Defaults to 0 (preview / Android
+   * gesture-nav devices report 0 here).
+   */
+  bottomInset?: number
 }
 
 export function tabBarScreenOptions({
   isDark = false,
   height = TAB_BAR_HEIGHT_BASE,
+  bottomInset = 0,
 }: TabBarScreenOptionsArgs = {}) {
   const surface = isDark ? tokens.color.gray["950"] : "#ffffff"
   const borderColor = isDark ? tokens.color.gray["800"] : tokens.color.gray["200"]
@@ -60,9 +67,9 @@ export function tabBarScreenOptions({
       backgroundColor: surface,
       borderTopColor: borderColor,
       borderTopWidth: 0.5,
-      height,
+      height: height + bottomInset,
       paddingTop: 6,
-      paddingBottom: 6,
+      paddingBottom: 6 + bottomInset,
     },
     tabBarActiveTintColor: activeTint,
     tabBarInactiveTintColor: inactiveTint,
