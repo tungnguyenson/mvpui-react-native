@@ -31,11 +31,11 @@ Ported from `mvp-ui` (web). Same variant API, same look, RN deltas documented pe
 | HintText | ✅ | `packages/ui/src/components/hint-text.tsx`. Helper / error text below fields. Sizes sm/md. `isInvalid` switches to `text-fg-error` + announces via `accessibilityLiveRegion="polite"`. |
 | Avatar | ✅ | `packages/ui/src/components/avatar.tsx`. 6 sizes (xs/sm/md/lg/xl/2xl) with per-size font + icon step. Cascade: src (expo-image) → initials → placeholder → lucide User. Status dot supports 4 statuses (online/offline/away/busy). `border` + `square` opt-in. Verified all sizes light + dark. |
 | Icon wrapper | ❌ | Wrap `lucide-react-native`; respect `IconProp` contract. |
-| Checkbox | ❌ | `@rn-primitives/checkbox`. |
-| RadioGroup | ❌ | `@rn-primitives/radio-group`. |
-| Switch | ❌ | `@rn-primitives/switch`. |
-| Select | ❌ | `@rn-primitives/select`. |
-| Textarea | ❌ | `TextInput multiline`. |
+| Checkbox | ✅ | `packages/ui/src/components/checkbox.tsx`. `@rn-primitives/checkbox` Root + tristate (`boolean \| "indeterminate"`) layered at wrapper. Sizes sm (20px box, text-sm) / md (24px box, text-md). States default/checked/indeterminate/disabled/invalid. SVG check + dash glyphs via `react-native-svg` mirror web paths verbatim; stroke hardcoded `#ffffff` = `--color-primary-fg`. Default `hitSlop: 10pt` extends bare-box tap area to ≥ 44pt. Composed `Checkbox` (Pressable row + box + label/hint) + `CheckboxBase` (visual-only cell for embed inside other Pressables like Select item indicator). Demo: `apps/showcase/src/app/components/checkbox.tsx`. Docs: `packages/skill/components-rn.md#checkbox`. **Visual verification on hardware pending.** |
+| RadioGroup | ❌ | `@rn-primitives/radio-group`. P2 — not in current batch. |
+| Switch | ✅ | `packages/ui/src/components/switch.tsx`. `@rn-primitives/switch` Root + Reanimated v4 animated pill (Track color + thumb translate via `useDerivedValue(withTiming(200ms))`). Sizes sm (24×44 track, 20 thumb) / md (28×52 track, 24 thumb). On-state track tint = `--color-primary` (brand-600 both modes); off-state = `bg-bg-tertiary` (gray-50 light / gray-800 dark) via `useColorScheme`. Thumb white in both modes. Composed `Switch` (Pressable row + pill + label/hint) + `SwitchBase` (visual-only pill). `slim` variant deferred to follow-up. Demo: `apps/showcase/src/app/components/switch.tsx`. Docs: `packages/skill/components-rn.md#switch`. **Visual verification on hardware pending.** |
+| Select | ✅ | `packages/ui/src/components/select.tsx`. `@rn-primitives/select` (Radix-style compound: Root + Trigger + Portal + Overlay + Content + Item + ItemText + ItemIndicator). Trigger mirrors Input box (`triggerVariants` cva — sm h-11 / md h-12 / lg h-14). Popover elevation via `pickShadow("lg", mode)` token. Items support leading `IconProp`, disabled, right-aligned check indicator. Consumer API: `value` / `defaultValue` / `onValueChange` use `SelectOption = { value, label } \| undefined` matching primitive. **Requires** `<PortalHost />` mounted in app root (added to showcase `_layout.tsx`). Deferred for v1: `items` prop + render-prop children, `avatarUrl` / `supportingText` per-item, `selectionIndicator="checkbox"`, combobox typeahead, `variant="sheet"`. Demo: `apps/showcase/src/app/components/select.tsx`. Docs: `packages/skill/components-rn.md#select`. **Visual verification on hardware pending.** |
+| Textarea | ✅ | `packages/ui/src/components/textarea.tsx`. `TextInput multiline` + `textAlignVertical="top"` (Android caret-at-top). Sizes sm (px-3 py-3 text-sm) / md (px-3.5 py-3 text-md) / lg (px-3.5 py-3.5 text-lg). `rows` prop drives `minHeight` via `LEADING[size] × rows + PADDING_Y[size] × 2` — content grows beyond min. States default/error/success/disabled/readonly. Composed `Textarea` (Label + TextareaBase + HintText, mirrors Input) + `TextareaBase` (standalone field). Web `::-webkit-resizer` custom SVG handle dropped (RN grows auto). Placeholder color resolved as raw hex via JS tokens. Demo: `apps/showcase/src/app/components/textarea.tsx`. Docs: `packages/skill/components-rn.md#textarea`. **Visual verification on hardware pending.** |
 | PinInput | ❌ | Custom; consider `react-native-confirmation-code-field` as reference. |
 | Dialog | ❌ | `@rn-primitives/dialog` + `@rn-primitives/portal`. |
 | Drawer | ❌ | Use `@gorhom/bottom-sheet` — RN-idiomatic drawer is bottom sheet. |
@@ -110,7 +110,7 @@ Composed from primitives. Open question whether design-system surface or app-lay
 
 | Component | Status | Notes |
 |---|---|---|
-| FormField | ❌ | `Label` + `Input` + helper + error. Controlled by `react-hook-form`. Likely design-system. |
+| FormField | ❌ | **Separate PR after forms-controls batch (decision Q3=separate, 2026-05-22).** `Label` + control (Input/Textarea/Select/Checkbox/Switch) + `HintText`. Shared `id` + `isInvalid` + `isRequired` + `isDisabled` flow down. Open API call: `control` slot vs `type` prop — decide after the 4 controls settle. Controlled by `react-hook-form` at app layer. |
 | SettingsRow | ❌ | `Label` + control (Switch/Select/chevron). iOS Settings convention. Likely design-system. |
 | Card variants | ❌ | ProductCard / ListCard / MediaCard. Likely app-layer; design-system provides base `Card`. |
 | Onboarding slides | ❌ | Paginated intro with dots. App-layer. |
@@ -146,6 +146,36 @@ Repo scaffolded via Task 1 of `docs/init-prompt.md`:
 - Decide Toast vs Snackbar — one component or two with different semantics (ephemeral vs actionable).
 - Decide which composite components (FormField, SettingsRow, Card variants) live in `packages/ui` vs app-layer.
 - Confirm P0 list with user before sequencing builds.
+
+### Forms-controls batch (2026-05-22) — implementation complete, visual verification pending
+
+Decisions locked:
+- **Q1 — Select picker:** Option A (popover via `@rn-primitives/select`). Matches web. Sheet variant deferred until BottomSheet ships.
+- **Q2 — Checkbox indeterminate:** ship on first land. `checked: boolean | "indeterminate"`.
+- **Q3 — FormField:** separate PR after the 4 controls. Manual `nativeID` wiring in this batch's demos (established Input pattern).
+
+Build order shipped: Checkbox → Switch → Textarea → Select. All four pass `tsc --noEmit` across `packages/tokens` / `packages/ui` / `apps/showcase`.
+
+**Hardware audit still owed.** Per playbook step 9-10 + traps #13 / #14, every variant × {light, dark, disabled, loading, pressed} needs a real-device pass before "✅" is honest. Next session should:
+1. Run `apps/showcase` on iOS simulator (and ideally physical iPhone for `Switch` thumb glide).
+2. Capture each demo screen in both light + dark mode at 393×852.
+3. Side-by-side compare with `https://mvpui.imtung.com/components/{checkbox,toggle,textarea,select}` at the same viewport.
+4. Confirm Select popover positions correctly under collision (open near the bottom edge of the scroll view).
+5. Maestro flow + `verify-{component}.sh` wrapper for each — not yet scripted.
+
+Infrastructure changes shipped alongside this batch:
+- `@rn-primitives/{checkbox,switch,select}@^1.4.0` added to `packages/ui` deps.
+- `<PortalHost />` mounted at the top of `apps/showcase/src/app/_layout.tsx` (outside `Stack`, inside `ThemeProvider`) — required by `@rn-primitives/select`. Future overlay primitives (Dialog, Tooltip, BottomSheet) reuse the same host.
+
+### Deferred (post-batch)
+
+- **`Select` sheet variant** — `variant="sheet"` (bottom-sheet wheel for long lists OR ActionSheet rows for short lists). Non-breaking addition. Blocked on BottomSheet primitive shipping. Re-evaluate UX: wheel vs ActionSheet at decision time.
+- **`Select` extras** — `items` prop + render-prop children form, `avatarUrl` / `supportingText` per item, `selectionIndicator="checkbox"`, combobox typeahead. Pulled out of v1 for scope; add as opt-in props in follow-ups.
+- **`Switch` slim variant** — bordered track for dense dashboards. Web Toggle has it; RN port deferred to keep first land iOS-pill-shaped.
+- **FormField composite** — own PR. Open API question: `control` slot (`<FormField control={<Input />} />`) vs `type` prop (`<FormField type="text" />`). Decide after consumer feedback from the 4 raw controls.
+- **RadioGroup** — P2. Not in forms-controls batch. Build alongside FormField if `react-hook-form` integration demands it.
+- **SettingsRow** — composes `Label` + control. Blocked on forms-controls batch landing.
+- **Maestro flows + `verify-{checkbox,switch,textarea,select}.sh` wrappers** — visual-audit infrastructure for the 4 new components. Mirror the `verify-button.sh` pattern.
 
 ## Tokens backlog progress (vs docs/tokens-rn-adjustments.md)
 

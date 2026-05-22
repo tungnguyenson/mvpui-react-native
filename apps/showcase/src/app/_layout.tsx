@@ -1,5 +1,6 @@
 import "@mvp-ui-rn/tokens/global.css"
 
+import { PortalHost } from "@rn-primitives/portal"
 import { useFonts } from "expo-font"
 import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from "expo-router"
 import * as SplashScreen from "expo-splash-screen"
@@ -53,6 +54,10 @@ export default function RootLayout() {
             }}
           />
         </View>
+        {/* PortalHost lives outside Stack so popovers (Select, Dialog,
+         * Tooltip) can overlay the navigation header. Default name; primitives
+         * target the default host automatically. */}
+        <PortalHost />
       </ThemeProvider>
     </SafeAreaProvider>
   )

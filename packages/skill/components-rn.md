@@ -967,3 +967,316 @@ masked gradient overlay, no LinearGradient dep.
   Reanimated to stay on the compositor thread.
 
 ---
+
+## Checkbox
+
+**Import**
+
+```ts
+import { Checkbox, CheckboxBase, type CheckboxProps, type CheckboxBaseProps, type CheckboxSize, type CheckboxState } from "@mvp-ui-rn/ui"
+```
+
+`Checkbox` is the composed row: pressable wrapper + visual box + optional
+label + hint. `CheckboxBase` is the visual cell only (no Pressable, no
+a11y role) — use inside other components (e.g. inside a `SelectItem`
+indicator) where the parent owns the tap.
+
+**Variants**
+
+| Prop | Values | Default |
+|---|---|---|
+| `checked` | `boolean \| "indeterminate"` — tristate | `false` |
+| `onCheckedChange` | `(next: CheckboxState) => void` — fires with next state | — |
+| `size` | `sm` (20px box, text-sm) · `md` (24px box, text-md) | `sm` |
+| `isInvalid` | `boolean` — red border when unchecked | `false` |
+| `disabled` | `boolean` — 50% row opacity + muted box bg, blocks taps | `false` |
+| `label` (`Checkbox` only) | `ReactNode` — primary label, tap toggles | — |
+| `hint` (`Checkbox` only) | `ReactNode` — helper text under label | — |
+| `containerClassName` | wrapper class for the row | — |
+| `className` | class for the box | — |
+| `hitSlop` | RN Pressable `hitSlop` — default `{top/bottom/left/right: 10}` | 10pt | 
+
+**Tristate behaviour**
+
+Clicking the indeterminate state transitions to `true` — mirrors browser
++ react-aria. From `true` the next tap goes to `false`; from `false`,
+`true`. Consumers that want a 3-cycle (false → true → indeterminate →
+false) override `onCheckedChange` and re-set `checked` themselves.
+
+**When to use**
+
+- Multi-select rows in lists or tables.
+- Acceptance flows ("I agree to the terms").
+- Setting toggles where the value is binary AND the option is part of a
+  group (use `Switch` for solo on/off settings).
+- `"indeterminate"` for parent rows that summarize partial-selection of
+  children ("3 of 12 selected").
+
+**When NOT to use**
+
+- Mutually exclusive choice in a small set → `RadioGroup` (not yet
+  ported).
+- Solo on/off setting (notifications, dark mode) → `Switch`.
+- Free-text yes/no with detail → `Textarea`.
+
+**Anti-patterns**
+
+- ❌ Raw color class on the box (`bg-brand-600`) — breaks dark mode. Use
+  the supplied variants or extend `boxVariants` upstream.
+- ❌ Cycling `false → indeterminate` via user tap. Indeterminate is a
+  *parent* state — consumers should set it when child group membership
+  is partial, not on user input.
+- ❌ Tiny `hitSlop={0}` overrides. The 20px box at `sm` is below the
+  44pt HIG floor; default hitSlop pads it. Override only inside dense
+  table rows where the row itself is the tap target.
+
+**RN deltas vs. web**
+
+- Web `ring-1 ring-border ring-inset` outline → RN `border border-border`
+  (1px inset). NativeWind has no `ring-*` utility — border + same
+  baseline weight produces an identical visual.
+- Web `react-aria` two-state Checkbox → RN tristate
+  (`boolean | "indeterminate"`). `@rn-primitives/checkbox` Root only
+  knows boolean, so tristate is layered at the wrapper — accessibility
+  state is forced to `"mixed"` for screen readers when indeterminate.
+- Web SVG check/dash inside a `<div>` → RN `react-native-svg` Path with
+  the same coordinates. Glyph stroke is hardcoded `#ffffff` to match
+  `--color-primary-fg` in both modes.
+- Sizes bumped from web (sm 16 → 20, md 20 → 24) for touch comfort.
+- No focus-visible ring (RN has no focus-visible primitive; touch is
+  the dominant input).
+
+---
+
+## Switch
+
+**Import**
+
+```ts
+import { Switch, SwitchBase, type SwitchProps, type SwitchBaseProps, type SwitchSize } from "@mvp-ui-rn/ui"
+```
+
+`Switch` is the composed pressable + animated pill + optional label/hint.
+`SwitchBase` is the visual-only pill (no Pressable) for static-state
+embeds (ListItem trailing, settings preview, etc.).
+
+**Variants**
+
+| Prop | Values | Default |
+|---|---|---|
+| `checked` | `boolean` | `false` |
+| `onCheckedChange` | `(next: boolean) => void` | — |
+| `size` | `sm` (24×44 track, 20 thumb) · `md` (28×52 track, 24 thumb) | `sm` |
+| `disabled` | `boolean` — 50% opacity, blocks taps | `false` |
+| `label` (`Switch` only) | `ReactNode` — tap toggles whole row | — |
+| `hint` (`Switch` only) | `ReactNode` — helper text under label | — |
+| `containerClassName` / `className` | wrapper / pill class overrides | — |
+| `hitSlop` | RN Pressable `hitSlop` — default 10pt all sides | 10pt |
+
+**Animation**
+
+Track color + thumb position animate together over 200ms via Reanimated
+`useDerivedValue(withTiming(...))`. Switching the controlled `checked`
+prop crossfades — no snap.
+
+- Off track: `bg-bg-tertiary` (gray-50 light / gray-800 dark)
+- On track: `--color-primary` (brand-600 both modes)
+- Thumb: white in both modes (matches `--color-primary-fg`)
+
+**When to use**
+
+- Solo on/off setting: notifications, airplane mode, biometric login.
+- Inside a ListItem `trailing` slot for Settings-style rows.
+- When the result is applied *immediately* (no Save button). For
+  deferred application use a `Checkbox`.
+
+**When NOT to use**
+
+- One-of-many choice → `Select` or `SegmentedControl`.
+- Multi-select inside a list → `Checkbox`.
+- Pending / loading state — Switch should reflect the resolved value
+  only; render a `Spinner` next to it during the in-flight write.
+
+**Anti-patterns**
+
+- ❌ Custom hardcoded track colors. Off-state must reference
+  `tokens.color.gray.50` / `gray-800` (dark) so it stays muted in both
+  modes; on-state is brand-600. Roll your own only after extending the
+  semantic alias map.
+- ❌ Bare pill inside a dense list with no hitSlop override. The pill
+  width (44 / 52) hits 44pt minimum naturally, but the height (24 / 28)
+  needs hitSlop for HIG compliance — default `10pt` covers it.
+- ❌ Using `Switch` for actions that POST and may fail. Add a `Spinner`
+  + rollback handler, or use a `Button`.
+
+**RN deltas vs. web**
+
+- Web `ring`-outlined track → RN flat track with Reanimated
+  `interpolateColor` crossfade. No ring utility in RN.
+- Web `slim` variant (bordered track) deferred — see Open follow-ups
+  in `docs/component-status.md`.
+- Sizes bumped from web for iOS UISwitch alignment + ≥ 44pt touch.
+- Focus-visible outline dropped (no focus-visible on touch).
+- `aria-valuetext` is set by `@rn-primitives/switch` Root — VoiceOver
+  reads "on" / "off" automatically.
+
+---
+
+## Textarea
+
+**Import**
+
+```ts
+import { Textarea, TextareaBase, type TextareaProps, type TextareaBaseProps, type TextareaSizeKey } from "@mvp-ui-rn/ui"
+```
+
+`Textarea` composes `Label` + `TextareaBase` + `HintText` (mirrors
+`Input`). `TextareaBase` is the standalone multiline field.
+
+**Variants**
+
+| Prop | Values | Default |
+|---|---|---|
+| `size` | `sm` (text-sm, py-3) · `md` (text-md, py-3) · `lg` (text-lg, py-3.5) | `md` |
+| `rows` | minimum visible rows — drives `minHeight` via `lineHeight × rows + padding × 2` | `4` |
+| `isInvalid` / `isSuccess` | `boolean` — red / green border | `false` |
+| `disabled` / `readOnly` | `boolean` — opacity / muted bg | `false` |
+| `label` (`Textarea` only) | `string` | — |
+| `hint` (`Textarea` only) | `ReactNode` — auto-flips to error tint when `isInvalid` | — |
+| `isRequired` (`Textarea` only) | `boolean` — required `*` in label | `false` |
+| Native `TextInputProps` forwarded | `value`, `defaultValue`, `onChangeText`, `maxLength`, `autoCapitalize`, … | — |
+
+**Sizing**
+
+`rows` sets the minimum visible height. Content beyond `rows` expands
+the field — there is no built-in `maxRows` cap (RN's multiline TextInput
+grows naturally). Apply `maxHeight` via `className`/`style` if a fixed
+cap is needed.
+
+**When to use**
+
+- Multi-line text input: bio, description, message, code snippet,
+  feedback form.
+- Long-form fields next to a `Label` + `HintText` triple.
+
+**When NOT to use**
+
+- Single-line text → `Input`.
+- Rich-text / markdown editor → not yet ported.
+
+**Anti-patterns**
+
+- ❌ Omitting `rows` for long-form fields — defaults to 4. Stage
+  3-line / 6-line / 10-line variants explicitly so the layout doesn't
+  reflow on first keystroke.
+- ❌ Setting `numberOfLines` (Android-only) without `minHeight` — iOS
+  ignores it. Use `rows` which derives both.
+- ❌ Raw `height` style overriding the size token — breaks the size
+  ramp's vertical-padding ratio. Use `rows` for height; `size` for
+  text + padding density.
+
+**RN deltas vs. web**
+
+- Web `react-aria` TextField + TextArea handles focus + invalid + label
+  wiring; RN tracks focus via `onFocus`/`onBlur` and pairs label via
+  `nativeID` + `accessibilityLabelledBy`.
+- Web custom `::-webkit-resizer` SVG handle dropped — RN multiline
+  TextInput grows automatically with content; no user-resizable corner.
+- Web `ring-2 ring-border-brand` focus ring → RN border-color swap
+  only (matches Input).
+- `textAlignVertical="top"` baked in so Android caret sits at line 1
+  when content < height.
+- Placeholder color resolved as raw hex via JS tokens; RN does not
+  honor className on placeholder text.
+
+---
+
+## Select
+
+**Import**
+
+```ts
+import { Select, SelectItem, type SelectProps, type SelectItemProps, type SelectOption, type SelectSize } from "@mvp-ui-rn/ui"
+```
+
+Popover-style picker. Trigger looks like an `Input` box; options
+render in a portal-positioned popover anchored below (or above on
+collision) the trigger.
+
+**Variants**
+
+| Prop | Values | Default |
+|---|---|---|
+| `value` / `defaultValue` | `SelectOption` = `{ value: string; label: string } \| undefined` | — |
+| `onValueChange` | `(next: SelectOption) => void` | — |
+| `size` | `sm` (h-11) · `md` (h-12) · `lg` (h-14) | `md` |
+| `placeholder` | trigger text when nothing selected | `"Select"` |
+| `isInvalid` | `boolean` — red trigger border | `false` |
+| `isRequired` | `boolean` — required `*` in label | `false` |
+| `disabled` | `boolean` — 50% opacity, blocks open | `false` |
+| `label` / `hint` | composed Label + HintText slots | — |
+| `containerClassName` / `triggerClassName` / `contentClassName` | class overrides | — |
+
+`SelectItem`:
+
+| Prop | Values | Default |
+|---|---|---|
+| `value` | `string` — required | — |
+| `label` | `string` — required, rendered by `SelectPrim.ItemText` | — |
+| `icon` | `IconProp` — leading lucide icon or pre-rendered element | — |
+| `disabled` | `boolean` | `false` |
+| `size` | `sm` · `md` · `lg` — visual size; usually inherits Select's `size` | `md` |
+
+**When to use**
+
+- Single choice from a small-to-medium list (≤ 20 options) that fits
+  in a popover without scroll fatigue.
+- Settings dropdowns, country pickers, role pickers, currency
+  selection.
+
+**When NOT to use**
+
+- Long lists (countries, timezones) — use the sheet variant
+  (`variant="sheet"`) once it lands; for now, `Select` still works but
+  the popover becomes tall.
+- Multi-select → `MultiSelect` (not yet ported).
+- Typeahead search inside the dropdown → `Combobox` (not yet ported).
+- One-of-two-or-three on a tight row → `SegmentedControl`.
+- Boolean → `Switch` or `Checkbox`.
+
+**Anti-patterns**
+
+- ❌ Forgetting to mount `<PortalHost />` in the app root. Without it,
+  the popover never renders. See `apps/showcase/src/app/_layout.tsx`
+  for the canonical placement (outside `Stack`, inside the theme
+  provider).
+- ❌ Passing a raw string as `value`. The primitive's option shape is
+  `{ value, label }`; if you only have the value string, pair it with
+  the resolved label or look it up before setting state.
+- ❌ Nesting non-`SelectItem` children directly inside `Select`.
+  Children render inside a `<View>` wrapper but only `SelectItem`
+  registers in the primitive's item context; arbitrary nodes won't
+  participate in selection.
+
+**RN deltas vs. web**
+
+- Web `react-aria-components` Select → RN
+  `@rn-primitives/select` (Radix-style compound API). The primitive
+  measures the trigger and positions Content relative to it via a
+  portal — no manual layout math.
+- Web `items` prop + render-prop children dropped for v1. Consumers
+  map data → `SelectItem` children directly.
+- Web `avatarUrl` / `supportingText` per-item dropped for v1. `icon`
+  slot only. Pair an `<Avatar>` element via the icon slot if needed.
+- Web `selectionIndicator="checkbox"` deferred. v1 ships
+  right-aligned check-mark indicator only.
+- Web `combobox` (typeahead) is its own component on RN —
+  not bundled into Select.
+- Sheet variant (bottom-sheet wheel / ActionSheet rows for long lists)
+  deferred until BottomSheet ships. Non-breaking when added.
+- Trigger looks like `Input` box. Border tints brand on `open`
+  (no `focus-within` in RN).
+- Popover elevation via `pickShadow("lg", mode)` token — light + dark
+  shadow maps to keep depth visible in dark mode.
+
+---

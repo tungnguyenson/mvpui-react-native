@@ -22,6 +22,10 @@ const components = [
   { href: "/components/list", label: "List" },
   { href: "/components/image", label: "Image" },
   { href: "/components/skeleton", label: "Skeleton" },
+  { href: "/components/checkbox", label: "Checkbox" },
+  { href: "/components/switch", label: "Switch" },
+  { href: "/components/textarea", label: "Textarea" },
+  { href: "/components/select", label: "Select" },
 ] as const
 
 export default function IndexScreen() {

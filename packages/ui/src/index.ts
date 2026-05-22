@@ -39,6 +39,14 @@ export {
   CardHeader,
   CardTitle,
 } from "./components/card"
+export {
+  Checkbox,
+  CheckboxBase,
+  type CheckboxBaseProps,
+  type CheckboxProps,
+  type CheckboxSize,
+  type CheckboxState,
+} from "./components/checkbox"
 export { EmptyState, type EmptyStateProps } from "./components/empty-state"
 export {
   Image,
@@ -83,6 +91,21 @@ export {
   type SearchBarScreenOptionsArgs,
 } from "./components/search-bar"
 export {
+  Select,
+  SelectItem,
+  type SelectItemProps,
+  type SelectOption,
+  type SelectProps,
+  type SelectSize,
+} from "./components/select"
+export {
+  Switch,
+  SwitchBase,
+  type SwitchBaseProps,
+  type SwitchProps,
+  type SwitchSize,
+} from "./components/switch"
+export {
   SegmentedControl,
   type SegmentedControlOption,
   type SegmentedControlProps,
@@ -97,5 +120,12 @@ export {
   tabBarScreenOptions,
   type TabBarScreenOptionsArgs,
 } from "./components/tab-bar"
+export {
+  Textarea,
+  TextareaBase,
+  type TextareaBaseProps,
+  type TextareaProps,
+  type TextareaSizeKey,
+} from "./components/textarea"
 export { cn } from "./lib/cn"
 export { renderIcon, type IconProp } from "./lib/render-icon"

@@ -9,14 +9,19 @@
     ".": "./src/index.ts",
     "./*": "./src/*"
   },
-  "files": ["src"],
+  "files": [
+    "src"
+  ],
   "license": "MIT",
   "scripts": {
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@mvp-ui-rn/tokens": "workspace:*",
+    "@rn-primitives/checkbox": "^1.4.0",
+    "@rn-primitives/select": "^1.4.0",
     "@rn-primitives/slot": "^1.4.0",
+    "@rn-primitives/switch": "^1.4.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1"
   },
