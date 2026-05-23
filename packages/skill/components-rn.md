@@ -2670,3 +2670,450 @@ import { ListSection, SettingsRow, Switch, Slider } from "@mvp-ui-rn/ui"
 
 ---
 
+## StatusBar
+
+`@mvp-ui-rn/ui` — `StatusBar`.
+
+Thin `expo-status-bar` wrapper with automatic `useColorScheme` resolution.
+Mount on screens that do **not** use `<SafeArea>`. `<SafeArea>` already
+renders `<StatusBar>` when `statusBar != false` — mounting both on the
+same screen causes a style conflict.
+
+```tsx
+import { StatusBar } from "@mvp-ui-rn/ui"
+
+// Auto mode (default): dark scheme → light content, light scheme → dark content.
+<StatusBar />
+
+// Force light content (e.g. over a dark hero image)
+<StatusBar style="light" />
+
+// Hide entirely on a splash-like screen
+<StatusBar hidden />
+```
+
+**Props**
+
+| Prop | Type | Default | Notes |
+|---|---|---|---|
+| `style` | `"auto" \| "light" \| "dark" \| "inverted"` | `"auto"` | `"inverted"` is the opposite of `"auto"`. |
+| `hidden` | `boolean` | `false` | Hides the bar entirely. |
+| `animated` | `boolean` | `true` | Animate style transitions. |
+
+**`"auto"` resolution**
+
+- Light scheme → dark content (black clock/icons on light bg)
+- Dark scheme → light content (white clock/icons on dark bg)
+- `"inverted"` flips this.
+
+**When to use**
+
+- Full-bleed screens (photo viewer, camera) that don't wrap `<SafeArea>`.
+- Modal screens that need explicit light content over a dark header image.
+- Any screen where the status-bar contrast differs from the ambient scheme.
+
+**When NOT to use**
+
+- Screens already using `<SafeArea>` — it mounts `StatusBar` internally.
+  Pass `statusBar` to `SafeArea` instead to change the style there.
+
+**Anti-patterns**
+
+- ❌ Mounting `<StatusBar>` alongside `<SafeArea>` — conflicting renders.
+  Use `<SafeArea statusBar="light">` instead.
+- ❌ Using `style="light"` on a screen with a white background — content
+  becomes invisible against the status bar.
+
+**RN deltas vs. web**
+
+- Manages the iOS/Android system status bar (clock, battery icons).
+  No web equivalent — browsers control their own chrome.
+
+---
+
+## Banner
+
+`@mvp-ui-rn/ui` — `Banner`.
+
+Full-width persistent in-page notice bar. Distinct from `Alert` (boxed,
+rounded) and `Toast` (ephemeral overlay). Banner is an inline layout
+element: full width, top + bottom hairline border, no border-radius.
+Consumer controls visibility via React state — no singleton store.
+
+```tsx
+import { Banner } from "@mvp-ui-rn/ui"
+
+const [dismissed, setDismissed] = useState(false)
+
+{!dismissed && (
+  <Banner
+    variant="warning"
+    title="Maintenance tonight"
+    description="Service unavailable 02:00–04:00 UTC."
+    icon={AlertTriangle}
+    onDismiss={() => setDismissed(true)}
+  />
+)}
+```
+
+**Variants**
+
+| Variant | Background / border | Title color |
+|---|---|---|
+| `neutral` (default) | `bg-bg-secondary / border-border` | `text-fg` |
+| `info` | `bg-info-bg / border-info-border` | `text-info-fg` |
+| `success` | `bg-success-bg / border-success-border` | `text-success-fg` |
+| `warning` | `bg-warning-bg / border-warning-border` | `text-warning-fg` |
+| `error` | `bg-error-bg / border-error-border` | `text-error-fg` |
+
+**Props**
+
+| Prop | Type | Default |
+|---|---|---|
+| `variant` | `BannerVariantKey` | `"neutral"` |
+| `title` | `string` | — (required) |
+| `description` | `string?` | — |
+| `icon` | `IconProp?` | — |
+| `onDismiss` | `() => void?` | — |
+| `dismissLabel` | `string` | `"Dismiss"` |
+| `children` | `ReactNode?` | extra content below description |
+
+**Dismiss animation**
+
+`onDismiss` adds an X button (trailing). When the parent unmounts the
+Banner (removing it from the tree), Reanimated `FadeOut.duration(200)`
+plays automatically via the wrapping `Animated.View`.
+
+**Placement**
+
+Between the screen `Header` and the page's `ScrollView`. Never inside a
+`ScrollView` — it should remain visible while the page scrolls.
+
+**When to use**
+
+- System-level messages that apply to the current screen (maintenance,
+  quota limit, trial expiry, connectivity warning).
+- Messages that must persist until the user acts, not just acknowledges.
+
+**When NOT to use**
+
+- Transient confirmations — use `Toast`.
+- Inline field feedback — use `FormField` / `HintText`.
+- Expandable / actionable rich content — build a custom `Card` layout.
+
+**Anti-patterns**
+
+- ❌ Stacking multiple Banners — use the highest-priority one only, or
+  replace as the state changes.
+- ❌ Putting interactive buttons inside `children` — the Banner surface
+  itself is not a Pressable; nested pressables need adequate hit areas.
+- ❌ `variant="error"` for warnings — reserve error for blocking failures.
+
+**RN deltas vs. web**
+
+- Text color does NOT cascade from `View` to `Text` in RN. Title and
+  description text color are set explicitly via `cva` `titleVariants` /
+  `descVariants` — not inherited.
+- Icon tint resolved via JS token map + `useColorScheme()` (Lucide icons
+  ignore `className` on RN).
+
+---
+
+## CircularProgress
+
+`@mvp-ui-rn/ui` — `CircularProgress`.
+
+Determinate circular progress ring. `react-native-svg` `<Circle>` with
+animated `strokeDashoffset` via Reanimated `useAnimatedProps`. API mirrors
+`ProgressBar` (`value`, `color`, `showValue`, `animationDurationMs`) plus
+raw-px `size` and `thickness`.
+
+```tsx
+import { CircularProgress } from "@mvp-ui-rn/ui"
+
+// Basic
+<CircularProgress value={75} />
+
+// With center label
+<CircularProgress value={42} size={72} showValue />
+<CircularProgress value={85} size={72} label="85%" />
+
+// Status colors
+<CircularProgress value={60} color="success" size={56} />
+<CircularProgress value={30} color="error" size={56} />
+```
+
+**Props**
+
+| Prop | Type | Default |
+|---|---|---|
+| `value` | `number` (0–100, clamped) | — (required) |
+| `size` | `number` (px diameter) | `48` |
+| `thickness` | `number` (stroke width px) | `4` |
+| `color` | `CircularProgressColor` | `"primary"` |
+| `label` | `string?` | — overrides `showValue` |
+| `showValue` | `boolean` | `false` |
+| `animationDurationMs` | `number` | `300` (token `slow`) |
+
+**Colors**
+
+| Value | Light fill | Dark fill |
+|---|---|---|
+| `primary` | brand-600 | brand-400 |
+| `success` | success-600 | success-500 |
+| `warning` | warning-600 | warning-500 |
+| `error` | error-600 | error-500 |
+
+Track ring: gray-100 light / gray-800 dark (approximates `bg-bg-tertiary`).
+
+**Center label**
+
+`label` and `showValue` are mutually exclusive — `label` wins. The label
+is a `<Text>` in a `StyleSheet.absoluteFill` `<View>` overlaying the SVG.
+`pointerEvents="none"` keeps taps passing through.
+
+**When to use**
+
+- Upload / download progress indicators.
+- Step-completion meters (onboarding, profile completeness).
+- Dashboard widgets where a ring is more compact than a linear bar.
+- Live-updating values (timer, poll results).
+
+**When NOT to use**
+
+- Page-level loading (use `Spinner` or `ProgressBar`).
+- Indeterminate state — `CircularProgress` is determinate only; extend
+  with an infinite rotation animation if you need a spinning variant.
+- Large progress canvases — `ProgressBar` is better for full-width tracks.
+
+**Anti-patterns**
+
+- ❌ Setting `thickness > size / 4` — the ring looks like a disc.
+- ❌ Very small `size` (< 24px) with `showValue` — label overflows the ring.
+- ❌ Driving rapid updates (60fps scroll) via `value` — the Reanimated
+  animation is designed for state-change events, not continuous input.
+  Debounce if driving from scroll offset.
+
+**RN deltas vs. web**
+
+- `react-native-svg` `<Circle>` does not accept NativeWind `className`.
+  Colors are resolved from JS token maps + `useColorScheme()`.
+- `strokeDashoffset` animation runs on the Reanimated worklet thread —
+  no JS-thread frame drops.
+- Arc starts at 12 o'clock via `rotation={-90}` on the `AnimatedCircle`.
+
+---
+
+## FAB
+
+`@mvp-ui-rn/ui` — `FAB`.
+
+Floating Action Button visual primitive. Circular (or extended pill)
+`Pressable` with brand fill + shadow. The component is a **visual
+primitive** — it does not set `position: absolute` or manage safe-area
+insets. The caller decides placement.
+
+```tsx
+import { FAB } from "@mvp-ui-rn/ui"
+import { Plus } from "lucide-react-native"
+
+// Floating (consumer owns position)
+<View style={{ position: "absolute", bottom: insets.bottom + 24, right: 24 }}>
+  <FAB icon={Plus} onPress={handleCreate} accessibilityLabel="Create note" />
+</View>
+
+// Extended (with label)
+<FAB icon={Edit} label="Compose" onPress={openCompose} />
+
+// Inside FabTabBar (tab-bar cutout, no position needed)
+<FAB icon={Plus} onPress={handleCreate} />
+```
+
+**Sizes**
+
+| Size | Diameter | Icon px | Label font |
+|---|---|---|---|
+| `md` (default) | 56px | 24px | 16px |
+| `lg` | 64px | 28px | 18px |
+
+**Colors**
+
+| Color | Background | Icon/label | Shadow |
+|---|---|---|---|
+| `primary` (default) | brand-600 | white | Brand-tinted (shadowColor brand-600, opacity 0.45) |
+| `secondary` | bg fill + border | brand-600 / brand-400 dark | Standard `pickShadow("md")` |
+| `surface` | bg-secondary fill | gray-700 / gray-300 dark | Standard `pickShadow("md")` |
+
+**Props**
+
+| Prop | Type | Default |
+|---|---|---|
+| `icon` | `IconProp` | — (required) |
+| `label` | `string?` | — switches to extended layout |
+| `size` | `FabSizeKey` | `"md"` |
+| `color` | `FabColorKey` | `"primary"` |
+| `isLoading` | `boolean` | `false` |
+| `disabled` | `boolean` | `false` |
+| `accessibilityLabel` | `string?` | required when no `label` |
+
+Extended FAB: `label` prop renders a pill shape with icon + text row.
+Circular FAB: no `label` → round button.
+
+`isLoading` shows `Spinner` in place of the icon; disables interaction.
+
+**When to use**
+
+- Primary screen-level action (create, compose, add, scan).
+- Typically one per screen.
+- Use `FabTabBar` recipe from `apps/showcase/src/components/FabTabBar.tsx`
+  for the cutout-in-tab-bar pattern.
+
+**When NOT to use**
+
+- Secondary or destructive actions — use a regular `Button`.
+- Inline actions inside cards or lists — use an icon button or `SwipeableRow`.
+- Multiple FABs on one screen — causes hierarchy confusion.
+
+**Anti-patterns**
+
+- ❌ Assuming the FAB positions itself — wrap in an absolutely-positioned
+  `View` at the caller layer.
+- ❌ Skipping `accessibilityLabel` on a circular FAB — icon-only buttons
+  require a label for screen readers.
+- ❌ `isLoading` without a `label` on extended FABs — the Spinner replaces
+  the icon but the label still shows; update label text to "Saving…" etc.
+
+**RN deltas vs. web**
+
+- No web analog — FAB is a Material/iOS convention. Web apps use sticky
+  buttons or toolbar actions.
+- Brand-tinted shadow (primary color) follows the `FabTabBar` convention
+  established in the showcase — makes the FAB feel elevated and on-brand.
+
+---
+
+## PinInput
+
+`@mvp-ui-rn/ui` — `PinInput`.
+
+OTP / PIN controlled input. Wraps `react-native-confirmation-code-field`
+v9 with design-system cell styling. Each cell is a styled View whose border
+color reflects focus + validity state. Animated blinking cursor (library's
+`<Cursor />`) occupies the active empty cell.
+
+Always controlled: consumer owns `value` string + `onChangeText`.
+
+```tsx
+import { PinInput } from "@mvp-ui-rn/ui"
+import { useRef, useState } from "react"
+
+// 6-digit OTP (default)
+const [otp, setOtp] = useState("")
+
+<PinInput
+  value={otp}
+  onChangeText={setOtp}
+  onComplete={(code) => verify(code)}
+/>
+
+// 4-digit secure PIN
+<PinInput
+  length={4}
+  value={pin}
+  onChangeText={setPin}
+  secureTextEntry
+  hint="Enter your 4-digit passcode"
+/>
+
+// Invalid state
+<PinInput
+  value={code}
+  onChangeText={setCode}
+  isInvalid={wrongCode}
+  hint={wrongCode ? "Incorrect code. Try again." : undefined}
+/>
+
+// Imperative ref
+const pinRef = useRef<PinInputRef>(null)
+<PinInput ref={pinRef} value={val} onChangeText={setVal} />
+<Button onPress={() => pinRef.current?.clear()}>Reset</Button>
+```
+
+**Props**
+
+| Prop | Type | Default |
+|---|---|---|
+| `length` | `number` | `6` |
+| `value` | `string` | — (required) |
+| `onChangeText` | `(val: string) => void` | — (required) |
+| `onComplete` | `(val: string) => void?` | — |
+| `isInvalid` | `boolean` | `false` |
+| `hint` | `ReactNode?` | — |
+| `secureTextEntry` | `boolean` | `false` |
+| `keyboardType` | `"number-pad" \| "decimal-pad" \| "ascii-capable" \| "default"` | `"number-pad"` |
+| `autoFocus` | `boolean` | `false` |
+| `editable` | `boolean` | `true` |
+
+**Imperative ref (`PinInputRef`)**
+
+| Method | Behavior |
+|---|---|
+| `focus()` | Focus the first unfilled cell. |
+| `blur()` | Dismiss keyboard. |
+| `clear()` | Calls `onChangeText("")` + re-focuses. Caller must also reset `value`. |
+
+**Cell styling**
+
+- Size: 48 × 56px, `borderRadius: 12`.
+- Border colors resolved from JS token maps (Lucide/SVG constraint):
+  - Default: `gray-300` light / `gray-700` dark.
+  - Focused: `brand-600` light / `brand-400` dark (2px border).
+  - Error: `error-600` light / `error-500` dark.
+- Background: white light / `gray-950` dark.
+
+**`onComplete` behavior**
+
+`onComplete` fires inside `onChangeText` once `val.length === length`.
+The library auto-blurs via `useBlurOnFulfill` immediately after.
+Clearing a cell (backspace on focused cell) is handled by
+`useClearByFocusCell` — the focused cell's content is cleared when it is
+re-tapped/focused.
+
+**`secureTextEntry`**
+
+Digits masked with "•" at the `renderCell` layer. The underlying
+`<TextInput>` also has `secureTextEntry` set so the iOS/Android keyboard
+switches to the password input mode (no QuickType suggestions).
+
+**When to use**
+
+- SMS OTP / 2FA codes.
+- App unlock PINs.
+- Confirmation codes (email, invite, payment).
+
+**When NOT to use**
+
+- Free-form text inputs — use `Input`.
+- Search or filter — use `SearchBar`.
+- Passwords (unbounded length) — use `Input secureTextEntry`.
+
+**Anti-patterns**
+
+- ❌ Uncontrolled usage — always pass `value` + `onChangeText`.
+- ❌ Not resetting `value` after calling `ref.clear()` — the input will
+  show stale characters until the next keystroke.
+- ❌ `length > 8` — cells overflow on narrow phones. Use a plain `Input`
+  for long codes.
+- ❌ `keyboardType="default"` for numeric-only codes — shows the full
+  QWERTY keyboard on iOS. Use `"number-pad"`.
+
+**RN deltas vs. web**
+
+- No native RN equivalent. Web uses `<input maxlength>` hacks; this is
+  purpose-built for RN touch.
+- Library: `react-native-confirmation-code-field` v9. API changed in v9
+  from v7: `useClearByFocusCell` returns `[{ onPressOut }, getCellOnLayout]`
+  as a tuple; spread the first element onto `<CodeField>` (passes `onPressOut`
+  to the hidden `TextInput`).
+
+---

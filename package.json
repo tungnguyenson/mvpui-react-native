@@ -23,6 +23,7 @@
     "verify:batch6": "bash apps/showcase/scripts/verify-batch6.sh",
     "verify:batch7": "bash apps/showcase/scripts/verify-batch7.sh",
     "verify:batch8": "bash apps/showcase/scripts/verify-batch8.sh",
+    "verify:batch9": "bash apps/showcase/scripts/verify-batch9.sh",
     "verify:kas": "bash apps/showcase/scripts/verify-kas.sh",
     "typecheck": "pnpm -r typecheck",
     "format": "biome format --write .",

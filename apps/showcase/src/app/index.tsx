@@ -47,6 +47,11 @@ const components = [
   { href: "/components/context-menu", label: "ContextMenu" },
   { href: "/components/haptics", label: "Haptics" },
   { href: "/components/settings-row", label: "SettingsRow" },
+  { href: "/components/status-bar", label: "StatusBar" },
+  { href: "/components/banner", label: "Banner" },
+  { href: "/components/circular-progress", label: "CircularProgress" },
+  { href: "/components/fab", label: "FAB" },
+  { href: "/components/pin-input", label: "PinInput" },
 ] as const
 
 export default function IndexScreen() {

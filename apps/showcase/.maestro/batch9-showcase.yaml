@@ -1,0 +1,109 @@
+# Drives the showcase through batch 9 (final design-system batch):
+# StatusBar / Banner / CircularProgress / FAB / PinInput.
+# Wrapper `scripts/verify-batch9.sh` runs twice (light + dark) and renames
+# captures to *-light.png / *-dark.png.
+#
+# Uses Expo deep links (`exp://localhost:8081/--/<route>`) to bypass the
+# scrolled-link-tap flakiness from prior batches.
+#
+# Maestro caveats for this batch:
+# - StatusBar: the status-bar chrome lives outside the JS tree. Screenshot
+#   captures it but Maestro cannot assertVisible on system-bar content.
+#   Snapshot only; visual diff in .maestro-out/ is the verification.
+# - Banner: controlled via React state. The dismiss X button is accessible
+#   by accessibilityLabel "Dismiss".
+# - CircularProgress: SVG content is not in the accessibility tree.
+#   assertVisible checks the containing section heading text.
+# - FAB: Pressable with accessibilityRole="button". assertVisible on labels.
+# - PinInput: CodeField renders a hidden TextInput overlay. Use `tapOn`
+#   on the cell area (centered, ~40% from top) and `typeText` to fill cells.
+#
+# Preconditions:
+#   1. `pnpm showcase` is running and Expo Go has the bundle loaded.
+#
+# Run:  pnpm verify:batch9
+
+appId: host.exp.Exponent
+---
+# --- Cold-launch Expo Go on the dev bundle, land on index ----------------
+- launchApp:
+    appId: host.exp.Exponent
+    stopApp: true
+- openLink: "exp://localhost:8081/--/"
+- extendedWaitUntil:
+    visible: "mvp-ui-rn"
+    timeout: 60000
+- takeScreenshot: 01-index
+
+# --- StatusBar -----------------------------------------------------------
+- openLink: "exp://localhost:8081/--/components/status-bar"
+- assertVisible: "StatusBar"
+- takeScreenshot: 02-statusbar-default
+- swipe:
+    direction: UP
+    duration: 800
+- takeScreenshot: 03-statusbar-styles
+
+# --- Banner --------------------------------------------------------------
+- openLink: "exp://localhost:8081/--/components/banner"
+- assertVisible: "All variants (full-width bar)"
+- takeScreenshot: 04-banner-variants
+- swipe:
+    direction: UP
+    duration: 1000
+- assertVisible: "Dismissible (Reanimated FadeOut)"
+- takeScreenshot: 05-banner-dismissible
+- tapOn: "Dismiss neutral banner"
+- waitForAnimationToEnd
+- takeScreenshot: 06-banner-dismissed
+
+# --- CircularProgress ----------------------------------------------------
+- openLink: "exp://localhost:8081/--/components/circular-progress"
+- assertVisible: "Colors (value=75)"
+- takeScreenshot: 07-circularprogress-top
+- swipe:
+    direction: UP
+    duration: 1000
+- takeScreenshot: 08-circularprogress-sizes
+- swipe:
+    direction: UP
+    duration: 1200
+- takeScreenshot: 09-circularprogress-live
+
+# --- FAB -----------------------------------------------------------------
+- openLink: "exp://localhost:8081/--/components/fab"
+- assertVisible: "Colors (md)"
+- takeScreenshot: 10-fab-colors
+- swipe:
+    direction: UP
+    duration: 1000
+- takeScreenshot: 11-fab-sizes
+- swipe:
+    direction: UP
+    duration: 1000
+- takeScreenshot: 12-fab-extended
+- tapOn: "Create — loading demo"
+- waitForAnimationToEnd
+- takeScreenshot: 13-fab-loading
+- swipe:
+    direction: UP
+    duration: 1000
+- takeScreenshot: 14-fab-disabled
+
+# --- PinInput ------------------------------------------------------------
+- openLink: "exp://localhost:8081/--/components/pin-input"
+- assertVisible: "6-digit OTP (default)"
+- takeScreenshot: 15-pininput-top
+- tapOn:
+    point: "50%, 25%"
+- inputText: "123456"
+- waitForAnimationToEnd
+- takeScreenshot: 16-pininput-filled
+- swipe:
+    direction: UP
+    duration: 1200
+- takeScreenshot: 17-pininput-invalid
+- swipe:
+    direction: UP
+    duration: 1200
+- takeScreenshot: 18-pininput-secure
