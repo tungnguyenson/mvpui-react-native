@@ -21,6 +21,7 @@ export const docsSections: NavSection[] = [
       { name: "Installation", href: "/docs/installation" },
       { name: "Theming", href: "/docs/theming" },
       { name: "Contributing", href: "/docs/contributing" },
+      { name: "Demo App", href: "/docs/demo-app" },
     ],
   },
 ]
