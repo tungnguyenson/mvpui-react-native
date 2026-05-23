@@ -114,16 +114,16 @@ export const componentSections: NavSection[] = [
 ]
 
 export const screenItems: NavItem[] = [
-  { name: "Bottom Tab Navigation", href: "/screens#bottom-tab-navigation" },
-  { name: "Bottom Tabs + FAB", href: "/screens#bottom-tabs-fab" },
-  { name: "Onboarding", href: "/screens#onboarding" },
-  { name: "Login / Auth", href: "/screens#login-auth" },
-  { name: "Profile", href: "/screens#profile" },
+  { name: "Login / Auth", href: "/screens#login" },
   { name: "Settings", href: "/screens#settings" },
-  { name: "Feed / Home", href: "/screens#feed-home" },
-  { name: "Search / Discover", href: "/screens#search-discover" },
-  { name: "Chat / Messaging", href: "/screens#chat-messaging" },
-  { name: "Checkout", href: "/screens#checkout" },
+  { name: "Profile", href: "/screens#profile" },
+  { name: "Chat / Messaging", href: "/screens#chat" },
   { name: "Notifications", href: "/screens#notifications" },
   { name: "Dashboard", href: "/screens#dashboard" },
+  { name: "Onboarding", href: "/screens#onboarding" },
+  { name: "Feed / Home", href: "/screens#feed" },
+  { name: "Search / Discover", href: "/screens#search" },
+  { name: "Checkout", href: "/screens#checkout" },
+  { name: "Bottom Tab Navigation", href: "/screens#bottom-tabs" },
+  { name: "Bottom Tabs + FAB", href: "/screens#bottom-tabs-fab" },
 ]
