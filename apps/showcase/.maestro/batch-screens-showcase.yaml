@@ -1,0 +1,135 @@
+# Drives the showcase through the Task-A app screen demos:
+# index (two-section), onboarding, login, profile, settings, settings/account,
+# feed, search, notifications, chat, checkout, dashboard.
+#
+# Uses Expo deep links to bypass scrolled-link-tap flakiness.
+# Wrapper scripts/verify-screens.sh runs twice (light + dark) and renames
+# captures to *-light.png / *-dark.png in .maestro-out/.
+#
+# Maestro caveats for this batch:
+# - Feed skeleton: 800ms delay before posts appear. extendedWaitUntil on
+#   post text auto-waits.
+# - Onboarding: FlatList horizontal paging. All slides are in the
+#   accessibility tree; assertions confirm screen loaded, screenshots confirm
+#   visual state after tapping Next.
+# - Search bar: tapOn by coordinate (placeholder text accessibility varies
+#   by device/version). Adjust point if layout shifts.
+# - SwipeableRow: gesture-driven open is unreliable under Maestro.
+#   Feed and Notifications flow is screenshot-only for swipe rows.
+# - Settings: native header enabled — "Settings" title in nav bar may not
+#   be assertable from JS tree. Assert on screen-level content instead.
+# - Chat: custom header, no native Stack.Screen header.
+#   assertVisible on "Lana Steiner" (custom header text in JS tree).
+#
+# Preconditions:
+#   1. `pnpm showcase` is running and Expo Go has the bundle loaded.
+#
+# Run: pnpm verify:screens
+
+appId: host.exp.Exponent
+---
+# --- Cold-launch, land on new two-section index --------------------------
+- launchApp:
+    appId: host.exp.Exponent
+- openLink: "exp://localhost:8081/--/"
+- extendedWaitUntil:
+    visible: "mvp-ui-rn"
+    timeout: 60000
+- assertVisible: "Application Screens"
+- takeScreenshot: 01-index-top
+- swipe:
+    direction: UP
+    duration: 800
+- takeScreenshot: 02-index-scrolled
+
+# --- Onboarding ----------------------------------------------------------
+- openLink: "exp://localhost:8081/--/screens/onboarding"
+- assertVisible: "Welcome to Orbit"
+- takeScreenshot: 03-onboarding-slide1
+- tapOn: "Next"
+- waitForAnimationToEnd
+- takeScreenshot: 04-onboarding-slide2
+- tapOn: "Next"
+- waitForAnimationToEnd
+- takeScreenshot: 05-onboarding-slide3
+
+# --- Login ---------------------------------------------------------------
+- openLink: "exp://localhost:8081/--/screens/login"
+- assertVisible: "Sign in to Orbit"
+- takeScreenshot: 06-login-top
+- swipe:
+    direction: UP
+    duration: 800
+- takeScreenshot: 07-login-social
+
+# --- Profile -------------------------------------------------------------
+- openLink: "exp://localhost:8081/--/screens/profile"
+- assertVisible: "Olivia Rhye"
+- takeScreenshot: 08-profile-posts
+- tapOn: "About"
+- waitForAnimationToEnd
+- takeScreenshot: 09-profile-about
+
+# --- Settings ------------------------------------------------------------
+- openLink: "exp://localhost:8081/--/screens/settings"
+- assertVisible: "olivia@untitledui.com"
+- takeScreenshot: 10-settings-top
+- swipe:
+    direction: UP
+    duration: 800
+- takeScreenshot: 11-settings-bottom
+
+# --- Settings / Account --------------------------------------------------
+- openLink: "exp://localhost:8081/--/screens/settings/account"
+- assertVisible: "Account"
+- takeScreenshot: 12-settings-account
+
+# --- Feed / Home ---------------------------------------------------------
+- openLink: "exp://localhost:8081/--/screens/feed"
+- extendedWaitUntil:
+    visible: "Olivia Rhye"
+    timeout: 5000
+- takeScreenshot: 13-feed-posts
+- swipe:
+    direction: UP
+    duration: 800
+- takeScreenshot: 14-feed-more
+
+# --- Search / Discover ---------------------------------------------------
+# Note: search typing skipped — inputText + keyboard can open Expo dev menu.
+# Visual for results state verified by screenshots only.
+- openLink: "exp://localhost:8081/--/screens/search"
+- assertVisible: "Find anyone"
+- takeScreenshot: 15-search-empty
+
+# --- Notifications -------------------------------------------------------
+# Note: SegmentedControl taps skipped for same reason — screenshot-only.
+- openLink: "exp://localhost:8081/--/screens/notifications"
+- assertVisible: "Olivia Rhye"
+- takeScreenshot: 16-notifications-all
+
+# --- Chat ----------------------------------------------------------------
+- openLink: "exp://localhost:8081/--/screens/chat"
+- waitForAnimationToEnd
+- assertVisible: "Lana Steiner"
+- takeScreenshot: 17-chat-top
+
+# --- Checkout ------------------------------------------------------------
+- openLink: "exp://localhost:8081/--/screens/checkout"
+- assertVisible: "Shipping Address"
+- takeScreenshot: 18-checkout-top
+- swipe:
+    direction: UP
+    duration: 1000
+- assertVisible: "Payment"
+- takeScreenshot: 19-checkout-payment
+
+# --- Dashboard -----------------------------------------------------------
+- openLink: "exp://localhost:8081/--/screens/dashboard"
+- assertVisible: "Welcome back, Olivia"
+- takeScreenshot: 20-dashboard-top
+- swipe:
+    direction: UP
+    duration: 800
+- assertVisible: "Recent Activity"
+- takeScreenshot: 21-dashboard-activity

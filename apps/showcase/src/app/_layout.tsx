@@ -61,7 +61,11 @@ export default function RootLayout() {
               <Stack
                 screenOptions={{
                   headerShown: false,
-                  contentStyle: { backgroundColor: "transparent" },
+                  // Opaque bg-bg hex (not "transparent") so the outgoing screen
+                  // doesn't bleed through during push/pop transitions.
+                  contentStyle: {
+                    backgroundColor: scheme === "dark" ? "#0a0a0a" : "#ffffff",
+                  },
                 }}
               />
             </View>
