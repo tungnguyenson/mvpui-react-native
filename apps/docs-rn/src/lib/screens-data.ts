@@ -8,7 +8,7 @@ export interface ScreenDef {
 
 export const screens: ScreenDef[] = [
   {
-    slug: "bottom-tab-navigation",
+    slug: "bottom-tabs",
     name: "Bottom Tab Navigation",
     description:
       "Standard tab-based app shell with 4 tabs, active indicator, and icon+label layout.",
@@ -32,7 +32,7 @@ export const screens: ScreenDef[] = [
     hasScreenshots: true,
   },
   {
-    slug: "login-auth",
+    slug: "login",
     name: "Login / Auth",
     description: "Email + password login screen with social sign-in options and error handling.",
     components: ["Input", "Button", "HintText", "SafeArea"],
@@ -54,7 +54,7 @@ export const screens: ScreenDef[] = [
     hasScreenshots: true,
   },
   {
-    slug: "feed-home",
+    slug: "feed",
     name: "Feed / Home",
     description:
       "Scrollable content feed with pull-to-refresh, skeleton loading, and swipeable rows.",
@@ -62,7 +62,7 @@ export const screens: ScreenDef[] = [
     hasScreenshots: true,
   },
   {
-    slug: "search-discover",
+    slug: "search",
     name: "Search / Discover",
     description:
       "Search interface with SearchBar, tag filters, and a results grid with Avatar + Badge.",
@@ -70,7 +70,7 @@ export const screens: ScreenDef[] = [
     hasScreenshots: true,
   },
   {
-    slug: "chat-messaging",
+    slug: "chat",
     name: "Chat / Messaging",
     description:
       "Conversation screen with message bubbles, avatar indicators, and keyboard-avoiding input.",

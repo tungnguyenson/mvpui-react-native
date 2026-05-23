@@ -60,6 +60,33 @@ fi
 ALL_SLUGS="$COMPONENT_SLUGS $SCREEN_SLUGS"
 
 # --------------------------------------------------------------------------
+# Validate showcase routes exist before running Maestro
+# --------------------------------------------------------------------------
+SHOWCASE_COMPONENTS="$REPO_ROOT/apps/showcase/src/app/components"
+SHOWCASE_SCREENS="$REPO_ROOT/apps/showcase/src/app/screens"
+MISSING=0
+
+for slug in $COMPONENT_SLUGS; do
+  if [[ ! -f "$SHOWCASE_COMPONENTS/${slug}.tsx" ]]; then
+    echo "ERROR: missing showcase route — apps/showcase/src/app/components/${slug}.tsx"
+    MISSING=$((MISSING + 1))
+  fi
+done
+
+for slug in $SCREEN_SLUGS; do
+  if [[ ! -f "$SHOWCASE_SCREENS/${slug}.tsx" && ! -d "$SHOWCASE_SCREENS/${slug}" ]]; then
+    echo "ERROR: missing showcase route — apps/showcase/src/app/screens/${slug}.tsx (or /${slug}/)"
+    MISSING=$((MISSING + 1))
+  fi
+done
+
+if [[ $MISSING -gt 0 ]]; then
+  echo ""
+  echo "Aborting: $MISSING missing route(s). Create the showcase files above, then re-run."
+  exit 1
+fi
+
+# --------------------------------------------------------------------------
 # Generate Maestro YAML
 # --------------------------------------------------------------------------
 generate_yaml() {
