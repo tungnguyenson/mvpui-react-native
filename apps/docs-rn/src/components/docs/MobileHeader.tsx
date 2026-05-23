@@ -8,6 +8,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/co
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible"
 import { cn } from "@/lib/utils"
 import { docsSections, componentSections, screenItems, type NavSection } from "@/lib/nav"
+import { ThemeToggle } from "./ThemeToggle"
 
 function DrawerLink({ href, name, onClose }: { href: string; name: string; onClose: () => void }) {
   const pathname = usePathname()
@@ -109,6 +110,8 @@ export function MobileHeader() {
       >
         mvp-ui-rn
       </Link>
+
+      <ThemeToggle className="ml-auto" />
     </header>
   )
 }

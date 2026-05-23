@@ -185,48 +185,46 @@
 /* --------------------------------------------------------------------------
    Dark mode — semantic overrides only (raw scales stay constant)
    -------------------------------------------------------------------------- */
-@media (prefers-color-scheme: dark) {
-  :root {
-    color-scheme: dark;
+.dark {
+  color-scheme: dark;
 
-    --color-primary: #7f56d9;
-    --color-primary-hover: #9e77ed;
-    --color-primary-active: #b692f6;
+  --color-primary: #7f56d9;
+  --color-primary-hover: #9e77ed;
+  --color-primary-active: #b692f6;
 
-    --color-bg: #0a0a0a;
-    --color-bg-secondary: #171717;
-    --color-bg-tertiary: #262626;
+  --color-bg: #0a0a0a;
+  --color-bg-secondary: #171717;
+  --color-bg-tertiary: #262626;
 
-    --color-fg: #fafafa;
-    --color-fg-secondary: #d4d4d4;
-    --color-fg-tertiary: #a3a3a3;
-    --color-fg-quaternary: #737373;
-    --color-fg-disabled: #525252;
-    --color-fg-brand: #b692f6;
-    --color-muted-fg: #737373;
+  --color-fg: #fafafa;
+  --color-fg-secondary: #d4d4d4;
+  --color-fg-tertiary: #a3a3a3;
+  --color-fg-quaternary: #737373;
+  --color-fg-disabled: #525252;
+  --color-fg-brand: #b692f6;
+  --color-muted-fg: #737373;
 
-    --color-border: #404040;
-    --color-border-secondary: #262626;
-    --color-border-brand: #b692f6;
+  --color-border: #404040;
+  --color-border-secondary: #262626;
+  --color-border-brand: #b692f6;
 
-    --color-fg-error: #ef4444;
-    --color-border-error: #ef4444;
-    --color-fg-success: #22c55e;
-    --color-border-success: #22c55e;
+  --color-fg-error: #ef4444;
+  --color-border-error: #ef4444;
+  --color-fg-success: #22c55e;
+  --color-border-success: #22c55e;
 
-    --color-info-bg: #2c1c5f;
-    --color-info-border: #53389e;
-    --color-info-fg: #d6bbfb;
-    --color-success-bg: #052e16;
-    --color-success-border: #166534;
-    --color-success-fg: #86efac;
-    --color-warning-bg: #451a03;
-    --color-warning-border: #92400e;
-    --color-warning-fg: #fcd34d;
-    --color-error-bg: #450a0a;
-    --color-error-border: #991b1b;
-    --color-error-fg: #fca5a5;
-  }
+  --color-info-bg: #2c1c5f;
+  --color-info-border: #53389e;
+  --color-info-fg: #d6bbfb;
+  --color-success-bg: #052e16;
+  --color-success-border: #166634;
+  --color-success-fg: #86efac;
+  --color-warning-bg: #451a03;
+  --color-warning-border: #92400e;
+  --color-warning-fg: #fcd34d;
+  --color-error-bg: #450a0a;
+  --color-error-border: #991b1b;
+  --color-error-fg: #fca5a5;
 }
 
 /* --------------------------------------------------------------------------
@@ -276,23 +274,21 @@
 .hljs-selector-class { color: #6f42c1; }
 .hljs-meta { color: #e36209; }
 
-@media (prefers-color-scheme: dark) {
-  .hljs { color: #e1e4e8; }
-  .hljs-keyword,
-  .hljs-deletion { color: #f97583; }
-  .hljs-title,
-  .hljs-title.class_,
-  .hljs-title.function_ { color: #b392f0; }
-  .hljs-number,
-  .hljs-attr,
-  .hljs-variable { color: #79b8ff; }
-  .hljs-string,
-  .hljs-regexp { color: #9ecbff; }
-  .hljs-comment { color: #6a737d; }
-  .hljs-tag { color: #85e89d; }
-  .hljs-name { color: #85e89d; }
-  .hljs-built_in { color: #ffab70; }
-  .hljs-type { color: #b392f0; }
-  .hljs-literal { color: #79b8ff; }
-  .hljs-meta { color: #ffab70; }
-}
+.dark .hljs { color: #e1e4e8; }
+.dark .hljs-keyword,
+.dark .hljs-deletion { color: #f97583; }
+.dark .hljs-title,
+.dark .hljs-title.class_,
+.dark .hljs-title.function_ { color: #b392f0; }
+.dark .hljs-number,
+.dark .hljs-attr,
+.dark .hljs-variable { color: #79b8ff; }
+.dark .hljs-string,
+.dark .hljs-regexp { color: #9ecbff; }
+.dark .hljs-comment { color: #6a737d; }
+.dark .hljs-tag { color: #85e89d; }
+.dark .hljs-name { color: #85e89d; }
+.dark .hljs-built_in { color: #ffab70; }
+.dark .hljs-type { color: #b392f0; }
+.dark .hljs-literal { color: #79b8ff; }
+.dark .hljs-meta { color: #ffab70; }

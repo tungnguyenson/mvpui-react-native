@@ -7,6 +7,7 @@ import { ChevronDown } from "lucide-react"
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible"
 import { cn } from "@/lib/utils"
 import { docsSections, componentSections, screenItems, type NavSection } from "@/lib/nav"
+import { ThemeToggle } from "./ThemeToggle"
 
 function SidebarLink({ href, name }: { href: string; name: string }) {
   const pathname = usePathname()
@@ -71,6 +72,7 @@ export function DocsSidebar() {
         <span className="rounded-full bg-brand-100 px-1.5 py-0.5 text-[10px] font-medium text-brand-700">
           docs
         </span>
+        <ThemeToggle className="ml-auto" />
       </div>
 
       <div className="flex flex-col gap-6 overflow-y-auto px-3 py-4">

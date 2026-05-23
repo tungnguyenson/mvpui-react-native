@@ -15,6 +15,9 @@
     "@gorhom/bottom-sheet": "^5.2.14",
     "@mvp-ui-rn/tokens": "workspace:*",
     "@mvp-ui-rn/ui": "workspace:*",
+    "@tailwindcss/postcss": "^4.3.0",
+    "postcss": "^8.5.15",
+    "tailwindcss": "^4.3.0",
     "@react-native-community/datetimepicker": "9.1.0",
     "@rn-primitives/portal": "^1.4.0",
     "@rn-primitives/slot": "^1.4.0",
@@ -46,10 +49,7 @@
     "react-native-worklets": "0.8.3"
   },
   "devDependencies": {
-    "@tailwindcss/postcss": "^4.3.0",
     "@types/react": "~19.2.2",
-    "postcss": "^8.5.15",
-    "tailwindcss": "^4.3.0",
     "typescript": "~6.0.3"
   }
 }

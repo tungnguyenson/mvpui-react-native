@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from "react"
+import { useTheme } from "next-themes"
 import { Sun, Moon } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { PlaceholderFrame, ScreenshotFrame } from "./IPhoneFrame"
@@ -20,7 +21,14 @@ export function ComponentPreview({
   label,
   className,
 }: ComponentPreviewProps) {
+  const { resolvedTheme } = useTheme()
   const [theme, setTheme] = React.useState<"light" | "dark">("light")
+
+  React.useEffect(() => {
+    if (resolvedTheme === "dark" || resolvedTheme === "light") {
+      setTheme(resolvedTheme)
+    }
+  }, [resolvedTheme])
 
   const hasScreenshots = lightSrc || darkSrc
   const src = theme === "light" ? lightSrc : darkSrc
