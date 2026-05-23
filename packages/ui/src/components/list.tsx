@@ -40,7 +40,7 @@ import { renderIcon, type IconProp } from "../lib/render-icon"
    dividers, full-width rows) instead of free-form content.
    ========================================================================== */
 
-const LIST_ROW_HEIGHT = 56
+const LIST_ROW_HEIGHT = 64
 
 /* -------------------------------------------------------------------------- */
 /*  List — top-level stack of sections                                        */

@@ -70,9 +70,9 @@ const triggerVariants = cva(
   {
     variants: {
       size: {
-        sm: "h-11 gap-2 px-3",
-        md: "h-12 gap-2 px-3",
-        lg: "h-14 gap-2.5 px-3.5",
+        sm: "h-11 gap-2 px-3.5",
+        md: "h-14 gap-2 px-3.5",
+        lg: "h-16 gap-2.5 px-4",
       },
       state: {
         default: "border-border",
@@ -116,9 +116,9 @@ const itemVariants = cva(
   {
     variants: {
       size: {
-        sm: "h-11 px-3",
-        md: "h-12 px-3",
-        lg: "h-14 px-3.5",
+        sm: "h-11 px-3.5",
+        md: "h-14 px-3.5",
+        lg: "h-16 px-4",
       },
       isDisabled: { true: "opacity-50", false: "" },
     },

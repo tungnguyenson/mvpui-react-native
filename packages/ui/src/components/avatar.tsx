@@ -49,12 +49,12 @@ interface AvatarSizeData {
 // icon px alongside the root dimension. Web's avatar.tsx shared
 // `text-sm` between `sm` and `md` — on RN that reads as no font step.
 const SIZE_DATA: Record<AvatarSize, AvatarSizeData> = {
-  xs: { root: "h-6 w-6", initials: "text-xs font-semibold", iconPx: 14, indicator: "h-1.5 w-1.5" },
-  sm: { root: "h-8 w-8", initials: "text-sm font-semibold", iconPx: 18, indicator: "h-2 w-2" },
-  md: { root: "h-10 w-10", initials: "text-md font-semibold", iconPx: 22, indicator: "h-2.5 w-2.5" },
-  lg: { root: "h-12 w-12", initials: "text-lg font-semibold", iconPx: 26, indicator: "h-3 w-3" },
-  xl: { root: "h-14 w-14", initials: "text-xl font-semibold", iconPx: 30, indicator: "h-3.5 w-3.5" },
-  "2xl": { root: "h-16 w-16", initials: "text-2xl font-semibold", iconPx: 34, indicator: "h-4 w-4" },
+  xs: { root: "h-8 w-8", initials: "text-xs font-semibold", iconPx: 18, indicator: "h-2 w-2" },
+  sm: { root: "h-10 w-10", initials: "text-sm font-semibold", iconPx: 22, indicator: "h-2.5 w-2.5" },
+  md: { root: "h-12 w-12", initials: "text-md font-semibold", iconPx: 26, indicator: "h-3 w-3" },
+  lg: { root: "h-14 w-14", initials: "text-lg font-semibold", iconPx: 30, indicator: "h-3.5 w-3.5" },
+  xl: { root: "h-16 w-16", initials: "text-xl font-semibold", iconPx: 34, indicator: "h-4 w-4" },
+  "2xl": { root: "h-20 w-20", initials: "text-2xl font-semibold", iconPx: 40, indicator: "h-5 w-5" },
 }
 
 const STATUS_BG: Record<AvatarStatus, string> = {

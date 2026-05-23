@@ -54,28 +54,27 @@ export const buttonVariants = cva(
         "link-gray": ["bg-transparent disabled:opacity-50"],
         "link-destructive": ["bg-transparent disabled:opacity-50"],
       },
-      // Mobile-tuned ramp per docs/tokens-rn-adjustments.md §3a. Web defaults
-      // are desktop-cramped on mobile; bump heights + paddings one Tailwind
-      // step so md (the default) reads as a thumb-comfortable primary CTA
-      // and lg/xl serve hero / marketing surfaces. `sm` (40pt) drops below
-      // the 44pt HIG floor — only acceptable inside Toolbar / dense
+      // Mobile-tuned ramp per docs/tokens-rn-adjustments.md §3a (+1 step
+      // above prior RN defaults). sm=44 is the HIG floor; md=56 is the
+      // thumb-comfortable primary CTA default; lg=64 / xl=72 for hero and
+      // marketing surfaces. `sm` is acceptable inside Toolbar / dense
       // ListItem / segmented-control containers (see components-rn.md).
       size: {
-        sm: "gap-1 rounded-md px-4 h-10",
-        md: "gap-1.5 rounded-md px-5 h-12",
-        lg: "gap-1.5 rounded-lg px-6 h-14",
-        xl: "gap-2 rounded-lg px-7 h-16",
+        sm: "gap-1 rounded-md px-5 h-11",
+        md: "gap-1.5 rounded-md px-6 h-14",
+        lg: "gap-1.5 rounded-lg px-7 h-16",
+        xl: "gap-2 rounded-lg px-8 h-18",
       },
       iconOnly: { true: "", false: "" },
       isLink: { true: "px-0 h-auto", false: "" },
     },
-    // iconOnly enforces a square ≥ 44pt regardless of size — sm bumps from
-    // 40 → 44 to keep the HIG touch-target floor even in dense layouts.
+    // iconOnly enforces a square matching the control height ramp. sm=44pt
+    // is the HIG touch-target floor.
     compoundVariants: [
       { iconOnly: true, size: "sm", className: "px-0 w-11 h-11" },
-      { iconOnly: true, size: "md", className: "px-0 w-12 h-12" },
-      { iconOnly: true, size: "lg", className: "px-0 w-14 h-14" },
-      { iconOnly: true, size: "xl", className: "px-0 w-16 h-16" },
+      { iconOnly: true, size: "md", className: "px-0 w-14 h-14" },
+      { iconOnly: true, size: "lg", className: "px-0 w-16 h-16" },
+      { iconOnly: true, size: "xl", className: "px-0 w-18 h-18" },
     ],
     defaultVariants: {
       color: "primary",

@@ -105,7 +105,7 @@ export const SearchBar = forwardRef<ComponentRef<typeof TextInput>, SearchBarPro
       <View className={cn("flex-row items-center gap-2", className)}>
         <View
           className={cn(
-            "h-11 flex-1 flex-row items-center gap-2 rounded-lg bg-bg-tertiary px-3",
+            "h-14 flex-1 flex-row items-center gap-2 rounded-lg bg-bg-tertiary px-3.5",
             fieldClassName,
           )}
         >

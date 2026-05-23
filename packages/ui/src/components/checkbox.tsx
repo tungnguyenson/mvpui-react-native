@@ -54,8 +54,8 @@ export type CheckboxSize = "sm" | "md"
 const boxVariants = cva("items-center justify-center border bg-bg", {
   variants: {
     size: {
-      sm: "size-5 rounded",
-      md: "size-6 rounded-md",
+      sm: "size-6 rounded",
+      md: "size-7 rounded-md",
     },
     isSelected: {
       true: "border-transparent bg-primary",
@@ -73,7 +73,7 @@ const boxVariants = cva("items-center justify-center border bg-bg", {
     { isSelected: false, isDisabled: true, className: "bg-bg-tertiary" },
   ],
   defaultVariants: {
-    size: "sm",
+    size: "md",
     isSelected: false,
     isInvalid: false,
     isDisabled: false,
@@ -84,25 +84,25 @@ const labelTextVariants = cva("font-medium text-fg-secondary", {
   variants: {
     size: { sm: "text-sm", md: "text-md" },
   },
-  defaultVariants: { size: "sm" },
+  defaultVariants: { size: "md" },
 })
 
 const hintTextVariants = cva("text-fg-tertiary", {
   variants: {
     size: { sm: "text-sm", md: "text-md" },
   },
-  defaultVariants: { size: "sm" },
+  defaultVariants: { size: "md" },
 })
 
 // `min-h-11` (44pt) enforces the iOS HIG touch-target floor on the whole
 // row even when the row is "box + short label" (which without min-height
 // would resolve to ~20–24pt = text line-height).
-const rowVariants = cva("flex-row items-start min-h-11 py-1.5", {
+const rowVariants = cva("flex-row items-start min-h-14 py-2", {
   variants: {
     size: { sm: "gap-2", md: "gap-3" },
     isDisabled: { true: "opacity-50", false: "" },
   },
-  defaultVariants: { size: "sm", isDisabled: false },
+  defaultVariants: { size: "md", isDisabled: false },
 })
 
 const GLYPH_SIZE: Record<CheckboxSize, number> = {
@@ -159,7 +159,7 @@ export const CheckboxBase = forwardRef<View, CheckboxBaseProps>(
   (
     {
       checked = false,
-      size = "sm",
+      size = "md",
       isInvalid = false,
       isDisabled = false,
       className,
@@ -225,7 +225,7 @@ export const Checkbox = forwardRef<
     {
       checked = false,
       onCheckedChange,
-      size = "sm",
+      size = "md",
       disabled = false,
       isInvalid = false,
       label,

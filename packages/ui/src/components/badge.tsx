@@ -55,9 +55,9 @@ const badgeVariants = cva(
         rounded: "rounded-md",
       },
       size: {
-        sm: "h-5 px-2 gap-1",
-        md: "h-6 px-2.5 gap-1",
-        lg: "h-7 px-3 gap-1.5",
+        sm: "h-6 px-2.5 gap-1",
+        md: "h-7 px-3 gap-1",
+        lg: "h-8 px-3.5 gap-1.5",
       },
       color: {
         gray: "bg-tag-gray-bg border-tag-gray-border",

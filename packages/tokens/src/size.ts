@@ -7,45 +7,45 @@
  * animations, StyleSheet, inline measurement) where Tailwind utility classes
  * cannot express the value.
  *
- * Ramp derives from `docs/tokens-rn-adjustments.md` §3a — mobile-tuned
- * (one Tailwind step above the web defaults).
+ * Ramp derives from `docs/tokens-rn-adjustments.md` §3a — mobile-tuned,
+ * shifted +1 Tailwind step above the prior RN defaults.
  */
 
 export const touchTarget = {
   /** Apple HIG floor. Use only inside dense containers (Toolbar, ListItem). */
   min: 44,
   /** Default for primary CTA, forms, and stand-alone controls. */
-  comfort: 48,
+  comfort: 56,
   /** Hero CTA, onboarding. */
-  prominent: 56,
+  prominent: 64,
   /** Marketing landing, modal primary. */
-  hero: 64,
+  hero: 72,
 } as const
 
 export type TouchTargetKey = keyof typeof touchTarget
 
 export const controlHeight = {
-  sm: 40,
-  md: 48,
-  lg: 56,
-  xl: 64,
+  sm: 44,
+  md: 56,
+  lg: 64,
+  xl: 72,
 } as const
 
 export type ControlSize = keyof typeof controlHeight
 
 export const controlPaddingX = {
-  sm: 16,
-  md: 20,
-  lg: 24,
-  xl: 28,
+  sm: 20,
+  md: 24,
+  lg: 28,
+  xl: 32,
 } as const
 
 /** Lucide icon pixel size per control size. */
 export const iconSize = {
-  sm: 16,
-  md: 20,
-  lg: 24,
-  xl: 28,
+  sm: 20,
+  md: 24,
+  lg: 28,
+  xl: 32,
 } as const
 
 export type IconSizeKey = keyof typeof iconSize

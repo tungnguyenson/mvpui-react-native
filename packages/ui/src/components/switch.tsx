@@ -62,22 +62,22 @@ interface SizeSpec {
 }
 
 const SIZE_MAP: Record<SwitchSize, SizeSpec> = {
-  sm: { trackHeight: 24, trackWidth: 44, thumbSize: 20, inset: 2 },
-  md: { trackHeight: 28, trackWidth: 52, thumbSize: 24, inset: 2 },
+  sm: { trackHeight: 28, trackWidth: 52, thumbSize: 24, inset: 2 },
+  md: { trackHeight: 32, trackWidth: 60, thumbSize: 28, inset: 2 },
 }
 
 const labelTextVariants = cva("font-medium text-fg-secondary", {
   variants: {
     size: { sm: "text-sm", md: "text-md" },
   },
-  defaultVariants: { size: "sm" },
+  defaultVariants: { size: "md" },
 })
 
 const hintTextVariants = cva("text-fg-tertiary", {
   variants: {
     size: { sm: "text-sm", md: "text-md" },
   },
-  defaultVariants: { size: "sm" },
+  defaultVariants: { size: "md" },
 })
 
 const rowVariants = cva("flex-row items-start", {
@@ -85,7 +85,7 @@ const rowVariants = cva("flex-row items-start", {
     size: { sm: "gap-2", md: "gap-3" },
     isDisabled: { true: "opacity-50", false: "" },
   },
-  defaultVariants: { size: "sm", isDisabled: false },
+  defaultVariants: { size: "md", isDisabled: false },
 })
 
 export interface SwitchBaseProps {
@@ -101,7 +101,7 @@ export interface SwitchBaseProps {
  * (e.g. ListItem `trailing`) can render a static-state pill cheaply.
  */
 export const SwitchBase = forwardRef<View, SwitchBaseProps>(
-  ({ checked = false, size = "sm", className }, ref) => {
+  ({ checked = false, size = "md", className }, ref) => {
     const scheme = useColorScheme()
     const isDark = scheme === "dark"
     const spec = SIZE_MAP[size]
@@ -186,7 +186,7 @@ export const Switch = forwardRef<
     {
       checked = false,
       onCheckedChange,
-      size = "sm",
+      size = "md",
       disabled = false,
       label,
       hint,

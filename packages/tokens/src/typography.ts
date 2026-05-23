@@ -15,15 +15,15 @@
  */
 
 export const textSize = {
-  xs: { fontSize: 12, lineHeight: 18 },
-  sm: { fontSize: 14, lineHeight: 20 },
-  md: { fontSize: 16, lineHeight: 24 },
-  lg: { fontSize: 18, lineHeight: 28 },
-  xl: { fontSize: 20, lineHeight: 30 },
-  "2xl": { fontSize: 24, lineHeight: 32 },
-  "3xl": { fontSize: 30, lineHeight: 38 },
-  "4xl": { fontSize: 36, lineHeight: 44 },
-  "5xl": { fontSize: 48, lineHeight: 60 },
+  xs: { fontSize: 14, lineHeight: 20 },
+  sm: { fontSize: 16, lineHeight: 24 },
+  md: { fontSize: 18, lineHeight: 28 },
+  lg: { fontSize: 20, lineHeight: 30 },
+  xl: { fontSize: 24, lineHeight: 32 },
+  "2xl": { fontSize: 30, lineHeight: 38 },
+  "3xl": { fontSize: 36, lineHeight: 44 },
+  "4xl": { fontSize: 48, lineHeight: 60 },
+  "5xl": { fontSize: 60, lineHeight: 72 },
 } as const
 
 export type TextSizeKey = keyof typeof textSize

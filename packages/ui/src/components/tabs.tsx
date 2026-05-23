@@ -155,8 +155,8 @@ const triggerVariants = cva(
         "button-border": "rounded-md border border-transparent",
       },
       size: {
-        sm: "h-10 px-3",
-        md: "h-12 px-4",
+        sm: "h-11 px-3",
+        md: "h-14 px-4",
       },
       fullWidth: { true: "flex-1", false: "" },
     },

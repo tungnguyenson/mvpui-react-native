@@ -44,8 +44,8 @@ const circleVariants = cva(
   {
     variants: {
       size: {
-        sm: "size-4",
-        md: "size-5",
+        sm: "size-5",
+        md: "size-6",
       },
       isSelected: {
         true: "border-primary",
@@ -59,7 +59,7 @@ const circleVariants = cva(
       { isSelected: false, isDisabled: true, className: "bg-bg-tertiary" },
     ],
     defaultVariants: {
-      size: "sm",
+      size: "md",
       isSelected: false,
       isInvalid: false,
       isDisabled: false,
@@ -70,32 +70,32 @@ const circleVariants = cva(
 const dotVariants = cva("rounded-full bg-primary", {
   variants: {
     size: {
-      sm: "size-2",
-      md: "size-2.5",
+      sm: "size-2.5",
+      md: "size-3",
     },
   },
-  defaultVariants: { size: "sm" },
+  defaultVariants: { size: "md" },
 })
 
 const labelTextVariants = cva("font-medium text-fg-secondary", {
   variants: { size: { sm: "text-sm", md: "text-md" } },
-  defaultVariants: { size: "sm" },
+  defaultVariants: { size: "md" },
 })
 
 const hintTextVariants = cva("text-fg-tertiary", {
   variants: { size: { sm: "text-sm", md: "text-md" } },
-  defaultVariants: { size: "sm" },
+  defaultVariants: { size: "md" },
 })
 
 // `min-h-11` (44pt) enforces the iOS HIG touch-target floor on the whole
 // row even when the row is "circle + short label" (which without min-height
 // would resolve to ~20–24pt = text line-height).
-const rowVariants = cva("flex-row items-start min-h-11 py-1.5", {
+const rowVariants = cva("flex-row items-start min-h-14 py-2", {
   variants: {
     size: { sm: "gap-2", md: "gap-3" },
     isDisabled: { true: "opacity-50", false: "" },
   },
-  defaultVariants: { size: "sm", isDisabled: false },
+  defaultVariants: { size: "md", isDisabled: false },
 })
 
 /* -------------------------------------------------------------------------- */
@@ -114,7 +114,7 @@ export interface RadioGroupBaseProps
 export const RadioGroupBase = forwardRef<View, RadioGroupBaseProps>(
   (
     {
-      size = "sm",
+      size = "md",
       isSelected = false,
       isInvalid = false,
       isDisabled = false,
@@ -147,7 +147,7 @@ interface InternalGroupContextValue {
 }
 
 const GroupContext = createContext<InternalGroupContextValue>({
-  size: "sm",
+  size: "md",
   value: undefined,
   disabled: false,
 })
@@ -170,7 +170,7 @@ export const RadioGroup = forwardRef<View, RadioGroupProps>(
     {
       value,
       onValueChange,
-      size = "sm",
+      size = "md",
       disabled = false,
       className,
       children,

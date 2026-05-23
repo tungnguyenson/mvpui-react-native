@@ -28,6 +28,7 @@
     "verify:batch9": "bash apps/showcase/scripts/verify-batch9.sh",
     "verify:screens": "bash apps/showcase/scripts/verify-screens.sh",
     "verify:kas": "bash apps/showcase/scripts/verify-kas.sh",
+    "screenshot": "bash apps/showcase/scripts/update-screenshot.sh",
     "typecheck": "pnpm -r typecheck",
     "format": "biome format --write .",
     "lint": "biome check ."

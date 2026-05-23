@@ -55,9 +55,9 @@ const textareaFieldVariants = cva(
   {
     variants: {
       size: {
-        sm: "px-3 py-3 text-sm",
-        md: "px-3.5 py-3 text-md",
-        lg: "px-3.5 py-3.5 text-lg",
+        sm: "px-3.5 py-3.5 text-sm",
+        md: "px-4 py-3.5 text-md",
+        lg: "px-4 py-4 text-lg",
       },
       state: {
         default: "border-border",
@@ -89,16 +89,16 @@ type TextareaSize = NonNullable<
 
 /** Line-height per size, matches `--leading-*` token resolution. */
 const LEADING: Record<TextareaSize, number> = {
-  sm: 20,
-  md: 24,
-  lg: 28,
+  sm: 24,
+  md: 28,
+  lg: 30,
 }
 
 /** Vertical padding in pixels per size — mirrors the cva `py-*` values. */
 const PADDING_Y: Record<TextareaSize, number> = {
-  sm: 12,
-  md: 12,
-  lg: 14,
+  sm: 14,
+  md: 14,
+  lg: 16,
 }
 
 const placeholderTintLight = tokens.color.gray["500"]
