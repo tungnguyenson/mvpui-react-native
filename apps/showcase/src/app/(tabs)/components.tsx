@@ -29,6 +29,7 @@ import {
   MessageSquare,
   Minus,
   MoreHorizontal,
+  LogIn,
   MousePointerClick,
   Navigation,
   PanelBottom,
@@ -70,6 +71,7 @@ const CATEGORIES: CategoryEntry[] = [
     title: "Actions",
     items: [
       { href: "/components/button", label: "Button", Icon: MousePointerClick },
+      { href: "/components/social-button", label: "SocialButton", Icon: LogIn },
       { href: "/components/fab", label: "FAB", Icon: Plus },
     ],
   },
@@ -152,7 +154,7 @@ export default function ComponentsTab() {
   const router = useRouter()
 
   return (
-    <SafeAreaView className="flex-1 bg-bg">
+    <SafeAreaView className="flex-1 bg-bg" edges={["top"]}>
       <ScrollView contentContainerClassName="px-5 py-6 gap-4">
         <Text className="text-fg text-2xl font-bold">Components</Text>
         <List>

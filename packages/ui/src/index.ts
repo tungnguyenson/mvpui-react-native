@@ -306,3 +306,9 @@ export {
 } from "./components/textarea"
 export { cn } from "./lib/cn"
 export { renderIcon, type IconProp } from "./lib/render-icon"
+export {
+  SocialButton,
+  type SocialButtonProps,
+  type SocialProvider,
+} from "./components/social-button"
+export { GoogleLogo, AppleLogo, type LogoProps } from "./components/social-logos"

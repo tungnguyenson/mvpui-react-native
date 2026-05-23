@@ -1,4 +1,4 @@
-import { Button, FormField, Input } from "@mvp-ui-rn/ui"
+import { Button, FormField, Input, SocialButton } from "@mvp-ui-rn/ui"
 import { Stack } from "expo-router"
 import { Lock, Mail } from "lucide-react-native"
 import { useState } from "react"
@@ -12,7 +12,7 @@ export default function LoginScreen() {
     <View className="flex-1 bg-bg">
       <Stack.Screen options={{ title: "Login / Auth", headerShown: true }} />
       <ScrollView
-        contentContainerClassName="px-5 py-8 gap-8"
+        contentContainerClassName="px-8 py-8 gap-8"
         keyboardShouldPersistTaps="handled"
       >
         {/* Logo + title */}
@@ -71,12 +71,12 @@ export default function LoginScreen() {
 
         {/* Social buttons */}
         <View className="gap-3">
-          <Button color="secondary" onPress={() => {}}>
+          <SocialButton provider="google" onPress={() => {}}>
             Continue with Google
-          </Button>
-          <Button color="secondary" onPress={() => {}}>
+          </SocialButton>
+          <SocialButton provider="apple" onPress={() => {}}>
             Continue with Apple
-          </Button>
+          </SocialButton>
         </View>
 
         {/* Sign up nudge */}
