@@ -1,0 +1,9 @@
+{
+  "/(main)/components/[slug]/page": "app/(main)/components/[slug]/page.js",
+  "/(main)/docs/contributing/page": "app/(main)/docs/contributing/page.js",
+  "/(main)/docs/installation/page": "app/(main)/docs/installation/page.js",
+  "/(main)/docs/introduction/page": "app/(main)/docs/introduction/page.js",
+  "/(main)/docs/theming/page": "app/(main)/docs/theming/page.js",
+  "/_not-found/page": "app/_not-found/page.js",
+  "/page": "app/page.js"
+}

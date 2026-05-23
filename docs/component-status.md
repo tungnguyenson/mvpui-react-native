@@ -284,6 +284,53 @@ Infrastructure changes:
 
 All P0, P1, and actionable P2 components now ✅. Remaining ❌ items are either deferred-by-design (Breadcrumb, Pagination, SideNav, Table) or app-layer (Card variants, Onboarding).
 
+### Showcase restructure — Task A (2026-05-23) — landed
+
+Rewrote `apps/showcase` from a flat 50+ link list into a two-section app per `docs/task-a-showcase-restructure.md`.
+
+**Index (`apps/showcase/src/app/index.tsx`):**
+- Section 1: Application Screens — 12 cards in a 2-column flex-wrap grid. Each card: colored top area (h-24, bg-primary) + lucide icon + title/subtitle. Uses `tokens.color.gray` for icon color (JS hex, adapts light/dark — lucide ignores className).
+- Section 2: Components — 7 categories using `List` + `ListSection` + `ListItem` with `chevron`. Same component list as before, just grouped.
+- Lucide `Tabs` renamed to `Columns` (import alias) to avoid conflict with `@mvp-ui-rn/ui` `Tabs`.
+
+**Bottom-tabs relocations (`git mv`):**
+- `apps/showcase/src/app/components/bottom-tabs/` → `apps/showcase/src/app/screens/bottom-tabs/`
+- `apps/showcase/src/app/components/bottom-tabs-fab/` → `apps/showcase/src/app/screens/bottom-tabs-fab/`
+
+**New screen demos (`apps/showcase/src/app/screens/`):**
+
+| Screen | File | Key components used |
+|---|---|---|
+| Onboarding | `onboarding.tsx` | FlatList (horizontal pagingEnabled), Button, dot indicators (plain Views) |
+| Login / Sign up | `login.tsx` | Input (iconLeading, secureTextEntry), Button (primary/tertiary/secondary/link-color), FormField |
+| Profile | `profile.tsx` | Avatar, Tabs (controlled), Badge, EmptyState, custom StatCell |
+| Settings | `settings/index.tsx` + `settings/account.tsx` | Switch (checked/onCheckedChange), ListSection/ListItem, Button (primary-destructive), FormField + Input |
+| Feed / Home | `feed.tsx` | SearchBar, Skeleton (timed load), SwipeableRow, usePullToRefresh, Avatar, Badge |
+| Search / Discover | `search.tsx` | SearchBar (showCancel/onCancel), SegmentedControl, List/ListItem, EmptyState (ReactNode icon) |
+| Notifications | `notifications.tsx` | SegmentedControl, SwipeableRow (mark-read + delete), usePullToRefresh, Avatar, unread dot (plain View) |
+| Chat | `chat.tsx` | KeyboardAvoidingScroll (View-based messages, not FlatList), Input, Button (iconLeading), Avatar, Badge |
+| Checkout | `checkout.tsx` | Stepper, PinInput (secureTextEntry CVV), Dialog + DialogTrigger asChild, CardContent |
+| Dashboard | `dashboard.tsx` | CircularProgress, ProgressBar (showValue + label), List/ListItem, Avatar, Badge |
+
+**Prop/API discoveries during build (traps for future reference):**
+
+| # | Trap | Fix |
+|---|---|---|
+| — | `lucide-react-native` has no `Tabs` export | Use `Columns` icon instead |
+| — | `Button` auto-detects icon-only (no `iconOnly` prop — computed from `!hasChildren && Boolean(iconLeading)`) | Remove `iconOnly` from all call sites |
+| — | `Switch` API: `checked`/`onCheckedChange` (not `value`/`onValueChange`) | Correct props at usage |
+| — | `Tabs` is controlled only: `value`/`onValueChange` (no `defaultValue`) | Add `useState` + controlled pattern |
+| — | `EmptyState icon` is `ReactNode` not `FC` | Pass `<Search size={32} />` not `Search` |
+| — | `SearchBar` requires `value` + `onChangeText` (even static) | Pass `value="" onChangeText={() => {}}` |
+| — | `Button color="link"` invalid; `color="link-color"` is the correct variant | Fix at call site |
+| — | `Button color="destructive"` invalid; use `color="primary-destructive"` | Fix at call site |
+| — | `Badge shape="dot"` does not exist | Replace with `<View className="w-2 h-2 rounded-full bg-primary" />` |
+| — | `Input trailing`/`onTrailingPress` don't exist; eye toggle is built into `secureTextEntry` | Remove, use `iconLeading` only |
+| — | Nested `FlatList` inside `KeyboardAvoidingScroll` (ScrollView) crashes | Render messages as plain Views |
+| — | `transition-all` in NativeWind className is a CSS animation class; no-ops in RN | Remove from dot indicator Views |
+
+TypeScript compilation clean (`tsc --noEmit` zero errors) across all screen files. Visual verification on device pending.
+
 ### Deferred (post-batch)
 
 - **Tabs sliding indicator** — measured-translate animated underline on the `underline` variant (mirror SegmentedControl's 220ms cubic-out). Non-breaking add. Needs layout measurement of each trigger relative to the horizontal ScrollView's content origin; build when consumers ask for it.

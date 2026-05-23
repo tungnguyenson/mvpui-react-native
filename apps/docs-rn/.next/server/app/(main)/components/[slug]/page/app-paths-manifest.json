@@ -1,0 +1,3 @@
+{
+  "/(main)/components/[slug]/page": "app/(main)/components/[slug]/page.js"
+}

@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 3, "column": 0}, "map": {"version":3,"sources":[],"names":[],"mappings":"","debugId":null}},
+    {"offset": {"line": 11, "column": 0}, "map": {"version":3,"sources":["file:///Volumes/DATA/dev/projects/mvp-ui-rn/apps/docs-rn/src/app/page.tsx"],"sourcesContent":["import { redirect } from \"next/navigation\"\n\nexport default function Home() {\n  redirect(\"/docs/introduction\")\n}\n"],"names":[],"mappings":";;;;AAAA;AAAA;;AAEe,SAAS;IACtB,IAAA,qXAAQ,EAAC;AACX","debugId":null}}]
+}

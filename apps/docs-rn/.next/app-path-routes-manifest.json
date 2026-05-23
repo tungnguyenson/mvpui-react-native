@@ -1,0 +1,10 @@
+{
+  "/_not-found/page": "/_not-found",
+  "/page": "/",
+  "/(main)/screens/page": "/screens",
+  "/(main)/components/[slug]/page": "/components/[slug]",
+  "/(main)/docs/introduction/page": "/docs/introduction",
+  "/(main)/docs/contributing/page": "/docs/contributing",
+  "/(main)/docs/theming/page": "/docs/theming",
+  "/(main)/docs/installation/page": "/docs/installation"
+}

@@ -1,0 +1,298 @@
+/**
+ * Copyright (c) 2026 TungMVP
+ * Licensed under MIT
+ *
+ * docs-rn global CSS — Tailwind v4 with the same token system as packages/tokens.
+ * Tokens are inlined here (no cross-package CSS import) to keep the web bundler
+ * away from NativeWind-specific @imports in the RN tokens package.
+ */
+
+@import "tailwindcss";
+
+/* --------------------------------------------------------------------------
+   Source scanning — generate utilities for all doc-site components.
+   -------------------------------------------------------------------------- */
+@source "../components/**/*.{ts,tsx}";
+@source "../app/**/*.{ts,tsx}";
+@source "../lib/**/*.{ts,tsx}";
+
+@theme {
+  /* ------------------------------------------------------------------------
+     Brand color scale — Untitled UI purple
+     ------------------------------------------------------------------------ */
+  --color-brand-25: #fdf4ff;
+  --color-brand-50: #f9f5ff;
+  --color-brand-100: #f4ebff;
+  --color-brand-200: #e9d7fe;
+  --color-brand-300: #d6bbfb;
+  --color-brand-400: #b692f6;
+  --color-brand-500: #9e77ed;
+  --color-brand-600: #7f56d9;
+  --color-brand-700: #6941c6;
+  --color-brand-800: #53389e;
+  --color-brand-900: #42307d;
+  --color-brand-950: #2c1c5f;
+
+  /* Gray scale */
+  --color-gray-25: #fafafa;
+  --color-gray-50: #f5f5f5;
+  --color-gray-100: #f0f0f0;
+  --color-gray-200: #e5e5e5;
+  --color-gray-300: #d4d4d4;
+  --color-gray-400: #a3a3a3;
+  --color-gray-500: #737373;
+  --color-gray-600: #525252;
+  --color-gray-700: #404040;
+  --color-gray-800: #262626;
+  --color-gray-900: #171717;
+  --color-gray-950: #0a0a0a;
+
+  /* Status scales */
+  --color-success-50: #f0fdf4;
+  --color-success-100: #dcfce7;
+  --color-success-200: #bbf7d0;
+  --color-success-300: #86efac;
+  --color-success-400: #4ade80;
+  --color-success-500: #22c55e;
+  --color-success-600: #16a34a;
+  --color-success-700: #15803d;
+  --color-success-800: #166534;
+  --color-success-950: #052e16;
+
+  --color-warning-50: #fffbeb;
+  --color-warning-100: #fef3c7;
+  --color-warning-200: #fde68a;
+  --color-warning-300: #fcd34d;
+  --color-warning-500: #f59e0b;
+  --color-warning-600: #d97706;
+  --color-warning-700: #b45309;
+  --color-warning-800: #92400e;
+  --color-warning-950: #451a03;
+
+  --color-error-25: #fffbfa;
+  --color-error-50: #fef2f2;
+  --color-error-100: #fee2e2;
+  --color-error-200: #fecaca;
+  --color-error-300: #fca5a5;
+  --color-error-500: #ef4444;
+  --color-error-600: #dc2626;
+  --color-error-700: #b91c1c;
+  --color-error-800: #991b1b;
+  --color-error-950: #450a0a;
+
+  /* Decorative ramps */
+  --color-slate-50: #f8fafc;
+  --color-slate-200: #e2e8f0;
+  --color-slate-300: #cbd5e1;
+  --color-slate-400: #94a3b8;
+  --color-slate-500: #64748b;
+  --color-slate-700: #334155;
+  --color-slate-800: #1e293b;
+  --color-slate-950: #020617;
+
+  --color-sky-50: #f0f9ff;
+  --color-sky-200: #bae6fd;
+  --color-sky-300: #7dd3fc;
+  --color-sky-400: #38bdf8;
+  --color-sky-700: #0369a1;
+  --color-sky-800: #075985;
+  --color-sky-950: #082f49;
+
+  --color-blue-50: #eff6ff;
+  --color-blue-200: #bfdbfe;
+  --color-blue-300: #93c5fd;
+  --color-blue-400: #60a5fa;
+  --color-blue-700: #1d4ed8;
+  --color-blue-800: #1e40af;
+  --color-blue-950: #172554;
+
+  /* ------------------------------------------------------------------------
+     Action tokens
+     ------------------------------------------------------------------------ */
+  --color-primary: #7f56d9;
+  --color-primary-hover: #6941c6;
+  --color-primary-active: #53389e;
+  --color-primary-fg: #ffffff;
+
+  /* ------------------------------------------------------------------------
+     Semantic surface/text/border — light defaults, dark overrides below
+     ------------------------------------------------------------------------ */
+  --color-bg: #ffffff;
+  --color-bg-secondary: #fafafa;
+  --color-bg-tertiary: #f5f5f5;
+
+  --color-fg: #171717;
+  --color-fg-secondary: #404040;
+  --color-fg-tertiary: #737373;
+  --color-fg-quaternary: #a3a3a3;
+  --color-fg-disabled: #d4d4d4;
+  --color-fg-brand: #7f56d9;
+  --color-fg-on-brand: #ffffff;
+  --color-muted-fg: #a3a3a3;
+
+  --color-border: #d4d4d4;
+  --color-border-secondary: #e5e5e5;
+  --color-border-brand: #d6bbfb;
+  --color-ring: #9e77ed;
+
+  /* Error/success semantic */
+  --color-fg-error: #dc2626;
+  --color-border-error: #fecaca;
+  --color-fg-success: #22c55e;
+  --color-border-success: #bbf7d0;
+
+  /* Status subtle surfaces */
+  --color-info-bg: #f9f5ff;
+  --color-info-border: #e9d7fe;
+  --color-info-fg: #6941c6;
+  --color-success-bg: #f0fdf4;
+  --color-success-border: #bbf7d0;
+  --color-success-fg: #15803d;
+  --color-warning-bg: #fffbeb;
+  --color-warning-border: #fde68a;
+  --color-warning-fg: #b45309;
+  --color-error-bg: #fef2f2;
+  --color-error-border: #fecaca;
+  --color-error-fg: #b91c1c;
+
+  /* ------------------------------------------------------------------------
+     Typography
+     ------------------------------------------------------------------------ */
+  --font-sans: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
+    "Helvetica Neue", Arial, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-md: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 1.875rem;
+  --text-4xl: 2.25rem;
+
+  /* ------------------------------------------------------------------------
+     Radii
+     ------------------------------------------------------------------------ */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.625rem;
+  --radius-xl: 0.75rem;
+  --radius-2xl: 1rem;
+  --radius-full: 9999px;
+}
+
+/* --------------------------------------------------------------------------
+   Dark mode — semantic overrides only (raw scales stay constant)
+   -------------------------------------------------------------------------- */
+@media (prefers-color-scheme: dark) {
+  :root {
+    color-scheme: dark;
+
+    --color-primary: #7f56d9;
+    --color-primary-hover: #9e77ed;
+    --color-primary-active: #b692f6;
+
+    --color-bg: #0a0a0a;
+    --color-bg-secondary: #171717;
+    --color-bg-tertiary: #262626;
+
+    --color-fg: #fafafa;
+    --color-fg-secondary: #d4d4d4;
+    --color-fg-tertiary: #a3a3a3;
+    --color-fg-quaternary: #737373;
+    --color-fg-disabled: #525252;
+    --color-fg-brand: #b692f6;
+    --color-muted-fg: #737373;
+
+    --color-border: #404040;
+    --color-border-secondary: #262626;
+    --color-border-brand: #b692f6;
+
+    --color-fg-error: #ef4444;
+    --color-border-error: #ef4444;
+    --color-fg-success: #22c55e;
+    --color-border-success: #22c55e;
+
+    --color-info-bg: #2c1c5f;
+    --color-info-border: #53389e;
+    --color-info-fg: #d6bbfb;
+    --color-success-bg: #052e16;
+    --color-success-border: #166534;
+    --color-success-fg: #86efac;
+    --color-warning-bg: #451a03;
+    --color-warning-border: #92400e;
+    --color-warning-fg: #fcd34d;
+    --color-error-bg: #450a0a;
+    --color-error-border: #991b1b;
+    --color-error-fg: #fca5a5;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Base styles
+   -------------------------------------------------------------------------- */
+@layer base {
+  html {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-fg);
+  }
+
+  * {
+    border-color: var(--color-border);
+    outline-color: var(--color-ring);
+  }
+}
+
+/* --------------------------------------------------------------------------
+   Code blocks — GitHub light/dark syntax theme (via highlight.js)
+   -------------------------------------------------------------------------- */
+.hljs {
+  color: #24292e;
+  background: transparent;
+}
+.hljs-keyword,
+.hljs-deletion { color: #d73a49; }
+.hljs-title,
+.hljs-title.class_,
+.hljs-title.function_ { color: #6f42c1; }
+.hljs-number,
+.hljs-attr,
+.hljs-variable { color: #005cc5; }
+.hljs-string,
+.hljs-regexp { color: #032f62; }
+.hljs-comment { color: #6a737d; font-style: italic; }
+.hljs-tag { color: #22863a; }
+.hljs-name { color: #22863a; }
+.hljs-built_in { color: #e36209; }
+.hljs-type { color: #6f42c1; }
+.hljs-literal { color: #005cc5; }
+.hljs-selector-class { color: #6f42c1; }
+.hljs-meta { color: #e36209; }
+
+@media (prefers-color-scheme: dark) {
+  .hljs { color: #e1e4e8; }
+  .hljs-keyword,
+  .hljs-deletion { color: #f97583; }
+  .hljs-title,
+  .hljs-title.class_,
+  .hljs-title.function_ { color: #b392f0; }
+  .hljs-number,
+  .hljs-attr,
+  .hljs-variable { color: #79b8ff; }
+  .hljs-string,
+  .hljs-regexp { color: #9ecbff; }
+  .hljs-comment { color: #6a737d; }
+  .hljs-tag { color: #85e89d; }
+  .hljs-name { color: #85e89d; }
+  .hljs-built_in { color: #ffab70; }
+  .hljs-type { color: #b392f0; }
+  .hljs-literal { color: #79b8ff; }
+  .hljs-meta { color: #ffab70; }
+}
