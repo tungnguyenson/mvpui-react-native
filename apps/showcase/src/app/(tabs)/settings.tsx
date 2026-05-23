@@ -8,7 +8,7 @@ export default function SettingsTab() {
   const isDark = scheme === "dark"
 
   return (
-    <SafeAreaView className="flex-1 bg-bg">
+    <SafeAreaView className="flex-1 bg-bg" edges={["top"]}>
       <ScrollView contentContainerClassName="px-5 py-6 gap-6">
         <Text className="text-fg text-2xl font-bold">Settings</Text>
 

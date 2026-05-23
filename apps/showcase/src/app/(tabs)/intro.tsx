@@ -40,7 +40,7 @@ export default function IntroTab() {
   const iconWhite = tokens.color.gray["25"]
 
   return (
-    <SafeAreaView className="flex-1 bg-bg">
+    <SafeAreaView className="flex-1 bg-bg" edges={["top"]}>
       <ScrollView contentContainerClassName="px-5 py-8 gap-8">
 
         {/* Hero */}

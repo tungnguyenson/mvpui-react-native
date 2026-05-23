@@ -47,12 +47,10 @@ export default function ScreensTab() {
   const fgColor = isDark ? tokens.color.gray["25"] : tokens.color.gray["900"]
 
   return (
-    <SafeAreaView className="flex-1 bg-bg">
+    <SafeAreaView className="flex-1 bg-bg" edges={["top"]}>
       <ScrollView contentContainerClassName="px-5 py-6">
         <View className="gap-4">
-          <Text className="text-fg-tertiary text-xs uppercase tracking-wide font-medium">
-            Application Screens
-          </Text>
+          <Text className="text-fg text-2xl font-bold">Application Screens</Text>
           <View className="flex-row flex-wrap gap-3">
             {SCREENS.map((s) => (
               <Pressable
@@ -65,7 +63,7 @@ export default function ScreensTab() {
                     <s.Icon size={28} color={fgColor} />
                   </View>
                   <CardContent className="py-3 px-4">
-                    <Text className="text-fg text-sm font-semibold" numberOfLines={1}>
+                    <Text className="text-fg text-sm font-semibold mt-2" numberOfLines={1}>
                       {s.label}
                     </Text>
                   </CardContent>
