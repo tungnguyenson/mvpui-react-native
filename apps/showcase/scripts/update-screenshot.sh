@@ -16,13 +16,14 @@ set -euo pipefail
 
 REPO_ROOT=$(cd "$(dirname "$0")/../../.." && pwd)
 DOCS_SCREENSHOTS="$REPO_ROOT/apps/docs-rn/public/screenshots"
+OUT="$REPO_ROOT/.maestro-out"
 EXPO_GO_ID="host.exp.Exponent"
 EXPO_URL="exp://localhost:8081"
 TMP_YAML="/tmp/maestro-update-screenshot.yaml"
 COMPONENTS_DATA="$REPO_ROOT/apps/docs-rn/src/lib/components-data.ts"
 SCREENS_DATA="$REPO_ROOT/apps/docs-rn/src/lib/screens-data.ts"
 
-mkdir -p "$DOCS_SCREENSHOTS"
+mkdir -p "$DOCS_SCREENSHOTS" "$OUT"
 
 # --------------------------------------------------------------------------
 # Collect slugs
@@ -108,17 +109,17 @@ run_mode() {
 
   # Clean any leftover slug PNGs from a previous run
   for slug in $ALL_SLUGS; do
-    rm -f "$REPO_ROOT/${slug}.png"
+    rm -f "$OUT/${slug}.png"
   done
 
   echo "==> Running Maestro flow ($mode)"
-  (cd "$REPO_ROOT" && maestro test "$TMP_YAML")
+  (cd "$OUT" && maestro test "$TMP_YAML")
 
   echo "==> Copying screenshots ($mode)"
   local ok=0 fail=0
   for slug in $ALL_SLUGS; do
-    if [[ -f "$REPO_ROOT/${slug}.png" ]]; then
-      mv "$REPO_ROOT/${slug}.png" "$DOCS_SCREENSHOTS/${slug}-${mode}.png"
+    if [[ -f "$OUT/${slug}.png" ]]; then
+      cp "$OUT/${slug}.png" "$DOCS_SCREENSHOTS/${slug}-${mode}.png"
       echo "    ✓ ${slug}-${mode}.png"
       ((ok++)) || true
     else

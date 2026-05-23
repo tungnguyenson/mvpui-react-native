@@ -67,9 +67,10 @@ function ScreenMockup({
   hasScreenshots?: boolean
 }) {
   if (hasScreenshots) {
+    const imageBase = process.env.IMAGE_HOST ?? ""
     return (
       <ScreenshotFrame
-        src={`/screenshots/${slug}-${theme}.png`}
+        src={`${imageBase}/screenshots/${slug}-${theme}.png`}
         alt={`${name} — ${theme} mode`}
       />
     )

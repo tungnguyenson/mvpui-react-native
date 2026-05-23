@@ -26,8 +26,9 @@ export default async function ComponentPage({ params }: PageProps) {
   const component = components.find((c) => c.slug === slug)
   if (!component) notFound()
 
-  const lightSrc = `/screenshots/${slug}-light.png`
-  const darkSrc = `/screenshots/${slug}-dark.png`
+  const imageBase = process.env.IMAGE_HOST ?? ""
+  const lightSrc = `${imageBase}/screenshots/${slug}-light.png`
+  const darkSrc = `${imageBase}/screenshots/${slug}-dark.png`
 
   return (
     <article className="mx-auto max-w-4xl px-6 py-12">
