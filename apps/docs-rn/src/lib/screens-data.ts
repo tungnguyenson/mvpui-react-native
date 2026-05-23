@@ -21,6 +21,7 @@ export const screens: ScreenDef[] = [
     description:
       "Tab shell with a centered FAB that replaces the middle tab — common in social/creation apps.",
     components: ["TabBar", "FAB", "Header", "SafeArea"],
+    hasScreenshots: true,
   },
   {
     slug: "onboarding",

@@ -29,7 +29,7 @@ appId: host.exp.Exponent
     stopApp: true
 - openLink: "exp://localhost:8081/--/"
 - extendedWaitUntil:
-    visible: "mvp-ui-rn"
+    visible: "Application Screens"
     timeout: 60000
 - takeScreenshot: 01-index
 
@@ -51,7 +51,6 @@ appId: host.exp.Exponent
 - assertVisible: "Pull down from the top"
 - takeScreenshot: 05-ptr-idle
 - swipe:
-    direction: DOWN
     duration: 1500
     start: 50%, 30%
     end: 50%, 85%
@@ -74,8 +73,10 @@ appId: host.exp.Exponent
 - takeScreenshot: 10-actionsheet-dismissed
 - tapOn: "Show rich options"
 - waitForAnimationToEnd
-- assertVisible: "Pin to top of inbox"
+- assertVisible: "Quick actions"
 - takeScreenshot: 11-actionsheet-rich
+- tapOn: "Cancel"
+- waitForAnimationToEnd
 
 # --- SwipeableRow -------------------------------------------------------
 - openLink: "exp://localhost:8081/--/components/swipeable-row"

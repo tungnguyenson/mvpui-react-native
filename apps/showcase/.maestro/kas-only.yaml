@@ -1,17 +1,18 @@
-# Focused KAS-only flow. Single tap → screenshot. Used while debugging
+# Focused KAS-only flow. Single deep link → screenshot. Used while debugging
 # the KeyboardAvoidingScroll layout — avoids re-screenshotting the 4
 # already-verified Header / TabBar / SearchBar / SegmentedControl pages.
 
 appId: host.exp.Exponent
 ---
-- runFlow:
-    when:
-      visible: "index"
-    commands:
-      - tapOn: "index"
+- launchApp:
+    appId: host.exp.Exponent
+    stopApp: true
+- openLink: "exp://localhost:8081/--/"
+- extendedWaitUntil:
+    visible: "Application Screens"
+    timeout: 60000
 
-- assertVisible: "mvp-ui-rn"
-- tapOn: "KAS"
+- openLink: "exp://localhost:8081/--/components/keyboard-avoiding-scroll"
 - assertVisible:
     text: "KAS"
     enabled: true

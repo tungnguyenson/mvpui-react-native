@@ -33,7 +33,7 @@ appId: host.exp.Exponent
     appId: host.exp.Exponent
 - openLink: "exp://localhost:8081/--/"
 - extendedWaitUntil:
-    visible: "mvp-ui-rn"
+    visible: "Application Screens"
     timeout: 60000
 - assertVisible: "Application Screens"
 - takeScreenshot: 01-index-top

@@ -3,6 +3,8 @@
 # Wrapper `scripts/verify-batch2.sh` runs this flow twice (light + dark)
 # and renames captures to *-light.png / *-dark.png.
 #
+# Uses Expo deep links to bypass the restructured (tabs) nav.
+#
 # Preconditions:
 #   1. `pnpm showcase:ios` is running.
 #   2. Expo Go is foregrounded.
@@ -11,17 +13,18 @@
 
 appId: host.exp.Exponent
 ---
-- runFlow:
-    when:
-      visible: "index"
-    commands:
-      - tapOn: "index"
-
-- assertVisible: "mvp-ui-rn"
+# --- Cold-launch, wait for bundle -----------------------------------------
+- launchApp:
+    appId: host.exp.Exponent
+    stopApp: true
+- openLink: "exp://localhost:8081/--/"
+- extendedWaitUntil:
+    visible: "Application Screens"
+    timeout: 60000
 - takeScreenshot: 01-index
 
 # ----- Header -----------------------------------------------------------
-- tapOn: "Header"
+- openLink: "exp://localhost:8081/--/components/header"
 - assertVisible:
     text: "Header"
     enabled: true
@@ -30,10 +33,9 @@ appId: host.exp.Exponent
     direction: UP
     duration: 2500
 - takeScreenshot: 03-header-mid
-- tapOn: "index"
 
 # ----- TabBar -----------------------------------------------------------
-- tapOn: "TabBar"
+- openLink: "exp://localhost:8081/--/components/tab-bar"
 - assertVisible:
     text: "TabBar"
     enabled: true
@@ -42,10 +44,9 @@ appId: host.exp.Exponent
     direction: UP
     duration: 2500
 - takeScreenshot: 05-tabbar-mid
-- tapOn: "index"
 
 # ----- SearchBar --------------------------------------------------------
-- tapOn: "SearchBar"
+- openLink: "exp://localhost:8081/--/components/search-bar"
 - assertVisible:
     text: "SearchBar"
     enabled: true
@@ -54,10 +55,9 @@ appId: host.exp.Exponent
     direction: UP
     duration: 2500
 - takeScreenshot: 07-searchbar-mid
-- tapOn: "index"
 
 # ----- SegmentedControl -------------------------------------------------
-- tapOn: "SegmentedControl"
+- openLink: "exp://localhost:8081/--/components/segmented-control"
 - assertVisible:
     text: "SegmentedControl"
     enabled: true
@@ -66,10 +66,9 @@ appId: host.exp.Exponent
     direction: UP
     duration: 2500
 - takeScreenshot: 09-segmented-mid
-- tapOn: "index"
 
 # ----- KeyboardAvoidingScroll -------------------------------------------
-- tapOn: "KAS"
+- openLink: "exp://localhost:8081/--/components/keyboard-avoiding-scroll"
 - assertVisible:
     text: "KAS"
     enabled: true

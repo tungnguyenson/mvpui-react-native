@@ -2,14 +2,15 @@
 
 appId: host.exp.Exponent
 ---
-- runFlow:
-    when:
-      visible: "index"
-    commands:
-      - tapOn: "index"
+- launchApp:
+    appId: host.exp.Exponent
+    stopApp: true
+- openLink: "exp://localhost:8081/--/"
+- extendedWaitUntil:
+    visible: "Application Screens"
+    timeout: 60000
 
-- assertVisible: "mvp-ui-rn"
-- tapOn: "Skeleton"
+- openLink: "exp://localhost:8081/--/components/skeleton"
 - assertVisible:
     text: "Skeleton"
     enabled: true

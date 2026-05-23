@@ -4,6 +4,8 @@
 # forced to light appearance, once with dark — and renames captures to
 # *-light.png / *-dark.png between runs.
 #
+# Uses Expo deep links to bypass the restructured (tabs) nav.
+#
 # Preconditions:
 #   1. `pnpm showcase:ios` is running.
 #   2. Expo Go is foregrounded.
@@ -12,24 +14,17 @@
 
 appId: host.exp.Exponent
 ---
-# --- Reset to index if currently on Button page -------------------------
+# --- Cold-launch, wait for bundle -----------------------------------------
+- launchApp:
+    appId: host.exp.Exponent
+    stopApp: true
+- openLink: "exp://localhost:8081/--/"
+- extendedWaitUntil:
+    visible: "Application Screens"
+    timeout: 60000
 
-- runFlow:
-    when:
-      visible: "index"
-    commands:
-      - tapOn: "index"
-
-# --- Index --------------------------------------------------------------
-
-- assertVisible: "mvp-ui-rn"
-- assertVisible: "Components"
-- assertVisible: "Button"
-- takeScreenshot: 01-index
-
-# --- Button page sweep --------------------------------------------------
-
-- tapOn: "Button"
+# --- Button page sweep ----------------------------------------------------
+- openLink: "exp://localhost:8081/--/components/button"
 - assertVisible:
     text: "Button"
     enabled: true

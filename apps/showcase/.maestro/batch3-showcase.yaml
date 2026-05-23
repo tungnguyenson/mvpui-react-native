@@ -2,6 +2,8 @@
 # Wrapper `scripts/verify-batch3.sh` runs twice (light + dark) and
 # renames captures to *-light.png / *-dark.png.
 #
+# Uses Expo deep links to bypass the restructured (tabs) nav.
+#
 # Preconditions:
 #   1. `pnpm showcase:ios` is running.
 #   2. Expo Go is foregrounded.
@@ -10,17 +12,18 @@
 
 appId: host.exp.Exponent
 ---
-- runFlow:
-    when:
-      visible: "index"
-    commands:
-      - tapOn: "index"
-
-- assertVisible: "mvp-ui-rn"
+# --- Cold-launch, wait for bundle -----------------------------------------
+- launchApp:
+    appId: host.exp.Exponent
+    stopApp: true
+- openLink: "exp://localhost:8081/--/"
+- extendedWaitUntil:
+    visible: "Application Screens"
+    timeout: 60000
 - takeScreenshot: 01-index
 
 # ----- Badge ------------------------------------------------------------
-- tapOn: "Badge"
+- openLink: "exp://localhost:8081/--/components/badge"
 - assertVisible:
     text: "Badge"
     enabled: true
@@ -29,10 +32,9 @@ appId: host.exp.Exponent
     direction: UP
     duration: 2500
 - takeScreenshot: 03-badge-mid
-- tapOn: "index"
 
 # ----- Avatar -----------------------------------------------------------
-- tapOn: "Avatar"
+- openLink: "exp://localhost:8081/--/components/avatar"
 - assertVisible:
     text: "Avatar"
     enabled: true
@@ -41,10 +43,9 @@ appId: host.exp.Exponent
     direction: UP
     duration: 2500
 - takeScreenshot: 05-avatar-mid
-- tapOn: "index"
 
 # ----- List -------------------------------------------------------------
-- tapOn: "List"
+- openLink: "exp://localhost:8081/--/components/list"
 - assertVisible:
     text: "List"
     enabled: true
@@ -53,10 +54,9 @@ appId: host.exp.Exponent
     direction: UP
     duration: 2500
 - takeScreenshot: 07-list-mid
-- tapOn: "index"
 
 # ----- Image ------------------------------------------------------------
-- tapOn: "Image"
+- openLink: "exp://localhost:8081/--/components/image"
 - assertVisible:
     text: "Image"
     enabled: true
@@ -65,10 +65,9 @@ appId: host.exp.Exponent
     direction: UP
     duration: 2500
 - takeScreenshot: 09-image-mid
-- tapOn: "index"
 
 # ----- Skeleton ---------------------------------------------------------
-- tapOn: "Skeleton"
+- openLink: "exp://localhost:8081/--/components/skeleton"
 - assertVisible:
     text: "Skeleton"
     enabled: true

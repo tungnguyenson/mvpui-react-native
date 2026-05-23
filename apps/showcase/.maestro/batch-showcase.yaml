@@ -3,6 +3,8 @@
 # runs this flow TWICE — light + dark — and renames captures to
 # *-light.png / *-dark.png between runs.
 #
+# Uses Expo deep links to bypass the restructured (tabs) nav.
+#
 # Preconditions:
 #   1. `pnpm showcase:ios` is running.
 #   2. Expo Go is foregrounded.
@@ -11,20 +13,18 @@
 
 appId: host.exp.Exponent
 ---
-# --- Reset to index if currently on a component page --------------------
-
-- runFlow:
-    when:
-      visible: "index"
-    commands:
-      - tapOn: "index"
-
-- assertVisible: "mvp-ui-rn"
+# --- Cold-launch, wait for bundle -----------------------------------------
+- launchApp:
+    appId: host.exp.Exponent
+    stopApp: true
+- openLink: "exp://localhost:8081/--/"
+- extendedWaitUntil:
+    visible: "Application Screens"
+    timeout: 60000
 - takeScreenshot: 01-index
 
 # ----- Spinner ----------------------------------------------------------
-
-- tapOn: "Spinner"
+- openLink: "exp://localhost:8081/--/components/spinner"
 - assertVisible:
     text: "Spinner"
     enabled: true
@@ -33,11 +33,9 @@ appId: host.exp.Exponent
     direction: UP
     duration: 2500
 - takeScreenshot: 03-spinner-mid
-- tapOn: "index"
 
 # ----- SafeArea ---------------------------------------------------------
-
-- tapOn: "SafeArea"
+- openLink: "exp://localhost:8081/--/components/safe-area"
 - assertVisible:
     text: "SafeArea"
     enabled: true
@@ -46,11 +44,9 @@ appId: host.exp.Exponent
     direction: UP
     duration: 2500
 - takeScreenshot: 05-safearea-mid
-- tapOn: "index"
 
 # ----- Card -------------------------------------------------------------
-
-- tapOn: "Card"
+- openLink: "exp://localhost:8081/--/components/card"
 - assertVisible:
     text: "Card"
     enabled: true
@@ -59,11 +55,9 @@ appId: host.exp.Exponent
     direction: UP
     duration: 2500
 - takeScreenshot: 07-card-mid
-- tapOn: "index"
 
 # ----- Alert ------------------------------------------------------------
-
-- tapOn: "Alert"
+- openLink: "exp://localhost:8081/--/components/alert"
 - assertVisible:
     text: "Alert"
     enabled: true
@@ -72,11 +66,9 @@ appId: host.exp.Exponent
     direction: UP
     duration: 2500
 - takeScreenshot: 09-alert-mid
-- tapOn: "index"
 
 # ----- EmptyState -------------------------------------------------------
-
-- tapOn: "EmptyState"
+- openLink: "exp://localhost:8081/--/components/empty-state"
 - assertVisible:
     text: "EmptyState"
     enabled: true

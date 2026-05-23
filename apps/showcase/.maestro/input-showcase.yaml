@@ -3,6 +3,8 @@
 # `scripts/verify-input.sh` runs this flow TWICE — once light, once dark —
 # and renames captures to *-light.png / *-dark.png between runs.
 #
+# Uses Expo deep links to bypass the restructured (tabs) nav.
+#
 # Preconditions:
 #   1. `pnpm showcase:ios` is running.
 #   2. Expo Go is foregrounded.
@@ -11,33 +13,23 @@
 
 appId: host.exp.Exponent
 ---
-# --- Reset to index if currently on Input page -------------------------
+# --- Cold-launch, wait for bundle -----------------------------------------
+- launchApp:
+    appId: host.exp.Exponent
+    stopApp: true
+- openLink: "exp://localhost:8081/--/"
+- extendedWaitUntil:
+    visible: "Application Screens"
+    timeout: 60000
 
-- runFlow:
-    when:
-      visible: "index"
-    commands:
-      - tapOn: "index"
-
-# --- Index --------------------------------------------------------------
-
-- assertVisible: "mvp-ui-rn"
-- assertVisible: "Components"
-- assertVisible: "Input"
-- takeScreenshot: 01-index
-
-# --- Input page sweep ---------------------------------------------------
-
-- tapOn: "Input"
+# --- Input page sweep -----------------------------------------------------
+- openLink: "exp://localhost:8081/--/components/input"
 - assertVisible:
     text: "Input"
     enabled: true
 - assertVisible: "Default"
 - takeScreenshot: 02-input-top
 
-# Slow first swipe (longer duration = less momentum) so success /
-# disabled / read-only rows land in the captured viewport. Faster
-# swipes vaulted past them in the previous flows.
 - swipe:
     direction: UP
     duration: 2500
