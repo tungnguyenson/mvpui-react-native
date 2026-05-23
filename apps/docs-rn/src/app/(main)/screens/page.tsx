@@ -1,6 +1,6 @@
 import type { Metadata } from "next"
 import { screens } from "@/lib/screens-data"
-import { PlaceholderFrame } from "@/components/docs/IPhoneFrame"
+import { PlaceholderFrame, ScreenshotFrame } from "@/components/docs/IPhoneFrame"
 
 export const metadata: Metadata = { title: "Screens" }
 
@@ -40,11 +40,11 @@ export default function ScreensPage() {
             {/* Side-by-side light + dark mockups */}
             <div className="flex flex-wrap gap-8 justify-start">
               <div className="flex flex-col items-center gap-2">
-                <ScreenMockup slug={screen.slug} theme="light" name={screen.name} />
+                <ScreenMockup slug={screen.slug} theme="light" name={screen.name} hasScreenshots={screen.hasScreenshots} />
                 <span className="text-xs text-fg-tertiary">Light</span>
               </div>
               <div className="flex flex-col items-center gap-2">
-                <ScreenMockup slug={screen.slug} theme="dark" name={screen.name} />
+                <ScreenMockup slug={screen.slug} theme="dark" name={screen.name} hasScreenshots={screen.hasScreenshots} />
                 <span className="text-xs text-fg-tertiary">Dark</span>
               </div>
             </div>
@@ -59,12 +59,20 @@ function ScreenMockup({
   slug,
   theme,
   name,
+  hasScreenshots,
 }: {
   slug: string
   theme: "light" | "dark"
   name: string
+  hasScreenshots?: boolean
 }) {
-  const src = `/screenshots/${slug}-${theme}.png`
-
+  if (hasScreenshots) {
+    return (
+      <ScreenshotFrame
+        src={`/screenshots/${slug}-${theme}.png`}
+        alt={`${name} — ${theme} mode`}
+      />
+    )
+  }
   return <PlaceholderFrame label={`${name} — ${theme}`} />
 }
