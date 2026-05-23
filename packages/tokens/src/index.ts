@@ -3,8 +3,8 @@
  * Licensed under MIT
  */
 
-export { tokens } from "./tokens"
-export type { Tokens, BrandColor, GrayColor } from "./tokens"
+export { tokens, applyTheme } from "./tokens"
+export type { Tokens, BrandColor, GrayColor, BrandScale } from "./tokens"
 
 export { textSize, fontWeight } from "./typography"
 export type { TextSizeKey, FontWeightKey } from "./typography"

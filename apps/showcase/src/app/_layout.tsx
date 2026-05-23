@@ -1,5 +1,8 @@
-import "@mvp-ui-rn/tokens/global.css"
+import "../global.css"
 
+import { applyTheme } from "@mvp-ui-rn/tokens"
+import { brand, brandPrimary } from "@mvp-ui-rn/tokens/themes/purple"
+applyTheme(brand)
 import { BottomSheetModalProvider } from "@gorhom/bottom-sheet"
 import { ActionSheetHost, Toaster } from "@mvp-ui-rn/ui"
 import { PortalHost } from "@rn-primitives/portal"
@@ -24,7 +27,8 @@ export default function RootLayout() {
   // pick up `bg-bg` via className. Hand it the React Navigation theme that
   // matches the current Appearance so the header bg + label flip in lockstep
   // with our token-driven content area.
-  const navTheme = scheme === "dark" ? DarkTheme : DefaultTheme
+  const base = scheme === "dark" ? DarkTheme : DefaultTheme
+  const navTheme = { ...base, colors: { ...base.colors, primary: brandPrimary } }
 
   // Inter Variable — single TTF covers every weight (RN handles axes natively
   // on iOS 14+ / modern Android). Family name maps 1:1 to the `--font-sans`
@@ -35,7 +39,7 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (fontsLoaded) {
-      SplashScreen.hideAsync().catch(() => {})
+      SplashScreen.hideAsync().catch(() => { })
     }
   }, [fontsLoaded])
 

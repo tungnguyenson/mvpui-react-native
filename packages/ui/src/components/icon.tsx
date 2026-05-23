@@ -44,7 +44,7 @@ export type IconTint =
   | "fg-success"
   | "primary-fg"
 
-const tintLight: Record<IconTint, string> = {
+const getTintLight = (): Record<IconTint, string> => ({
   fg: tokens.color.gray["900"],
   "fg-secondary": tokens.color.gray["700"],
   "fg-tertiary": tokens.color.gray["500"],
@@ -53,9 +53,9 @@ const tintLight: Record<IconTint, string> = {
   "fg-warning": tokens.color.warning["600"],
   "fg-success": tokens.color.success["600"],
   "primary-fg": "#ffffff", // dark-ok: white on brand fill, light + dark
-}
+})
 
-const tintDark: Record<IconTint, string> = {
+const getTintDark = (): Record<IconTint, string> => ({
   fg: tokens.color.gray["25"],
   "fg-secondary": tokens.color.gray["300"],
   "fg-tertiary": tokens.color.gray["400"],
@@ -64,7 +64,7 @@ const tintDark: Record<IconTint, string> = {
   "fg-warning": tokens.color.warning["500"],
   "fg-success": tokens.color.success["500"],
   "primary-fg": "#ffffff", // dark-ok
-}
+})
 
 export interface IconProps {
   /** Lucide component, react-native-svg factory, or pre-rendered node. */
@@ -90,7 +90,7 @@ export function Icon({ as, size = "md", tint = "fg", color }: IconProps) {
   const isDark = scheme === "dark"
   const resolvedSize = typeof size === "number" ? size : ICON_PX[size]
   const resolvedColor =
-    color ?? (isDark ? tintDark[tint] : tintLight[tint])
+    color ?? (isDark ? getTintDark()[tint] : getTintLight()[tint])
 
   return renderIcon(as, "leading", {
     size: resolvedSize,

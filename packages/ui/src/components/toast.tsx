@@ -141,7 +141,7 @@ interface TintPair {
   dark: string
 }
 
-const ICON_TINTS: Record<ToastVariant, TintPair> = {
+const getIconTints = (): Record<ToastVariant, TintPair> => ({
   info: { light: tokens.color.brand["600"], dark: tokens.color.brand["400"] },
   success: {
     light: tokens.color.success["600"],
@@ -155,7 +155,7 @@ const ICON_TINTS: Record<ToastVariant, TintPair> = {
     light: tokens.color.error["600"],
     dark: tokens.color.error["500"],
   },
-}
+})
 
 const VARIANT_BORDER: Record<ToastVariant, string> = {
   info: "border-info-border",
@@ -180,7 +180,7 @@ const ToastItem = ({ toast: t, isDark, onDismiss }: ToastItemProps) => {
   const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const duration = t.duration ?? DEFAULT_DURATION
   const Icon = ICONS[t.variant]
-  const tint = isDark ? ICON_TINTS[t.variant].dark : ICON_TINTS[t.variant].light
+  const tint = isDark ? getIconTints()[t.variant].dark : getIconTints()[t.variant].light
   const dismissTint = isDark
     ? tokens.color.gray["400"]
     : tokens.color.gray["500"]

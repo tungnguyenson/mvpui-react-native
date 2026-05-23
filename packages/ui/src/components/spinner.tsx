@@ -57,23 +57,23 @@ type SpinnerTint =
   | "fg-error"
   | "primary-fg"
 
-const tintLight: Record<SpinnerTint, string> = {
+const getTintLight = (): Record<SpinnerTint, string> => ({
   fg: tokens.color.gray["900"],
   "fg-secondary": tokens.color.gray["700"],
   "fg-tertiary": tokens.color.gray["500"],
   "fg-brand": tokens.color.brand["600"],
   "fg-error": tokens.color.error["600"],
   "primary-fg": "#ffffff", // dark-ok: white on brand fill, light + dark
-}
+})
 
-const tintDark: Record<SpinnerTint, string> = {
+const getTintDark = (): Record<SpinnerTint, string> => ({
   fg: tokens.color.gray["25"],
   "fg-secondary": tokens.color.gray["300"],
   "fg-tertiary": tokens.color.gray["400"],
   "fg-brand": tokens.color.brand["400"],
   "fg-error": tokens.color.error["500"],
   "primary-fg": "#ffffff", // dark-ok
-}
+})
 
 export interface SpinnerProps {
   /**
@@ -107,7 +107,7 @@ export function Spinner({
   const isDark = scheme === "dark"
   const resolvedSize = typeof size === "number" ? size : SPINNER_PX_SIZE[size]
   const resolvedColor =
-    color ?? (isDark ? tintDark[tint] : tintLight[tint])
+    color ?? (isDark ? getTintDark()[tint] : getTintLight()[tint])
 
   const rotation = useSharedValue(0)
 

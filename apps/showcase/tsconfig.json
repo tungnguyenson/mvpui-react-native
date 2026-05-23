@@ -6,6 +6,8 @@
       "@/*": ["./src/*"],
       "@/assets/*": ["./assets/*"],
       "@mvp-ui-rn/tokens": ["../../packages/tokens/src/index.ts"],
+      "@mvp-ui-rn/tokens/themes/*.css": ["../../packages/tokens/src/themes/index.d.ts"],
+      "@mvp-ui-rn/tokens/themes/*": ["../../packages/tokens/src/themes/*.ts"],
       "@mvp-ui-rn/tokens/*": ["../../packages/tokens/src/*"],
       "@mvp-ui-rn/ui": ["../../packages/ui/src/index.ts"],
       "@mvp-ui-rn/ui/*": ["../../packages/ui/src/*"]

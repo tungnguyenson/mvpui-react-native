@@ -9,7 +9,14 @@
     ".": "./src/index.ts",
     "./global.css": "./src/global.css",
     "./tokens.css": "./src/tokens.css",
-    "./theme.css": "./src/theme.css"
+    "./theme.css": "./src/theme.css",
+    "./themes/*.css": "./src/themes/*.css",
+    "./themes/*": "./src/themes/*.ts"
+  },
+  "typesVersions": {
+    "*": {
+      "themes/*.css": ["./src/themes/index.d.ts"]
+    }
   },
   "files": ["src"],
   "license": "MIT",

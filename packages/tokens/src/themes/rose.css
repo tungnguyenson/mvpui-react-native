@@ -1,0 +1,22 @@
+/**
+ * Brand theme: Rose (Tailwind rose)
+ * Note: if rose is used as brand, consider swapping --color-error-* to
+ * red to keep status semantics visually distinct.
+ *
+ * Copyright (c) 2026 TungMVP — MIT
+ */
+
+@theme {
+  --color-brand-25:  #fff7f8;
+  --color-brand-50:  #fff1f2;
+  --color-brand-100: #ffe4e6;
+  --color-brand-200: #fecdd3;
+  --color-brand-300: #fda4af;
+  --color-brand-400: #fb7185;
+  --color-brand-500: #f43f5e;
+  --color-brand-600: #e11d48;
+  --color-brand-700: #be123c;
+  --color-brand-800: #9f1239;
+  --color-brand-900: #881337;
+  --color-brand-950: #4c0519;
+}

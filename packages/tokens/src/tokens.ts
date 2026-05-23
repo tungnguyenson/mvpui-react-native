@@ -126,3 +126,18 @@ export const tokens = {
 export type Tokens = typeof tokens
 export type BrandColor = keyof typeof tokens.color.brand
 export type GrayColor = keyof typeof tokens.color.gray
+export type BrandScale = {
+  "25": string; "50": string; "100": string; "200": string; "300": string
+  "400": string; "500": string; "600": string; "700": string; "800": string
+  "900": string; "950": string
+}
+
+/**
+ * Mutates `tokens.color.brand` in-place so all lazy color getters in
+ * component files pick up the new values on their next render.
+ * Call this at module level in your app entry point, before any component
+ * renders. One-time setup only — not designed for runtime switching.
+ */
+export function applyTheme(brand: BrandScale): void {
+  Object.assign(tokens.color.brand as Record<string, string>, brand)
+}

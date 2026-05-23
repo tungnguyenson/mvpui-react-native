@@ -49,28 +49,28 @@ type FabSize = keyof typeof FAB_SIZE
 type FabColor = "primary" | "secondary" | "surface"
 
 /* Background color (JS — needed for shadow + bg together) */
-const bgColorLight: Record<FabColor, string> = {
+const getBgColorLight = (): Record<FabColor, string> => ({
   primary: tokens.color.brand["600"],
   secondary: "#ffffff",
   surface: tokens.color.gray["50"],
-}
-const bgColorDark: Record<FabColor, string> = {
+})
+const getBgColorDark = (): Record<FabColor, string> => ({
   primary: tokens.color.brand["600"],
   secondary: tokens.color.gray["950"],
   surface: tokens.color.gray["900"],
-}
+})
 
 /* Icon / label tint */
-const iconTintLight: Record<FabColor, string> = {
+const getIconTintLight = (): Record<FabColor, string> => ({
   primary: "#ffffff", // dark-ok: white on brand fill
   secondary: tokens.color.brand["600"],
   surface: tokens.color.gray["700"],
-}
-const iconTintDark: Record<FabColor, string> = {
+})
+const getIconTintDark = (): Record<FabColor, string> => ({
   primary: "#ffffff", // dark-ok
   secondary: tokens.color.brand["400"],
   surface: tokens.color.gray["300"],
-}
+})
 
 const containerVariants = cva("items-center justify-center overflow-hidden", {
   variants: {
@@ -124,8 +124,8 @@ export const FAB = forwardRef<ComponentRef<typeof Pressable>, FabProps>(
     const px = FAB_SIZE[size]
     const iconPx = ICON_SIZE[size]
     const labelSize = LABEL_SIZE[size]
-    const bgColor = (isDark ? bgColorDark : bgColorLight)[color]
-    const iconColor = (isDark ? iconTintDark : iconTintLight)[color]
+    const bgColor = (isDark ? getBgColorDark() : getBgColorLight())[color]
+    const iconColor = (isDark ? getIconTintDark() : getIconTintLight())[color]
     const isDisabled = disabled || isLoading
     const shape = label ? "extended" : "circle"
 

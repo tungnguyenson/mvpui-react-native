@@ -57,19 +57,19 @@ export type CircularProgressColor = NonNullable<
   VariantProps<typeof colorVariants>["color"]
 >
 
-const fillColorLight: Record<CircularProgressColor, string> = {
+const getFillColorLight = (): Record<CircularProgressColor, string> => ({
   primary: tokens.color.brand["600"],
   success: tokens.color.success["600"],
   warning: tokens.color.warning["600"],
   error: tokens.color.error["600"],
-}
+})
 
-const fillColorDark: Record<CircularProgressColor, string> = {
+const getFillColorDark = (): Record<CircularProgressColor, string> => ({
   primary: tokens.color.brand["400"],
   success: tokens.color.success["500"],
   warning: tokens.color.warning["500"],
   error: tokens.color.error["500"],
-}
+})
 
 // bg-bg-tertiary equivalent: gray-100 light / gray-800 dark
 const TRACK_LIGHT = tokens.color.gray["100"]
@@ -136,7 +136,7 @@ export const CircularProgress = forwardRef<
       strokeDashoffset: sv.value,
     }))
 
-    const fillColor = (isDark ? fillColorDark : fillColorLight)[color]
+    const fillColor = (isDark ? getFillColorDark() : getFillColorLight())[color]
     const trackColor = isDark ? TRACK_DARK : TRACK_LIGHT
     const centerText = label ?? (showValue ? `${Math.round(target)}%` : null)
 

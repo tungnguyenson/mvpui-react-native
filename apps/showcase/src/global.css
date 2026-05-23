@@ -1,0 +1,8 @@
+/* Single CSS entry point for the showcase app.
+ * Import the brand theme here — @theme declarations in a separate JS import
+ * are compiled independently and cannot override utilities baked by global.css.
+ * Chaining via CSS @import gives Tailwind one graph to compile, so the theme
+ * wins and all utilities (bg-primary, text-fg-brand, etc.) regenerate correctly.
+ */
+@import "@mvp-ui-rn/tokens/global.css";
+@import "@mvp-ui-rn/tokens/themes/purple.css";

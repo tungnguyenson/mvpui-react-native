@@ -59,7 +59,6 @@ const thumbStyleBase: ViewStyle = {
   borderRadius: THUMB_SIZE / 2,
   backgroundColor: "#ffffff",
   borderWidth: 2,
-  borderColor: tokens.color.brand[600],
   shadowColor: "#000000",
   shadowOffset: { width: 0, height: 1 },
   shadowOpacity: 0.15,
@@ -108,6 +107,7 @@ export const Slider = forwardRef<View, SliderProps>(
     const scheme = useColorScheme()
     const isDark = scheme === "dark"
 
+    const thumbBorderColor = tokens.color.brand[600]
     const minTrackTint = tokens.color.brand[600]
     const maxTrackTint = isDark
       ? tokens.color.gray[700]
@@ -135,7 +135,7 @@ export const Slider = forwardRef<View, SliderProps>(
           trackStyle={trackStyle}
           minimumTrackStyle={trackStyle}
           maximumTrackStyle={trackStyle}
-          thumbStyle={thumbStyleBase}
+          thumbStyle={{ ...thumbStyleBase, borderColor: thumbBorderColor }}
           onValueChange={(values) => onChange?.(pairToValue(value, values))}
           onSlidingComplete={(values) =>
             onSlidingComplete?.(pairToValue(value, values))

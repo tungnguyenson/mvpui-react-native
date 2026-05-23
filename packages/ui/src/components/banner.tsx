@@ -80,21 +80,21 @@ const descVariants = cva("text-sm opacity-90", {
 
 type BannerVariant = NonNullable<VariantProps<typeof bannerVariants>["variant"]>
 
-const iconTintLight: Record<BannerVariant, string> = {
+const getIconTintLight = (): Record<BannerVariant, string> => ({
   neutral: tokens.color.gray["600"],
   info: tokens.color.brand["700"],
   success: tokens.color.success["700"],
   warning: tokens.color.warning["700"],
   error: tokens.color.error["700"],
-}
+})
 
-const iconTintDark: Record<BannerVariant, string> = {
+const getIconTintDark = (): Record<BannerVariant, string> => ({
   neutral: tokens.color.gray["400"],
   info: tokens.color.brand["300"],
   success: tokens.color.success["300"],
   warning: tokens.color.warning["300"],
   error: tokens.color.error["300"],
-}
+})
 
 const ICON_SIZE = 18
 const DISMISS_HIT = 12
@@ -135,7 +135,7 @@ export const Banner = forwardRef<ComponentRef<typeof View>, BannerProps>(
   ) => {
     const scheme = useColorScheme()
     const isDark = scheme === "dark"
-    const iconTint = (isDark ? iconTintDark : iconTintLight)[variant]
+    const iconTint = (isDark ? getIconTintDark() : getIconTintLight())[variant]
 
     return (
       <Animated.View exiting={FadeOut.duration(200)}>
