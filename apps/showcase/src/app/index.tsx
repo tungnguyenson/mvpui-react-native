@@ -39,6 +39,14 @@ const components = [
   { href: "/components/pull-to-refresh", label: "PullToRefresh" },
   { href: "/components/action-sheet", label: "ActionSheet" },
   { href: "/components/swipeable-row", label: "SwipeableRow" },
+  { href: "/components/popover", label: "Popover" },
+  { href: "/components/tooltip", label: "Tooltip" },
+  { href: "/components/radio-group", label: "RadioGroup" },
+  { href: "/components/slider", label: "Slider" },
+  { href: "/components/date-time-picker", label: "DateTimePicker" },
+  { href: "/components/context-menu", label: "ContextMenu" },
+  { href: "/components/haptics", label: "Haptics" },
+  { href: "/components/settings-row", label: "SettingsRow" },
 ] as const
 
 export default function IndexScreen() {

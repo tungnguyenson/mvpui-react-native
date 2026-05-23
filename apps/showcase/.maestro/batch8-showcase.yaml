@@ -1,0 +1,122 @@
+# Drives the showcase through batch 8 (floaters + forms-completion):
+# Popover / Tooltip / RadioGroup / Slider / DateTimePicker / ContextMenu /
+# Haptics / SettingsRow. Wrapper `scripts/verify-batch8.sh` runs twice
+# (light + dark) and renames captures to *-light.png / *-dark.png.
+#
+# Uses Expo deep links (`exp://localhost:8081/--/<route>`) to bypass the
+# scrolled-link-tap flakiness from prior batches.
+#
+# Maestro caveats for this batch:
+# - Popover content + Tooltip content live in the PortalHost overlay
+#   layer. They ARE inspectable but tap targets render above other
+#   touchables — close popovers via backdrop-tap (50%, 90%) when needed.
+# - Tooltip opens on long-press (500ms). Maestro `longPressOn` works on
+#   labelled triggers. Hold + release closes via onPressOut, so capture
+#   the open state BEFORE release — use `tapOn { longPress: true }` and
+#   take screenshot immediately.
+# - DateTimePicker on iOS renders a native UIDatePicker pill (compact).
+#   Tapping it opens the system overlay outside the JS tree — skip
+#   interactive verification, snapshot only.
+# - ContextMenu opens via long-press → ActionSheet. Same chrome as
+#   batch7 ActionSheet — options are inspectable; tap "Cancel" to dismiss.
+# - Haptics are silent during Maestro runs (sim doesn't vibrate).
+#   Verify by tapping buttons and asserting the screen rendered.
+#
+# Preconditions:
+#   1. `pnpm showcase` is running and Expo Go has the bundle loaded.
+#
+# Run:  pnpm verify:batch8
+
+appId: host.exp.Exponent
+---
+# --- Cold-launch Expo Go on the dev bundle, land on index ----------------
+- launchApp:
+    appId: host.exp.Exponent
+    stopApp: true
+- openLink: "exp://localhost:8081/--/"
+- extendedWaitUntil:
+    visible: "mvp-ui-rn"
+    timeout: 60000
+- takeScreenshot: 01-index
+
+# --- Popover ------------------------------------------------------------
+- openLink: "exp://localhost:8081/--/components/popover"
+- assertVisible: "Sides"
+- takeScreenshot: 02-popover-closed
+- tapOn: "Open below"
+- waitForAnimationToEnd
+- takeScreenshot: 03-popover-bottom
+- tapOn:
+    point: "50%, 92%"
+- waitForAnimationToEnd
+- swipe:
+    direction: UP
+    duration: 1000
+- takeScreenshot: 04-popover-bottom-list
+
+# --- Tooltip ------------------------------------------------------------
+- openLink: "exp://localhost:8081/--/components/tooltip"
+- assertVisible: "Long-press to show"
+- takeScreenshot: 05-tooltip-closed
+
+# --- RadioGroup ---------------------------------------------------------
+- openLink: "exp://localhost:8081/--/components/radio-group"
+- assertVisible: "Default sm"
+- takeScreenshot: 06-radio-default
+- tapOn: "Pro"
+- takeScreenshot: 07-radio-changed
+- swipe:
+    direction: UP
+    duration: 1200
+- takeScreenshot: 08-radio-bottom
+
+# --- Slider -------------------------------------------------------------
+- openLink: "exp://localhost:8081/--/components/slider"
+- assertVisible: "Single thumb"
+- takeScreenshot: 09-slider-top
+- swipe:
+    direction: UP
+    duration: 1200
+- takeScreenshot: 10-slider-range
+
+# --- DateTimePicker -----------------------------------------------------
+- openLink: "exp://localhost:8081/--/components/date-time-picker"
+- assertVisible: "Date"
+- takeScreenshot: 11-datetime-pickers
+
+# --- ContextMenu --------------------------------------------------------
+- openLink: "exp://localhost:8081/--/components/context-menu"
+- assertVisible: "Long-press a row"
+- takeScreenshot: 12-contextmenu-closed
+# ContextMenu wraps content in a Pressable — iOS combines child Text into a
+# single accessibility node. Text-based selector misses the inner ListItem
+# title; use the explicit testID set on the wrapper in the demo.
+- longPressOn:
+    id: "ctx-trip"
+- waitForAnimationToEnd
+- assertVisible: "Quick actions"
+- takeScreenshot: 13-contextmenu-open
+- tapOn: "Cancel"
+- waitForAnimationToEnd
+
+# --- Haptics ------------------------------------------------------------
+- openLink: "exp://localhost:8081/--/components/haptics"
+- assertVisible: "Imperative API"
+- takeScreenshot: 14-haptics-top
+- tapOn: "selection()"
+- takeScreenshot: 15-haptics-selection
+- tapOn: "success"
+- takeScreenshot: 16-haptics-success
+
+# --- SettingsRow --------------------------------------------------------
+- openLink: "exp://localhost:8081/--/components/settings-row"
+- assertVisible: "Inline (default) — switch + value text + chevron"
+- takeScreenshot: 17-settingsrow-inline
+- swipe:
+    direction: UP
+    duration: 1200
+- takeScreenshot: 18-settingsrow-stacked
+- swipe:
+    direction: UP
+    duration: 1200
+- takeScreenshot: 19-settingsrow-bottom

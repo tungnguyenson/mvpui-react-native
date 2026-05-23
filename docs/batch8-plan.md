@@ -46,7 +46,7 @@ New deps in `packages/ui`:
 | `@rn-primitives/popover` | `^1.4.0` | Popover headless primitive |
 | `@rn-primitives/tooltip` | `^1.4.0` | Tooltip headless primitive |
 | `@rn-primitives/radio-group` | `^1.4.0` | RadioGroup headless primitive |
-| `@react-native-community/slider` | `~5.x` | Native slider on iOS/Android |
+| `react-native-awesome-slider` | `^2.x` | Single + range slider (Reanimated-based) |
 | `@react-native-community/datetimepicker` | `~9.x` | Native date/time wheels & dialogs |
 | (ContextMenu lib) | TBD per Q1 | Native context menu |
 | `expo-haptics` | `~16.x` (Expo SDK 56) | Haptic feedback |
@@ -172,39 +172,39 @@ Rationale:
 
 **What it decides.** Whether v1 ships range-slider support or defers it. Affects library choice — `@react-native-community/slider` does NOT support a second thumb.
 
-#### Option A — Single thumb only (RECOMMENDED)
+#### Decision: **LOCKED — single + range, one unified library**
 
-Wrap `@react-native-community/slider` directly. Props: `value`, `min`, `max`, `step`, `onChange`, `onSlidingComplete`, `disabled`, `minimumTrackTintColor`, `maximumTrackTintColor`, `thumbTintColor`. Default track tints come from tokens.
+User locked range support in v1 (2026-05-22).
 
-Pros:
-- One mature, Apple-blessed lib. Native UISlider on iOS, native Slider on Android.
-- ~95% of consumer needs — volume, brightness, threshold, single-value filter.
-- No second library, no second mental model.
+**Lib:** `react-native-awesome-slider` (~v2.x).
 
-Cons:
-- Range filters (price min/max, date-range) need a second lib later. When that day comes, we'd ship `RangeSlider` as a separate component, not extend `Slider`. Two surfaces.
+- Reanimated v4 + gesture-handler driven. Stack we already use across `SwipeableRow`, `BottomSheet`, `SegmentedControl`.
+- Single thumb: `<Slider progress />`.
+- Range thumb: `<Slider progress lowerValue upperValue />` (both shared values).
+- One animation profile + one thumb visual across modes → no visual drift.
+- Token-styled thumb (we own radius / shadow / color), not native UISlider chrome.
 
-#### Option B — Single + range in v1
+**API shape:**
 
-Adds `rn-range-slider` (or `react-native-awesome-slider`) for range mode. Either:
-- Branch internally on `value: number | [number, number]` and swap libs, OR
-- Ship `Slider` (single) + `RangeSlider` (range) as separate components from day one.
+```tsx
+// Single
+<Slider value={vol} min={0} max={100} step={1} onChange={setVol} />
 
-Pros:
-- Range filters available immediately.
-- One PR closes the slider chapter.
+// Range
+<Slider value={[lo, hi]} min={0} max={100} step={1} onChange={([l, h]) => …} />
+```
 
-Cons:
-- Two libs, two animation profiles, two thumb-rendering pipelines. Visual inconsistency between single + range tracks (different lib = different padding / shadow / thumb radius defaults).
-- `rn-range-slider` is community-maintained (not the official `@react-native-community` org). Smaller adoption, more bugs.
-- Doubles the verify matrix for batch 8.
+Internal: `value: number | [number, number]`. Single → one Reanimated SharedValue. Range → two SharedValues + lower/upper props. Same component, prop-narrowed branching.
 
-#### Recommendation: **A — single thumb only**
+**Rejected alternatives:**
 
-Rationale:
-1. Ship the 95% case with the canonical library. Defer the 5% case until a consumer actually asks.
-2. Avoid mixing two slider libs — visual inconsistency is the kind of thing that erodes a design system's premium feel.
-3. When `RangeSlider` ships later, it can be a fresh batch with its own decision on lib.
+| Option | Why rejected |
+|---|---|
+| `@react-native-community/slider` (single) + `rn-range-slider` (range) | Two libs = two thumb visuals = drift. |
+| `@miblanchard/react-native-slider` | Older, JS-driven (no Reanimated). Less smooth on Android. |
+| Defer range to follow-up | User explicitly needs range in batch 8. |
+
+**Trade accepted:** thumb is not native UISlider on iOS. JS-styled thumb matches the rest of our overlay surfaces (Dialog, BottomSheet, Toast) which are also JS-rendered, not native chrome.
 
 ---
 

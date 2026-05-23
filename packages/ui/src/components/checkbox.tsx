@@ -94,7 +94,10 @@ const hintTextVariants = cva("text-fg-tertiary", {
   defaultVariants: { size: "sm" },
 })
 
-const rowVariants = cva("flex-row items-start", {
+// `min-h-11` (44pt) enforces the iOS HIG touch-target floor on the whole
+// row even when the row is "box + short label" (which without min-height
+// would resolve to ~20–24pt = text line-height).
+const rowVariants = cva("flex-row items-start min-h-11 py-1.5", {
   variants: {
     size: { sm: "gap-2", md: "gap-3" },
     isDisabled: { true: "opacity-50", false: "" },
@@ -275,7 +278,7 @@ export const Checkbox = forwardRef<
         onCheckedChange={handlePrimChange}
         disabled={disabled}
         accessibilityState={mergedA11yState}
-        hitSlop={hitSlop ?? { top: 10, bottom: 10, left: 10, right: 10 }}
+        hitSlop={hitSlop ?? { top: 14, bottom: 14, left: 14, right: 14 }}
         className={cn(
           rowVariants({ size, isDisabled: disabled }),
           containerClassName,

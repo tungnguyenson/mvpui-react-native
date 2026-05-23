@@ -203,6 +203,63 @@ export {
   type UsePullToRefreshResult,
 } from "./hooks/use-pull-to-refresh"
 export {
+  haptics,
+  useHaptics,
+  type HapticImpactStyle,
+  type HapticNotifyType,
+  type HapticsApi,
+} from "./hooks/use-haptics"
+export {
+  ContextMenu,
+  type ContextMenuItem,
+  type ContextMenuItemStyle,
+  type ContextMenuProps,
+} from "./components/context-menu"
+export {
+  DateTimePicker,
+  type DateTimePickerMode,
+  type DateTimePickerProps,
+} from "./components/date-time-picker"
+export {
+  Popover,
+  PopoverClose,
+  PopoverContent,
+  PopoverPortal,
+  PopoverTrigger,
+  type PopoverAlign,
+  type PopoverContentProps,
+  type PopoverSide,
+} from "./components/popover"
+export {
+  RadioGroup,
+  RadioGroupBase,
+  RadioGroupItem,
+  type RadioGroupBaseProps,
+  type RadioGroupItemProps,
+  type RadioGroupProps,
+  type RadioGroupSize,
+} from "./components/radio-group"
+export {
+  SettingsRow,
+  type SettingsRowOrientation,
+  type SettingsRowProps,
+} from "./components/settings-row"
+export {
+  Slider,
+  type SliderProps,
+  type SliderSize,
+  type SliderValue,
+} from "./components/slider"
+export {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+  type TooltipAlign,
+  type TooltipContentProps,
+  type TooltipSide,
+  type TooltipTriggerProps,
+} from "./components/tooltip"
+export {
   tabBarScreenOptions,
   type TabBarScreenOptionsArgs,
 } from "./components/tab-bar"

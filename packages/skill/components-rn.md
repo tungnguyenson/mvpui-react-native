@@ -1046,6 +1046,17 @@ false) override `onCheckedChange` and re-set `checked` themselves.
 - No focus-visible ring (RN has no focus-visible primitive; touch is
   the dominant input).
 
+**Inside `@gorhom/bottom-sheet`**
+
+- Tap on the row works. `Pressable` taps fire normally.
+- For scrollable sheet content containing Checkboxes, wrap the list in
+  `BottomSheetScrollView` (not bare `ScrollView`) so the sheet's
+  pan-to-close gesture cooperates with content scroll. Bare
+  `ScrollView` makes scroll win and the sheet won't dismiss.
+- For non-scrolling sheet content, wrap in `BottomSheetView`.
+- The row's own `min-h-11` + `hitSlop: 14pt` ensures the bare-box tap
+  target stays ≥ 44pt even when content gets dense inside the sheet.
+
 ---
 
 ## Switch
@@ -2182,3 +2193,480 @@ Imperative ref methods: `close()` · `openLeft()` · `openRight()` ·
 - `friction` defaults to 2; raise it (e.g. 8) for a stickier feel.
 
 ---
+
+## Popover
+
+`@mvp-ui-rn/ui` — `Popover`, `PopoverTrigger`, `PopoverContent`, `PopoverClose`, `PopoverPortal`.
+
+Anchored floating panel. Compound on `@rn-primitives/popover`. Same Radix-style API as `Dialog`/`Select`.
+
+```tsx
+import { Popover, PopoverTrigger, PopoverContent, Button } from "@mvp-ui-rn/ui"
+
+<Popover>
+  <PopoverTrigger asChild>
+    <Button color="secondary">Open</Button>
+  </PopoverTrigger>
+  <PopoverContent side="bottom" align="start">
+    <Text>Anchored content</Text>
+  </PopoverContent>
+</Popover>
+```
+
+**Props (`PopoverContent`)**
+
+- `side: 'top' | 'bottom'` — default `bottom`.
+- `align: 'start' | 'center' | 'end'` — default `center`.
+- `sideOffset: number` — gap between trigger and panel. Default 8.
+- `alignOffset: number` — nudge along the align axis. Default 0.
+- `avoidCollisions: boolean` — default true; flips side if it overflows.
+- `closeOnPressOutside: boolean` — default true.
+
+**When to use**
+
+- Action menus anchored to a button (Edit / Delete / Duplicate).
+- Filter chips with a list of options.
+- Help / "more info" cards next to small icons.
+
+**When NOT to use**
+
+- Modal flows — use `Dialog` (full-screen scrim, can't tap through).
+- Long lists or pickers — use `BottomSheet` or `Select`.
+
+**Anti-patterns**
+
+- ❌ No arrow indicator in v1 — consistent with `Dialog`/`BottomSheet`'s
+  arrow-less surface. Don't introduce inconsistent arrows.
+- ❌ Nesting Popovers — the inner overlay swallows backdrop taps.
+
+**Requires**
+
+- `<PortalHost />` mounted at the app root (already there for
+  Dialog/Select/Toast).
+
+**RN deltas vs. web**
+
+- `side` is `'top' | 'bottom'` only (RN primitive doesn't implement
+  `left` / `right`). Use `align` for horizontal nudging.
+- Reanimated `FadeIn 150ms` / `FadeOut 120ms` only — no zoom, no spring.
+
+---
+
+## Tooltip
+
+`@mvp-ui-rn/ui` — `Tooltip`, `TooltipTrigger`, `TooltipContent`.
+
+Long-press tooltip. Built on `Popover` (not the upstream `@rn-primitives/tooltip` — that one opens on tap, which conflicts with `onPress`).
+
+```tsx
+import { Tooltip, TooltipTrigger, TooltipContent, Button } from "@mvp-ui-rn/ui"
+
+<Tooltip>
+  <TooltipTrigger asChild>
+    <Button>Save</Button>
+  </TooltipTrigger>
+  <TooltipContent>Adds to your saved list</TooltipContent>
+</Tooltip>
+```
+
+**Trigger**
+
+- Long-press (default 500ms) to show.
+- Release closes via `onPressOut`. Tap outside also closes.
+- Normal `onPress` still fires — tooltip never consumes taps.
+
+**Props (`TooltipTrigger`)**
+
+- `delayDuration: number` — long-press delay in ms. Default 500.
+- `asChild: boolean` — merge gestures onto a child component (e.g. Button).
+- `onPress` — pass through; fires on short tap.
+
+**Props (`TooltipContent`)**
+
+- `side: 'top' | 'bottom'` — default `top`.
+- `align`, `sideOffset`, `alignOffset` — same as Popover.
+
+**When to use**
+
+- Disambiguating icon-only buttons.
+- Surfacing keyboard shortcuts or extra context for icon affordances.
+
+**When NOT to use**
+
+- Critical information — long-press is a discovery-hostile gesture.
+  Use inline `HintText` or a `Dialog` instead.
+- Anything actionable — tooltips are presentation-only.
+
+**Anti-patterns**
+
+- ❌ Putting interactive elements inside `TooltipContent` — tap-through
+  is blocked by the overlay.
+- ❌ Combining `Tooltip` + `ContextMenu` on the same trigger — both
+  fire on long-press, gestures conflict.
+
+**RN deltas vs. web**
+
+- No hover on mobile — long-press substitute. Apps that need hover
+  (web/Electron) should fall back to mvp-ui's web Tooltip.
+- Dark-surface tooltip (`bg-fg`) in both modes — high-contrast,
+  matches iOS system tooltips.
+
+---
+
+## RadioGroup
+
+`@mvp-ui-rn/ui` — `RadioGroup`, `RadioGroupItem`, `RadioGroupBase`.
+
+Controlled list of mutually-exclusive options. `@rn-primitives/radio-group` Root + Item for accessibility; our `GroupContext` drives the circle tint per row.
+
+```tsx
+import { RadioGroup, RadioGroupItem } from "@mvp-ui-rn/ui"
+
+<RadioGroup value={theme} onValueChange={setTheme}>
+  <RadioGroupItem value="light" label="Light" hint="Always light" />
+  <RadioGroupItem value="dark" label="Dark" hint="Always dark" />
+  <RadioGroupItem value="system" label="System" hint="Follow OS" />
+</RadioGroup>
+```
+
+**Sizes**
+
+- `sm` — 16px circle, `text-sm` label.
+- `md` — 20px circle, `text-md` label.
+
+**Props (`RadioGroup`)**
+
+- `value: string | undefined`
+- `onValueChange: (value: string) => void`
+- `size: 'sm' | 'md'` — default `sm`.
+- `disabled: boolean` — disables all rows.
+
+**Props (`RadioGroupItem`)**
+
+- `value: string` — required.
+- `label`, `hint` — text content.
+- `size` — overrides group size for this row only.
+- `disabled` — disables this row only.
+- `isInvalid` — red border on the circle when unselected.
+
+**When to use**
+
+- Theme picker, single-choice settings, single-select form fields.
+
+**When NOT to use**
+
+- More than ~6 options — use `Select` instead.
+- Multi-select — use `Checkbox` per option.
+
+**Anti-patterns**
+
+- ❌ Putting controls inside the label — the entire row is a Pressable,
+  inner controls won't get taps.
+- ❌ Mixing radio + freeform inputs in the same group — the radio
+  metaphor implies "one of these answers", not "answer or type".
+
+**Touch targets**
+
+- Full-row tap (Pressable wraps icon + label/hint).
+- Bare-circle `hitSlop: 10pt` extends tappable area to ≥ 44pt.
+
+**RN deltas vs. web**
+
+- Web ring-on-checked outline → RN solid-fill bullet inside a tinted
+  circle. Same visual idea, RN-friendly tokens.
+
+**Inside `@gorhom/bottom-sheet`**
+
+- Tap on the row works. `Pressable` taps fire normally.
+- For scrollable sheet content containing a RadioGroup, wrap the list
+  in `BottomSheetScrollView` (not bare `ScrollView`) so the sheet's
+  pan-to-close gesture cooperates with content scroll. Bare
+  `ScrollView` makes scroll win and the sheet won't dismiss.
+- For non-scrolling sheet content, wrap in `BottomSheetView`.
+- The row's own `min-h-11` + `hitSlop: 14pt` ensures the bare-circle
+  tap target stays ≥ 44pt even when content gets dense inside the sheet.
+
+---
+
+## Slider
+
+`@mvp-ui-rn/ui` — `Slider`.
+
+Single + range thumb slider. Wraps `@miblanchard/react-native-slider` (pure-JS, supports both modes natively).
+
+```tsx
+import { Slider } from "@mvp-ui-rn/ui"
+
+// Single thumb
+<Slider value={50} onChange={setValue} />
+
+// Range thumb — pass [low, high]
+<Slider value={[20, 80]} onChange={([lo, hi]) => …} />
+```
+
+**Props**
+
+- `value: number | [number, number]` — single or range.
+- `onChange: (value) => void` — continuous during drag.
+- `onSlidingComplete: (value) => void` — once on release.
+- `min`, `max` — default 0, 100.
+- `step` — snap interval.
+- `disabled: boolean`.
+- `size: 'sm' | 'md'` — track container height; default `md`.
+
+**When to use**
+
+- Volume, brightness, threshold, single-value filter.
+- Range filters (price, date-range, age-range).
+
+**When NOT to use**
+
+- Discrete choices — use `SegmentedControl` or `RadioGroup`.
+- Tiny ranges (3–4 values) — use `Stepper` or `RadioGroup`.
+
+**Anti-patterns**
+
+- ❌ Sliders with no displayed value — users can't tell where they are.
+  Always show the current value next to or below the slider.
+- ❌ Range thumbs that can cross — confusing semantics. The lib
+  prevents this by default; don't override.
+
+**RN deltas vs. web**
+
+- Web `<input type="range">` is awful on touch. Library renders a
+  JS-styled thumb (24px circle, brand border, soft shadow). Not native
+  UISlider — consistent visual identity across iOS/Android.
+- Track always `bg-bg-tertiary` background, `--color-primary` active
+  fill. Custom theming requires forking.
+
+---
+
+## DateTimePicker
+
+`@mvp-ui-rn/ui` — `DateTimePicker`.
+
+Mobile-native date / time picker. Wraps `@react-native-community/datetimepicker`. iOS renders an inline compact pill; Android opens system dialog from a trigger button.
+
+```tsx
+import { DateTimePicker } from "@mvp-ui-rn/ui"
+
+<DateTimePicker mode="date" value={date} onValueChange={setDate} />
+<DateTimePicker mode="time" value={t} onValueChange={setT} />
+<DateTimePicker mode="datetime" value={dt} onValueChange={setDt} />
+```
+
+**Modes**
+
+- `date` — picks a date.
+- `time` — picks a time.
+- `datetime` — picks both. On iOS this is a single inline picker; on
+  Android it chains date → time dialogs in sequence.
+
+**Props**
+
+- `value: Date`, `onValueChange: (date: Date) => void` — controlled.
+- `minimumDate`, `maximumDate` — constraint.
+- `minuteInterval` — `1 | 2 | 3 | 4 | 5 | 6 | 10 | 12 | 15 | 20 | 30`.
+- `is24Hour` — Android only; iOS follows device locale.
+- `disabled`, `triggerLabel` (Android trigger label override).
+
+**When to use**
+
+- Birthday, appointment, deadline, schedule — anywhere users pick a
+  calendar date or wall-clock time.
+
+**When NOT to use**
+
+- Relative time deltas ("in 5 minutes") — use a `Stepper`.
+- Recurring schedules — needs a more specialized UI; build app-layer.
+
+**Anti-patterns**
+
+- ❌ Free-form date strings — touch users mistype constantly. Use the
+  picker.
+- ❌ Hidden constraints — always tell users why a date is disabled
+  (via `HintText` below the picker).
+
+**Platform notes**
+
+- iOS: `display="compact"` (HIG-blessed pill). Tap expands the wheel.
+- Android: system dialog. Triggered via a `<Button>` we render.
+- Both: `themeVariant`/`expo-system-ui` flips light/dark.
+
+---
+
+## ContextMenu
+
+`@mvp-ui-rn/ui` — `ContextMenu`.
+
+Long-press action menu. Pivoted from `zeego` (planned) to our existing `ActionSheet` infrastructure — `zeego` requires native deps that don't ship with Expo Go.
+
+```tsx
+import { ContextMenu } from "@mvp-ui-rn/ui"
+
+<ContextMenu
+  title="Note actions"
+  items={[
+    { key: "pin", label: "Pin", icon: Pin },
+    { key: "share", label: "Share…", icon: Share2 },
+    { key: "delete", label: "Delete", icon: Trash2, style: "destructive" },
+  ]}
+  onSelect={(key) => handle(key)}
+>
+  <ListItem leading={FileText} title="Trip planning" />
+</ContextMenu>
+```
+
+**Props**
+
+- `items: ContextMenuItem[]` — rows with `key`, `label`, `icon`, `style`, `disabled`.
+- `title`, `message` — sheet header.
+- `onSelect: (key | null) => void` — `null` = dismissed without choosing.
+- `showCancel: boolean` — default true; appends a Cancel row.
+- `cancelLabel: string` — default "Cancel".
+- `delayDuration: number` — long-press ms. Default 500.
+- `onPress` — short-tap handler (separate from long-press).
+
+**When to use**
+
+- Hidden secondary actions on a row (notes, messages, contacts).
+- Bulk operations behind a discoverable gesture.
+
+**When NOT to use**
+
+- Primary actions — discovery-hostile. Use a button.
+- Inline content menus — use `Popover` instead.
+
+**Anti-patterns**
+
+- ❌ Putting `ContextMenu` on every list row's children — long-press
+  becomes ambiguous. Limit to ~3 items per screen with menus.
+- ❌ Critical destructive actions without confirmation — pair
+  destructive items with a `Dialog` confirm before firing.
+
+**zeego upgrade path**
+
+Future: optional zeego implementation for consumers with custom dev
+clients (`react-native-ios-context-menu` + `@react-native-menu/menu`).
+v1 ships ActionSheet under the hood for Expo Go compatibility.
+
+---
+
+## haptics + useHaptics
+
+`@mvp-ui-rn/ui` — `haptics` (imperative), `useHaptics()` (hook).
+
+Tactile feedback wrapper over `expo-haptics`. Both surfaces return the same shape.
+
+```tsx
+import { haptics, useHaptics } from "@mvp-ui-rn/ui"
+
+// Imperative — call from anywhere
+haptics.selection()
+haptics.impact("light" | "medium" | "heavy" | "soft" | "rigid")
+haptics.notify("success" | "warning" | "error")
+
+// Hook — same API, planned preference-gating layer
+const h = useHaptics()
+h.selection()
+```
+
+**Semantic mapping**
+
+- `selection()` — list scrub, toggle, segment change. Subtle.
+- `impact(style)` — UI element collision. Picker click, button press.
+- `notify(type)` — task outcome. Save success / form error / warning.
+
+**When to use**
+
+- Confirmation that a tap registered when visuals are subtle.
+- Drag thresholds (swipe-to-action engaged).
+- Status feedback (notification arrived, save committed).
+
+**When NOT to use**
+
+- For every tap — saturates the user's perception. Reserve haptics for
+  meaningful state changes.
+- Long-running operations — use a progress indicator instead.
+
+**Anti-patterns**
+
+- ❌ Firing `impact("heavy")` on every keypress — feels broken.
+- ❌ Awaiting `haptics.*` for UI flow — they fire-and-forget; the
+  wrapper swallows rejection on unsupported devices.
+
+**Platform notes**
+
+- iOS: maps to `UIImpactFeedbackGenerator` / `UINotificationFeedback...`.
+- Android: maps to `Vibrator` (less granular). `performAndroidHaptics`
+  is more nuanced; v1 uses the cross-platform calls only.
+
+---
+
+## SettingsRow
+
+`@mvp-ui-rn/ui` — `SettingsRow`.
+
+iOS Settings-style row composite. Children-slot pattern (same as `FormField`). Group multiple rows inside `ListSection` for the hairline-divider grouped-card visual.
+
+```tsx
+import { ListSection, SettingsRow, Switch, Slider } from "@mvp-ui-rn/ui"
+
+<ListSection title="General">
+  <SettingsRow leading={Bell} title="Notifications" subtitle="Push, email">
+    <Switch checked={on} onCheckedChange={setOn} />
+  </SettingsRow>
+  <SettingsRow leading={Globe} title="Language">
+    <Text className="text-fg-tertiary text-md">English (US)</Text>
+  </SettingsRow>
+  <SettingsRow leading={User} title="Account" onPress={openAccount} />
+</ListSection>
+
+// Stacked (full-width control below title row):
+<SettingsRow leading={Volume2} title="Volume" orientation="stacked">
+  <Slider value={vol} onChange={setVol} />
+</SettingsRow>
+```
+
+**Props**
+
+- `leading?: IconProp` — lucide component / pre-rendered node / Avatar.
+- `title: string` — primary label.
+- `subtitle?: string` — secondary line below title.
+- `children?: ReactNode` — trailing or below-title control.
+- `orientation: 'inline' | 'stacked'` — default `inline`.
+- `onPress?` — makes the whole row pressable.
+- `disabled?` — `opacity-50` + blocks press.
+- `chevron?: boolean` — defaults true on pressable + no children inline.
+
+**Layouts**
+
+- `inline` (default): control sits in the trailing column.
+  - Best for Switch, value text, Select, chevron.
+- `stacked`: control renders below the title row at full width.
+  - Best for Slider, RadioGroup, RadioGroupItem lists.
+
+**When to use**
+
+- Settings screens, profile screens, app preferences.
+- Anywhere iOS Settings groupings make sense.
+
+**When NOT to use**
+
+- Action lists (Edit / Delete / etc.) — use `ListItem` instead.
+- Multi-line content cards — use `Card` instead.
+
+**Anti-patterns**
+
+- ❌ Mixing `inline` and `stacked` rows of vastly different heights in
+  the same section — visual rhythm breaks.
+- ❌ Putting `onPress` and a Switch in the same row — both fire when
+  the row is tapped, creating duplicate state changes. Pick one.
+
+**Pair with**
+
+- `<ListSection>` for grouped-card chrome with hairline dividers.
+- `<List>` to stack multiple sections with `gap-6`.
+
+---
+
