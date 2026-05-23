@@ -14,6 +14,26 @@ export default function InstallationPage() {
       </header>
 
       <section className="mb-10">
+        <h2 className="text-xl font-semibold text-fg mb-4">Installation methods</h2>
+        <div className="grid grid-cols-2 gap-3">
+          <a
+            href="#npm"
+            className="rounded-xl border border-border bg-bg-secondary px-4 py-3 hover:bg-bg-tertiary transition-colors"
+          >
+            <p className="text-sm font-semibold text-fg mb-0.5">npm / Expo install</p>
+            <p className="text-xs text-fg-tertiary">Add to an existing Expo project</p>
+          </a>
+          <a
+            href="#clone"
+            className="rounded-xl border border-border bg-bg-secondary px-4 py-3 hover:bg-bg-tertiary transition-colors"
+          >
+            <p className="text-sm font-semibold text-fg mb-0.5">Clone from GitHub</p>
+            <p className="text-xs text-fg-tertiary">Contribute or explore the source</p>
+          </a>
+        </div>
+      </section>
+
+      <section id="npm" className="mb-10">
         <h2 className="text-xl font-semibold text-fg mb-2">Prerequisites</h2>
         <p className="text-sm text-fg-secondary mb-4 leading-relaxed">
           You need an Expo project running SDK 56+ with expo-router. If starting fresh:
@@ -102,6 +122,30 @@ export default function RootLayout() {
           code={`// nativewind-env.d.ts (create at project root)
 /// <reference types="nativewind/types" />`}
         />
+      </section>
+
+      <section id="clone" className="mb-10">
+        <h2 className="text-xl font-semibold text-fg mb-2">Clone from GitHub</h2>
+        <p className="text-sm text-fg-secondary mb-4 leading-relaxed">
+          Clone the repository to contribute, explore the source, or run the showcase app locally.
+        </p>
+        <CodeBlock
+          language="bash"
+          code={`git clone https://github.com/tungnguyenson/mvpui-react-native.git
+cd mvpui-react-native
+pnpm install`}
+        />
+        <p className="mt-4 text-sm text-fg-secondary leading-relaxed">
+          Then launch the Expo showcase app:
+        </p>
+        <CodeBlock
+          language="bash"
+          code={`cd apps/showcase
+npx expo start --ios`}
+        />
+        <p className="mt-3 text-xs text-fg-tertiary leading-relaxed">
+          Requires Node 20+, pnpm 9+, and Xcode (iOS) or Android Studio (Android).
+        </p>
       </section>
 
       <section>

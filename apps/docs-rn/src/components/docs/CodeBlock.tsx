@@ -5,6 +5,8 @@ import hljs from "highlight.js/lib/core"
 import typescript from "highlight.js/lib/languages/typescript"
 import xml from "highlight.js/lib/languages/xml"
 import bash from "highlight.js/lib/languages/bash"
+import css from "highlight.js/lib/languages/css"
+import markdown from "highlight.js/lib/languages/markdown"
 import { Check, Copy } from "lucide-react"
 import { cn } from "@/lib/utils"
 
@@ -12,6 +14,8 @@ hljs.registerLanguage("typescript", typescript)
 hljs.registerLanguage("tsx", typescript)
 hljs.registerLanguage("xml", xml)
 hljs.registerLanguage("bash", bash)
+hljs.registerLanguage("css", css)
+hljs.registerLanguage("markdown", markdown)
 
 interface CodeBlockProps {
   code: string

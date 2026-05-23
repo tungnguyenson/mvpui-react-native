@@ -8,7 +8,7 @@ export default function ThemingPage() {
     <article className="mx-auto max-w-3xl px-6 py-12">
       <header className="mb-10">
         <h1 className="text-3xl font-bold tracking-tight text-fg mb-3">Theming</h1>
-        <p className="text-lg text-fg-secondary leading-relaxed">
+        <p className="text-lg text-fg-secondary leading-relaxed mb-6">
           Design tokens, dark mode, and how to extend or override the default palette.
         </p>
       </header>
@@ -111,6 +111,39 @@ export default function ThemingPage() {
           <code>bg-gray-100</code>, <code>text-brand-600</code>). They resolve to fixed values and
           won't flip in dark mode. Use semantic aliases only.
         </div>
+      </section>
+
+      <section className="mb-10">
+        <h2 className="text-xl font-semibold text-fg mb-2">Brand color</h2>
+        <p className="text-sm text-fg-secondary mb-4 leading-relaxed">
+          The default brand color is purple. Swap it at app setup time by chaining a theme file
+          in your app&apos;s CSS entry point and calling{" "}
+          <code className="rounded bg-bg-tertiary px-1.5 py-0.5 font-mono text-xs text-fg-brand">applyTheme</code>{" "}
+          before the first render.
+        </p>
+        <CodeBlock
+          language="css"
+          code={`/* apps/my-app/src/global.css */
+@import "@mvp-ui-rn/tokens/global.css";
+@import "@mvp-ui-rn/tokens/themes/teal.css";  /* purple | blue | indigo | violet | teal | green | orange | rose */`}
+        />
+        <CodeBlock
+          language="tsx"
+          code={`// apps/my-app/src/app/_layout.tsx
+import "../global.css"
+import { applyTheme } from "@mvp-ui-rn/tokens"
+import { brand, brandPrimary } from "@mvp-ui-rn/tokens/themes/teal"
+applyTheme(brand) // runs before first render — updates JS native color props
+
+// ...
+const base = scheme === "dark" ? DarkTheme : DefaultTheme
+const navTheme = { ...base, colors: { ...base.colors, primary: brandPrimary } }`}
+        />
+        <p className="mt-3 text-xs text-fg-tertiary leading-relaxed">
+          See{" "}
+          <a href="/docs/brand-color" className="text-fg-brand hover:underline">Brand Color</a>
+          {" "}for available themes, collision warnings (green/orange/rose), and custom brand scales.
+        </p>
       </section>
 
       <section>

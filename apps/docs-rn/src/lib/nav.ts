@@ -20,6 +20,8 @@ export const docsSections: NavSection[] = [
       { name: "Introduction", href: "/docs/introduction" },
       { name: "Installation", href: "/docs/installation" },
       { name: "Theming", href: "/docs/theming" },
+      { name: "Brand Color", href: "/docs/brand-color" },
+      { name: "AI Assistant Guide", href: "/docs/agent-guide" },
       { name: "Contributing", href: "/docs/contributing" },
       { name: "Demo App", href: "/docs/demo-app" },
     ],

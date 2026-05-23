@@ -1,4 +1,5 @@
 import type { Metadata } from "next"
+import Image from "next/image"
 import { CodeBlock } from "@/components/docs/CodeBlock"
 
 export const metadata: Metadata = { title: "Introduction" }
@@ -8,7 +9,7 @@ export default function IntroductionPage() {
     <article className="mx-auto max-w-3xl px-6 py-12">
       <header className="mb-10">
         <h1 className="text-3xl font-bold tracking-tight text-fg mb-3">Introduction</h1>
-        <p className="text-lg text-fg-secondary leading-relaxed">
+        <p className="text-lg text-fg-secondary leading-relaxed mb-6">
           mvp-ui-rn is a React Native component library built on Expo, NativeWind v5, and Tailwind
           v4. It ports the{" "}
           <a
@@ -19,6 +20,16 @@ export default function IntroductionPage() {
           </a>{" "}
           design system to mobile — same token values, same variant API, same developer experience.
         </p>
+        <div className="rounded-xl overflow-hidden border border-border">
+          <Image
+            src="/demo.webp"
+            alt="mvp-ui-rn component showcase — light and dark mode"
+            width={1200}
+            height={630}
+            className="w-full"
+            priority
+          />
+        </div>
       </header>
 
       <section className="mb-10">
